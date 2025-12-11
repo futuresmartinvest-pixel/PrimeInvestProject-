@@ -1,3 +1,7 @@
+// -----------------------------
+// ADMIN UID (Set Your Admin User ID Here)
+// -----------------------------
+export const ADMIN_UID = "za934MEck4Qd3IK2pHqplS6WPBe2";
 import { auth, db } from "./firebase.js";
 import {
   createUserWithEmailAndPassword,
