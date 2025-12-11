@@ -21,12 +21,12 @@ import {
 
 // Your Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyCMRStwAHyes-1HLmW7MntK5Nuzw1-QTjo",
-  authDomain: "primeinvestproject-292bb.firebaseapp.com",
-  projectId: "primeinvestproject-292bb",
-  storageBucket: "primeinvestproject-292bb.firebasestorage.app",
-  messagingSenderId: "503196441640",
-  appId: "1:503196441640:web:38865529e6586c6873291d"
+  apiKey: "AIzaSyAH7t_OO9N5rzXda0sU_rUqM-x0RDEiZtA",
+  authDomain: "primeinvestproject-aa94a.firebaseapp.com",
+  projectId: "primeinvestproject-aa94a",
+  storageBucket: "primeinvestproject-aa94a.firebasestorage.app",
+  messagingSenderId: "990540338824",
+  appId: "1:990540338824:web:ca0cc230736f078b72713d"
 };
 
 // Initialize Firebase
