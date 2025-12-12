@@ -7,11 +7,12 @@
 
 <style>
 :root{
+  --bg:#ffffff;
+  --text:#000000;
+  --muted:#555;
   --purple:#5b2bbd;
   --purple-soft:#6f49c9;
-  --glass:rgba(255,255,255,0.08);
-  --text:#ffffff;
-  --muted:#d1c4e9;
+  --glass:rgba(0,0,0,0.05);
 }
 
 *{box-sizing:border-box}
@@ -19,7 +20,7 @@
 body{
   margin:0;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-  background:var(--purple);
+  background:var(--bg);
   color:var(--text);
   padding-bottom:120px;
 }
@@ -45,7 +46,10 @@ body{
   background:linear-gradient(135deg,#ff9800,#ff5722);
 }
 
-.menu{font-size:26px}
+.menu{
+  font-size:26px;
+  color:#000;
+}
 
 /* ===== BALANCE ===== */
 .balance-card{
@@ -53,11 +57,12 @@ body{
   background:var(--purple-soft);
   border-radius:22px;
   padding:20px;
+  color:#fff;
 }
 
 .balance-title{
   font-size:14px;
-  color:var(--muted);
+  opacity:.8;
 }
 
 .balance-row{
@@ -92,6 +97,7 @@ body{
   border-radius:26px;
   background:linear-gradient(135deg,#ff7043,#ff5252);
   padding:20px;
+  color:#fff;
 }
 
 .bank-chip{
@@ -118,8 +124,9 @@ body{
 }
 
 .section-title{
-  font-size:15px;
+  font-size:16px;
   margin-bottom:14px;
+  font-weight:600;
 }
 
 .task{
@@ -133,7 +140,7 @@ body{
   width:42px;
   height:42px;
   border-radius:14px;
-  background:#ffffff33;
+  background:#eee;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -154,8 +161,8 @@ body{
   -webkit-backdrop-filter: blur(14px);
 
   box-shadow:
-    0 8px 30px rgba(0,0,0,0.25),
-    inset 0 0 0 1px rgba(255,255,255,0.06);
+    0 8px 30px rgba(0,0,0,0.15),
+    inset 0 0 0 1px rgba(0,0,0,0.04);
 }
 
 /* ===== NAV ===== */
@@ -168,11 +175,11 @@ body{
 .nav-item{
   text-align:center;
   font-size:12px;
-  color:#d1c4e9;
+  color:#444;
 }
 
 .nav-item.active{
-  color:#fff;
+  color:#000;
   font-weight:600;
 }
 
