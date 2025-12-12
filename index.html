@@ -198,6 +198,44 @@ body {
     VIP
   </div>
 </div>
+<script type="module">
+  import { auth, db } from "./firebase.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+  const userNameEl = document.querySelector(".user");
+  const balanceEl = document.querySelector(".balance h1");
+  const todayEl = document.querySelector(".balance span");
+  const shieldsBox = document.querySelector(".vip-shields");
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      location.href = "auth.html";
+      return;
+    }
+
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+
+    // Name
+    userNameEl.textContent = data.name || "User";
+
+    // Balance
+    balanceEl.textContent = "$" + (data.balance || 0).toFixed(2);
+    todayEl.textContent = "+$" + (data.todayEarned || 0).toFixed(2) + " Today";
+
+    // VIP shields
+    shieldsBox.innerHTML = "";
+    const vipLevel = data.vipLevel || 0;
+
+    for (let i = 0; i < vipLevel; i++) {
+      const img = document.createElement("img");
+      img.src = "vip-shield.png";
+      shieldsBox.appendChild(img);
+    }
+  });
+</script>
 </body>
 </html>
