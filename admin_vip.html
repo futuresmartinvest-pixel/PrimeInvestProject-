@@ -1,14 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin VIP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin – VIP Approvals</title>
+
 <style>
-body{background:#0f172a;color:#fff;font-family:system-ui;padding:16px}
-.card{background:#1e293b;padding:14px;border-radius:14px;margin-bottom:12px}
-button{background:#22c55e;border:none;padding:8px 14px;border-radius:10px;font-weight:800}
+body{
+  margin:0;
+  padding:16px;
+  font-family:system-ui;
+  background:#0b1220;
+  color:#fff;
+}
+.card{
+  background:#141c2f;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+}
+button{
+  background:#22c55e;
+  border:none;
+  padding:10px 16px;
+  border-radius:12px;
+  font-weight:800;
+  margin-top:10px;
+}
 </style>
 </head>
+
 <body>
 
 <h2>VIP Requests</h2>
@@ -16,8 +37,17 @@ button{background:#22c55e;border:none;padding:8px 14px;border-radius:10px;font-w
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
   authDomain: "primeinvestproject2.firebaseapp.com",
@@ -27,47 +57,68 @@ const firebaseConfig = {
   appId: "1:798977477628:web:c97d1fba72ad7865864079"
 };
 
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-const VIPS={
-  1:{rate:2.33},2:{rate:3.33},3:{rate:3.66},4:{rate:3.99},
-  5:{rate:4.33},6:{rate:4.99},7:{rate:6.99},8:{rate:7.33}
+/* VIP PLANS */
+const VIPS = {
+  1:{rate:2.33},
+  2:{rate:3.33},
+  3:{rate:3.66},
+  4:{rate:3.99},
+  5:{rate:4.33},
+  6:{rate:4.99},
+  7:{rate:6.99},
+  8:{rate:7.33}
 };
 
 async function load(){
-  const snap=await getDocs(collection(db,"vip_requests"));
-  list.innerHTML="";
-  snap.forEach(s=>{
-    const d=s.data();
-    if(d.status!=="pending")return;
-    const c=document.createElement("div");
-    c.className="card";
-    c.innerHTML=`
-      <div>User: ${d.userId}</div>
-      <div>VIP ${d.vipLevel} — $${d.price}</div>
+  const snap = await getDocs(collection(db,"vip_requests"));
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  snap.forEach(d=>{
+    const data = d.data();
+    if(data.status !== "pending") return;
+
+    const div = document.createElement("div");
+    div.className="card";
+    div.innerHTML = `
+      <div>User ID: ${data.userId}</div>
+      <div>VIP Level: ${data.vipLevel}</div>
+      <div>Price: $${data.price}</div>
       <button>Approve</button>
     `;
-    c.querySelector("button").onclick=async()=>{
-      await setDoc(doc(db,"users",d.userId),{
-        vip:{
-          level:d.vipLevel,
-          price:d.price,
-          rate:VIPS[d.vipLevel].rate,
-          activatedAt:serverTimestamp()
-        }
-      },{merge:true});
 
-      await updateDoc(doc(db,"vip_requests",s.id),{
+    div.querySelector("button").onclick = async ()=>{
+      /* ACTIVATE VIP */
+      await setDoc(
+        doc(db,"users",data.userId),
+        {
+          vip:{
+            level:data.vipLevel,
+            rate:VIPS[data.vipLevel].rate,
+            price:data.price,
+            lastProfit:Date.now()
+          }
+        },
+        {merge:true}
+      );
+
+      /* UPDATE REQUEST */
+      await updateDoc(doc(db,"vip_requests",d.id),{
         status:"approved",
         approvedAt:serverTimestamp()
       });
 
+      alert("VIP Approved");
       load();
     };
-    list.appendChild(c);
+
+    list.appendChild(div);
   });
 }
+
 load();
 </script>
 
