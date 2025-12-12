@@ -12,7 +12,6 @@
   --text: #0f172a;
   --muted: #64748b;
   --blue: #2563eb;
-  --gold: #f59e0b;
   --radius: 18px;
 }
 
@@ -26,30 +25,28 @@ body {
   padding-bottom: 90px;
 }
 
-/* TOP BAR */
+/* ===== TOP BAR ===== */
 .topbar {
-  background: #111827;
+  background: linear-gradient(135deg, #0f172a, #111827);
   color: #fff;
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
+  padding: 16px;
 }
 
-.user {
+.topbar .user {
   font-size: 18px;
   font-weight: 600;
 }
 
-/* CARDS */
+/* ===== CARD ===== */
 .card {
   background: var(--card);
   margin: 18px;
   padding: 22px;
   border-radius: var(--radius);
-  box-shadow: 0 10px 25px rgba(0,0,0,.06);
+  box-shadow: 0 12px 28px rgba(0,0,0,.08);
 }
 
-/* BALANCE */
+/* ===== BALANCE ===== */
 .balance h1 {
   margin: 0;
   font-size: 36px;
@@ -60,53 +57,58 @@ body {
   display: block;
   text-align: center;
   color: var(--blue);
+  font-weight: 500;
+  margin-top: 6px;
 }
 
-/* VIP */
+/* ===== VIP CARD ===== */
 .vip-card {
   background: linear-gradient(135deg, #0f172a, #020617);
   color: #fff;
   margin: 18px;
-  padding: 22px;
+  padding: 24px;
   border-radius: var(--radius);
 }
 
 .vip-title {
   font-size: 20px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .vip-badge {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .vip-emblem {
-  font-size: 60px;
-  margin-bottom: 12px;
+  width: 150px;
+  margin-bottom: 14px;
 }
 
 .vip-shields {
   display: flex;
-  justify-content: center;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.vip-shield {
-  font-size: 26px;
+.vip-shields img {
+  width: 40px;
 }
 
-/* BOTTOM NAV */
+/* ===== BOTTOM NAV ===== */
 .navbar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
+  background: #ffffff;
   border-top: 1px solid #e5e7eb;
   display: flex;
   justify-content: space-around;
-  padding: 10px 0;
+  padding: 10px 0 8px;
 }
 
 .nav-item {
@@ -120,9 +122,10 @@ body {
   font-weight: 600;
 }
 
-.nav-icon {
-  font-size: 22px;
-  display: block;
+.nav-item img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
   margin-bottom: 4px;
 }
 </style>
@@ -146,10 +149,8 @@ body {
   <div class="vip-title">Active VIP</div>
 
   <div class="vip-badge">
-    <!-- VIP EMBLEM -->
-    <div class="vip-emblem">👑</div>
+    <img src="vip-emblem.png" class="vip-emblem" alt="VIP Emblem" />
 
-    <!-- VIP SHIELDS -->
     <div class="vip-shields"></div>
   </div>
 </div>
@@ -157,27 +158,27 @@ body {
 <!-- BOTTOM NAV -->
 <div class="navbar">
   <div class="nav-item active">
-    <span class="nav-icon">🏠</span>
+    <img src="icon-home.png" alt="Home">
     Home
   </div>
 
   <div class="nav-item">
-    <span class="nav-icon">📝</span>
+    <img src="icon-tasks.png" alt="Tasks">
     Tasks
   </div>
 
   <div class="nav-item">
-    <span class="nav-icon">💼</span>
+    <img src="icon-wallet.png" alt="Wallet">
     Wallet
   </div>
 
   <div class="nav-item">
-    <span class="nav-icon">👥</span>
+    <img src="icon-referral.png" alt="Referral">
     Referral
   </div>
 
   <div class="nav-item">
-    <span class="nav-icon">💎</span>
+    <img src="icon-vip.png" alt="VIP">
     VIP
   </div>
 </div>
@@ -212,10 +213,9 @@ onAuthStateChanged(auth, async (user) => {
   const vipLevel = data.vipLevel || 0;
 
   for (let i = 0; i < vipLevel; i++) {
-    const span = document.createElement("span");
-    span.className = "vip-shield";
-    span.textContent = "🛡️";
-    shieldsBox.appendChild(span);
+    const img = document.createElement("img");
+    img.src = "vip-shield.png";
+    shieldsBox.appendChild(img);
   }
 });
 </script>
