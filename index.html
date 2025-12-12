@@ -11,39 +11,54 @@
 html, body {
   margin: 0;
   height: 100%;
-  overflow: hidden;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background: #ffffff;
+  background: #5b2fc2;
+  overflow: hidden;
 }
 
-/* APP WRAPPER */
+/* APP */
 .app {
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* ===== TOP BALANCE CARD ===== */
-.top-card {
+/* HEADER */
+.header {
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: orange;
+}
+
+/* BALANCE CARD */
+.balance-card {
   margin: 16px;
-  padding: 20px;
-  background: #6f42c1;
+  background: rgba(255,255,255,0.15);
   border-radius: 26px;
+  padding: 20px;
   color: white;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-}
-
-.balance-text {
-  font-size: 16px;
-  opacity: 0.9;
 }
 
 .balance-amount {
-  font-size: 42px;
+  font-size: 40px;
   font-weight: 700;
-  margin-top: 4px;
 }
 
 .balance-actions {
@@ -53,38 +68,79 @@ html, body {
 }
 
 .action-btn {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.25);
   padding: 10px 18px;
   border-radius: 16px;
-  font-size: 15px;
   text-align: center;
 }
 
-/* ===== MAIN WHITE AREA ===== */
-.main {
-  flex: 1;
+/* BANK CARD (WHITE) */
+.bank-card {
+  margin: 16px;
   background: white;
+  color: #333;
+  border-radius: 26px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
 }
 
-/* ===== BOTTOM NAV ===== */
+.card-chip {
+  width: 44px;
+  height: 34px;
+  background: #eee;
+  border-radius: 8px;
+  margin-bottom: 18px;
+}
+
+.card-number {
+  font-size: 22px;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+/* EXPENSE LIST */
+.section {
+  padding: 0 16px;
+  color: white;
+}
+
+.expense {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 14px 0;
+}
+
+.expense-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* BOTTOM NAV */
 .nav {
+  margin-top: auto;
   height: 72px;
   background: white;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  box-shadow: 0 -8px 20px rgba(0,0,0,0.12);
-  font-size: 12px;
+  border-radius: 22px 22px 0 0;
 }
 
 .nav-item {
   text-align: center;
+  font-size: 12px;
   color: #444;
 }
 
 .nav-item span {
-  display: block;
   font-size: 22px;
+  display: block;
 }
 </style>
 </head>
@@ -93,10 +149,19 @@ html, body {
 
 <div class="app">
 
-  <!-- TOP -->
-  <div class="top-card">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="avatar"></div>
+      <div>Alex</div>
+    </div>
+    ☰
+  </div>
+
+  <!-- BALANCE -->
+  <div class="balance-card">
     <div>
-      <div class="balance-text">Balance</div>
+      <div>Balance</div>
       <div class="balance-amount">$0.00</div>
     </div>
     <div class="balance-actions">
@@ -105,10 +170,37 @@ html, body {
     </div>
   </div>
 
-  <!-- WHITE AREA -->
-  <div class="main"></div>
+  <!-- WHITE BANK CARD -->
+  <div class="bank-card">
+    <div class="card-chip"></div>
+    <div class="card-number">1234 5678 9123 0000</div>
+    <div>Card Holder</div>
+  </div>
 
-  <!-- BOTTOM NAV -->
+  <!-- EXPENSES -->
+  <div class="section">
+    <div>This month expenses</div>
+
+    <div class="expense">
+      <div class="expense-icon">S</div>
+      <div>Shopping</div>
+      <div>$8.00</div>
+    </div>
+
+    <div class="expense">
+      <div class="expense-icon">M</div>
+      <div>Movies</div>
+      <div>$1.00</div>
+    </div>
+
+    <div class="expense">
+      <div class="expense-icon">F</div>
+      <div>Food</div>
+      <div>$3.00</div>
+    </div>
+  </div>
+
+  <!-- NAV -->
   <div class="nav">
     <div class="nav-item"><span>🏠</span>Home</div>
     <div class="nav-item"><span>📝</span>Tasks</div>
