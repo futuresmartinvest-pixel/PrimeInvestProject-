@@ -1,8 +1,11 @@
-// -----------------------------
+// ------------------------------------------------------
 // ADMIN UID (Set Your Admin User ID Here)
-// -----------------------------
-export const ADMIN_UID = "za934MEck4Qd3IK2pHqplS6WPBe2";
+// ------------------------------------------------------
+export const ADMIN_UID = "3xM6WyDqPTVkX0L4sOTNQ8f4VWO2";
 
+// ------------------------------------------------------
+// Firebase Imports
+// ------------------------------------------------------
 import { auth, db } from "./firebase.js";
 
 import {
@@ -11,115 +14,80 @@ import {
   updateProfile,
   onAuthStateChanged,
   signOut
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 import {
   doc,
   setDoc,
   getDoc,
   updateDoc
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// ------------------------------------
-// GENERATE USER REFERRAL CODE
-// ------------------------------------
-function generateReferralCode(uid) {
-  return uid.substring(0, 6).toUpperCase();
-}
-
-// ------------------------------------
-// SIGN UP USER (GLOBAL)
-// ------------------------------------
-export async function signUpUser(fullName, email, password, referredByCode = null) {
+// ------------------------------------------------------
+// REGISTER USER
+// ------------------------------------------------------
+export async function registerUser(name, email, password) {
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
 
-    await updateProfile(user, { displayName: fullName });
+    await updateProfile(cred.user, { displayName: name });
 
-    const referralCode = generateReferralCode(user.uid);
-
-    let referredBy = null;
-
-    // -----------------------------------------
-    // If referral code exists → find referring user
-    // -----------------------------------------
-    if (referredByCode) {
-      const usersRef = doc(db, "referralCodes", referredByCode);
-      const refSnap = await getDoc(usersRef);
-
-      if (refSnap.exists()) {
-        referredBy = refSnap.data().uid;
-
-        // Add this user to referredUsers of the inviter
-        await updateDoc(doc(db, "users", referredBy), {
-          referredUsers: [user.uid],
-        });
-      }
-    }
-
-    // -----------------------------------------
-    // Create user Firestore profile
-    // -----------------------------------------
-    await setDoc(doc(db, "users", user.uid), {
-      fullName,
+    // Create Firestore user document
+    await setDoc(doc(db, "users", cred.user.uid), {
+      name,
       email,
-      referralCode,
-      referredBy,
-      referredUsers: [],
+      uid: cred.user.uid,
+      vip: false,
       balance: 0,
-      vipStatus: "none",     // FIXED from pending
-      createdAt: Date.now(),
-      role: user.uid === ADMIN_UID ? "admin" : "user"
+      referralCode: cred.user.uid.substring(0, 6),
+      invitedBy: null,
+      createdAt: Date.now()
     });
 
-    // -----------------------------------------
-    // Store referral code so others can find it
-    // -----------------------------------------
-    await setDoc(doc(db, "referralCodes", referralCode), {
-      uid: user.uid
-    });
-
-    return { success: true, user };
-
+    return { success: true };
   } catch (error) {
     return { success: false, message: error.message };
   }
 }
 
-// -----------------------------
-// SIGN IN USER
-// -----------------------------
-export async function signInUser(email, password) {
+// ------------------------------------------------------
+// LOGIN USER
+// ------------------------------------------------------
+export async function loginUser(email, password) {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return { success: true, user: userCredential.user };
+    await signInWithEmailAndPassword(auth, email, password);
+    return { success: true };
   } catch (error) {
     return { success: false, message: error.message };
   }
 }
 
-// -----------------------------
-// AUTH STATE LISTENER
-// -----------------------------
-export function initAuthState(callback) {
+// ------------------------------------------------------
+// ON AUTH STATE CHANGED
+// ------------------------------------------------------
+export function watchAuthState(callback) {
   onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      callback({
-        loggedIn: true,
-        user: user,
-        data: userDoc.exists() ? userDoc.data() : null
-      });
-    } else {
-      callback({ loggedIn: false });
-    }
+    if (!user) return callback(null);
+
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists()) return callback(null);
+
+    callback({
+      uid: user.uid,
+      email: user.email,
+      name: user.displayName,
+      vip: snap.data().vip,
+      balance: snap.data().balance,
+      referralCode: snap.data().referralCode,
+      invitedBy: snap.data().invitedBy,
+      isAdmin: user.uid === ADMIN_UID
+    });
   });
 }
 
-// -----------------------------
-// LOGOUT USER
-// -----------------------------
-export async function logoutUser() {
-  await signOut(auth);
+// ------------------------------------------------------
+// LOGOUT
+// ------------------------------------------------------
+export function logoutUser() {
+  return signOut(auth);
 }
