@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin VIP Panel</title>
+<title>Admin – VIP Requests</title>
 
 <style>
 body{
@@ -23,42 +23,29 @@ h2{
   border-radius:16px;
   padding:16px;
   margin-bottom:14px;
-  box-shadow:0 10px 30px rgba(0,0,0,.4);
 }
 
-.row{
-  margin-bottom:6px;
-  font-size:15px;
+.card small{
+  opacity:.7;
 }
 
 button{
   margin-top:10px;
-  padding:10px 14px;
+  padding:10px 16px;
   border:none;
   border-radius:12px;
   background:#22c55e;
-  color:#000;
   font-weight:900;
   cursor:pointer;
-}
-
-.badge{
-  display:inline-block;
-  padding:4px 10px;
-  border-radius:999px;
-  font-size:12px;
-  background:#f59e0b;
-  color:#000;
-  font-weight:800;
 }
 </style>
 </head>
 
 <body>
 
-<h2>VIP Deposit Requests</h2>
+<h2>VIP Requests</h2>
 
-<div id="list"></div>
+<div id="list">Loading…</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -68,7 +55,6 @@ import {
   getDocs,
   doc,
   updateDoc,
-  setDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -85,23 +71,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* VIP RATES */
-const VIP_RATES = {
-  1:2.33,
-  2:3.33,
-  3:3.66,
-  4:3.99,
-  5:4.33,
-  6:4.99,
-  7:6.99,
-  8:7.33
-};
-
+/* LOAD REQUESTS */
 async function load(){
+  const snap = await getDocs(collection(db,"vip_requests"));
   const list = document.getElementById("list");
   list.innerHTML = "";
 
-  const snap = await getDocs(collection(db,"vip_requests"));
+  if(snap.empty){
+    list.innerHTML = "No pending requests";
+    return;
+  }
 
   snap.forEach(docSnap=>{
     const d = docSnap.data();
@@ -109,41 +88,21 @@ async function load(){
 
     const div = document.createElement("div");
     div.className = "card";
-
     div.innerHTML = `
-      <div class="row"><b>User ID:</b> ${d.userId}</div>
-      <div class="row"><b>VIP Level:</b> VIP ${d.vipLevel}</div>
-      <div class="row"><b>Price:</b> $${d.price}</div>
-      <div class="row"><span class="badge">PENDING</span></div>
-      <button>APPROVE VIP</button>
+      <div><b>User:</b> ${d.userId}</div>
+      <div><b>VIP:</b> VIP ${d.vipLevel}</div>
+      <div><b>Amount:</b> $${d.price}</div>
+      <small>Requested</small>
+      <button>Approve</button>
     `;
 
     div.querySelector("button").onclick = async ()=>{
-      /* 1️⃣ ACTIVATE VIP FOR USER */
-      await setDoc(
-        doc(db,"users",d.userId),
-        {
-          vip:{
-            level:d.vipLevel,
-            price:d.price,
-            rate:VIP_RATES[d.vipLevel],
-            status:"active",
-            lastProfitAt: serverTimestamp()
-          }
-        },
-        { merge:true }
-      );
+      await updateDoc(doc(db,"vip_requests",docSnap.id),{
+        status:"approved",
+        approvedAt: serverTimestamp()
+      });
 
-      /* 2️⃣ UPDATE REQUEST STATUS */
-      await updateDoc(
-        doc(db,"vip_requests",docSnap.id),
-        {
-          status:"approved",
-          approvedAt: serverTimestamp()
-        }
-      );
-
-      alert("VIP APPROVED");
+      alert("VIP Approved");
       load();
     };
 
