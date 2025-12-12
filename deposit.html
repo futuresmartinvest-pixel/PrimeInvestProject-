@@ -5,132 +5,92 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-<title>VIP Plans</title>
+<title>VIP Deposit</title>
 
 <style>
 body{
   margin:0;
-  padding:20px;
-  font-family:system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  padding:16px;
+  font-family:system-ui;
   background:#ffffff;
-  color:#111;
-}
-
-/* TITLE */
-h1{
-  margin-bottom:20px;
-  font-size:28px;
-  font-weight:800;
-}
-
-/* GRID */
-.vip-grid{
-  display:grid;
-  grid-template-columns:repeat(2, 1fr);
-  gap:16px;
-}
-
-/* VIP CARD */
-.vip-card{
-  background:#fff;
-  border-radius:18px;
-  padding:18px;
-  box-shadow:0 8px 24px rgba(0,0,0,.08);
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  min-height:170px;
-}
-
-/* TEXT */
-.vip-title{
-  font-size:20px;
-  font-weight:800;
-}
-.vip-price{
-  font-size:22px;
-  margin-top:6px;
-}
-.vip-rate{
-  font-size:14px;
-  color:#666;
-  margin-top:4px;
-}
-
-/* BUTTON */
-.vip-btn{
-  margin-top:14px;
-  padding:12px;
-  border:none;
-  border-radius:14px;
-  font-weight:800;
-  font-size:16px;
-  cursor:pointer;
-  background:linear-gradient(135deg,#f7c873,#e8a93b);
   color:#000;
 }
 
-/* STATES */
-.vip-btn[disabled]{
-  background:#eee;
-  color:#999;
-  cursor:not-allowed;
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
 }
 
-/* DEPOSIT BOX */
-.deposit-box{
-  display:none;
-  margin-top:30px;
-  padding:20px;
-  border-radius:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
-}
-
-.addr{
-  margin-top:10px;
+/* VIP BOX */
+.vip-box{
+  border:1px solid #e5e7eb;
+  border-radius:16px;
   padding:14px;
+  text-align:center;
+  background:#fff;
+}
+.vip-box b{
+  font-size:18px;
+}
+.vip-box small{
+  display:block;
+  margin-top:4px;
+  opacity:.7;
+}
+.vip-box button{
+  margin-top:10px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:12px;
+  background:#000;
+  color:#fff;
+  font-weight:700;
+}
+
+/* DEPOSIT */
+.deposit{
+  display:none;
+  margin-top:20px;
+  border-radius:16px;
+  padding:16px;
+  background:#f8fafc;
+}
+.addr{
   background:#000;
   color:#0f0;
-  border-radius:12px;
-  word-break:break-all;
-  font-size:14px;
-}
-
-input{
-  width:100%;
-  margin-top:14px;
   padding:12px;
   border-radius:12px;
+  word-break:break-all;
+  margin:10px 0;
 }
-
-.confirm{
-  margin-top:14px;
+input,button.confirm{
   width:100%;
-  padding:14px;
+  padding:12px;
+  border-radius:12px;
   border:none;
-  border-radius:14px;
-  font-size:17px;
-  font-weight:900;
+  margin-top:10px;
+}
+button.confirm{
   background:#22c55e;
-  color:#fff;
+  font-weight:900;
 }
 </style>
 </head>
 
 <body>
 
-<h1>VIP Plans</h1>
+<h2>Select VIP Plan</h2>
 
-<div class="vip-grid" id="vipGrid"></div>
+<div class="grid" id="vipGrid"></div>
 
-<!-- DEPOSIT -->
-<div class="deposit-box" id="depositBox">
-  <h2 id="selectedVipText"></h2>
+<div class="deposit" id="depositBox">
+  <h3 id="selectedVip"></h3>
 
-  <div>USDT – TRC20</div>
-  <div class="addr">
-    TTHLd1pCtYstvRKtWkx7qfHQmWRuxZKH4p
-  </div>
+  <div><b>USDT (TRC20)</b></div>
+  <div class="addr">TTHLd1pCtYstvRKtWkx7qfHQmWRuxZKH4p</div>
 
   <input type="file" id="proof" accept="image/*">
   <button class="confirm" onclick="submitDeposit()">Confirm Deposit</button>
@@ -138,14 +98,7 @@ input{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  serverTimestamp,
-  doc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /* FIREBASE */
 const firebaseConfig = {
@@ -160,103 +113,64 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+/* VIP DATA */
+const VIPS = [
+ {id:1,price:30,rate:2.33},
+ {id:2,price:100,rate:3.33},
+ {id:3,price:499,rate:3.66},
+ {id:4,price:999,rate:3.99},
+ {id:5,price:4999,rate:4.33},
+ {id:6,price:9999,rate:4.99},
+ {id:7,price:49999,rate:6.99},
+ {id:8,price:99999,rate:7.33}
+];
+
 /* USER ID */
-function getUserId(){
+function uid(){
   let id = localStorage.getItem("userId");
   if(!id){
-    id = "user_" + Math.random().toString(36).slice(2,10) + "_" + Date.now();
-    localStorage.setItem("userId", id);
+    id="user_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+    localStorage.setItem("userId",id);
   }
   return id;
 }
 
-/* VIP DATA */
-const VIPS = [
-  {id:1, price:30, rate:2.33},
-  {id:2, price:100, rate:3.33},
-  {id:3, price:499, rate:3.66},
-  {id:4, price:999, rate:3.99},
-  {id:5, price:4999, rate:4.33},
-  {id:6, price:9999, rate:4.99},
-  {id:7, price:49999, rate:6.99},
-  {id:8, price:99999, rate:7.33}
-];
-
-let selectedVip = null;
-
-/* GET USER VIP LEVEL */
-async function getUserVipLevel(){
-  const snap = await getDoc(doc(db,"users",getUserId()));
-  if(!snap.exists()) return 0;
-  return snap.data()?.vip?.level || 0;
-}
-
-/* RENDER VIPS */
+let selectedVIP = null;
 const grid = document.getElementById("vipGrid");
-const depositBox = document.getElementById("depositBox");
-const selectedVipText = document.getElementById("selectedVipText");
 
-const userVipLevel = await getUserVipLevel();
-
+/* BUILD VIP GRID */
 VIPS.forEach(v=>{
-  const card = document.createElement("div");
-  card.className = "vip-card";
-
-  let status = "";
-  let disabled = false;
-
-  if(v.id === userVipLevel){
-    status = "ACTIVE";
-    disabled = true;
-  }
-  else if(v.id === userVipLevel + 1){
-    status = "AVAILABLE";
-  }
-  else{
-    status = "LOCKED";
-    disabled = true;
-  }
-
-  card.innerHTML = `
-    <div>
-      <div class="vip-title">VIP ${v.id}</div>
-      <div class="vip-price">$${v.price}</div>
-      <div class="vip-rate">${v.rate}% daily</div>
-      <div style="margin-top:6px;font-size:13px;color:#777">${status}</div>
-    </div>
-    <button class="vip-btn" ${disabled?"disabled":""}>
-      ${status==="AVAILABLE"?"Deposit":status}
-    </button>
+  const d=document.createElement("div");
+  d.className="vip-box";
+  d.innerHTML=`
+    <b>VIP ${v.id}</b>
+    <small>$${v.price} • ${v.rate}% daily</small>
+    <button>Select</button>
   `;
-
-  const btn = card.querySelector("button");
-  if(!disabled){
-    btn.onclick = ()=>{
-      selectedVip = v;
-      depositBox.style.display = "block";
-      selectedVipText.innerText =
-        `VIP ${v.id} — $${v.price} (${v.rate}% daily)`;
-      window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
-    };
-  }
-
-  grid.appendChild(card);
+  d.querySelector("button").onclick=()=>{
+    selectedVIP = v;
+    document.getElementById("depositBox").style.display="block";
+    document.getElementById("selectedVip").innerText =
+      "VIP "+v.id+" — $"+v.price+" ("+v.rate+"%)";
+  };
+  grid.appendChild(d);
 });
 
 /* SUBMIT */
-window.submitDeposit = async ()=>{
-  if(!selectedVip) return alert("Select VIP");
+window.submitDeposit = async()=>{
+  if(!selectedVIP) return alert("Select VIP");
   if(!proof.files[0]) return alert("Upload receipt");
 
   await addDoc(collection(db,"vip_requests"),{
-    userId: getUserId(),
-    vipLevel: selectedVip.id,
-    price: selectedVip.price,
+    userId: uid(),
+    vipLevel: selectedVIP.id,
+    price: selectedVIP.price,
+    rate: selectedVIP.rate,
     status:"pending",
     createdAt: serverTimestamp()
   });
 
-  location.href="https://t.me/SmartInvest202";
+  window.location.href="https://t.me/SmartInvest202";
 };
 </script>
 
