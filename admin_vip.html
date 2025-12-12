@@ -1,171 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Admin VIP Approval</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-body{
-  margin:0;
-  font-family:system-ui, sans-serif;
-  background:#111;
-  color:#fff;
-}
-
-.header{
-  background:#b7ff2c;
-  color:#000;
-  padding:16px;
-  font-size:22px;
-  font-weight:700;
-}
-
-.container{
-  padding:16px;
-}
-
-.card{
-  background:#1c1c1c;
-  border-radius:14px;
-  padding:14px;
-  margin-bottom:14px;
-}
-
-.title{
-  font-size:18px;
-  font-weight:700;
-}
-
-.info{
-  font-size:14px;
-  margin-top:4px;
-  color:#ccc;
-}
-
-.btn{
-  margin-top:10px;
-  padding:12px;
-  width:100%;
-  border:none;
-  border-radius:10px;
-  font-size:16px;
-  font-weight:600;
-  cursor:pointer;
-}
-
-.approve{
-  background:#00ff88;
-  color:#000;
-}
-
-.reject{
-  background:#ff4444;
-  color:#fff;
-  margin-top:6px;
-}
-
-.small{
-  font-size:13px;
-  color:#aaa;
-  margin-top:6px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin VIP Panel – PrimeGlobalPro</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0b0b0b;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #b7ff2c;
+    }
+    .card {
+      background: #1c1c1c;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+    button {
+      background: #b7ff2c;
+      color: #000;
+      font-weight: 700;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #d9ff6e;
+    }
+  </style>
 </head>
-
 <body>
+  <h1>Admin VIP Approvals</h1>
+  <div id="vipList">Loading...</div>
 
-<div class="header">Admin VIP Approval</div>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, updateDoc, doc, serverTimestamp } 
+      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-<div class="container" id="list"></div>
-
-<script>
-/*
-DATA STRUCTURE USED (localStorage):
-
-vip_requests = [
-  {
-    user:"alex",
-    vip:3,
-    price:499,
-    rate:3.66,
-    date:1690000000000
-  }
-]
-
-users = {
-  alex:{
-    balance:0,
-    vip:{
-      level:3,
-      rate:3.66,
-      start:1690000000000
-    }
-  }
-}
-*/
-
-const list = document.getElementById("list");
-
-let requests = JSON.parse(localStorage.getItem("vip_requests")) || [];
-let users = JSON.parse(localStorage.getItem("users")) || {};
-
-if(requests.length === 0){
-  list.innerHTML = "<p>No pending VIP requests.</p>";
-}
-
-requests.forEach((req,index)=>{
-  const div = document.createElement("div");
-  div.className="card";
-
-  div.innerHTML = `
-    <div class="title">User: ${req.user}</div>
-    <div class="info">VIP Level: VIP ${req.vip}</div>
-    <div class="info">Deposit: $${req.price}</div>
-    <div class="info">Daily Profit: ${req.rate}%</div>
-    <div class="small">
-      Proof sent via Telegram:<br>
-      <b>@SmartInvest202</b>
-    </div>
-    <button class="btn approve">Approve Deposit + VIP</button>
-    <button class="btn reject">Reject</button>
-  `;
-
-  div.querySelector(".approve").onclick = ()=>{
-    if(!users[req.user]){
-      users[req.user] = { balance:0 };
-    }
-
-    // Add deposit to balance
-    users[req.user].balance += req.price;
-
-    // Activate VIP
-    users[req.user].vip = {
-      level:req.vip,
-      rate:req.rate,
-      start:Date.now()
+    // ✅ Your Firebase config (paste yours below if changed)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
-    // Remove request
-    requests.splice(index,1);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("vip_requests", JSON.stringify(requests));
+    const vipList = document.getElementById("vipList");
 
-    alert("VIP APPROVED & BALANCE UPDATED");
-    location.reload();
-  };
+    async function loadRequests() {
+      vipList.innerHTML = "Loading...";
+      const snap = await getDocs(collection(db, "vip_requests"));
+      vipList.innerHTML = "";
 
-  div.querySelector(".reject").onclick = ()=>{
-    requests.splice(index,1);
-    localStorage.setItem("vip_requests", JSON.stringify(requests));
-    alert("Request rejected");
-    location.reload();
-  };
+      snap.forEach((docSnap) => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "card";
 
-  list.appendChild(div);
-});
-</script>
+        div.innerHTML = `
+          <div><b>User:</b> ${data.userId}</div>
+          <div><b>VIP Level:</b> ${data.vipLevel}</div>
+          <div><b>Price:</b> $${data.price}</div>
+          <div><b>Status:</b> ${data.status}</div>
+          ${data.status === "pending" ? `<button>Approve</button>` : ""}
+        `;
 
+        if (data.status === "pending") {
+          div.querySelector("button").onclick = async () => {
+            await updateDoc(doc(db, "vip_requests", docSnap.id), {
+              status: "approved",
+              approvedAt: serverTimestamp()
+            });
+            alert("✅ VIP Approved");
+            loadRequests();
+          };
+        }
+
+        vipList.appendChild(div);
+      });
+    }
+
+    loadRequests();
+  </script>
 </body>
 </html>
