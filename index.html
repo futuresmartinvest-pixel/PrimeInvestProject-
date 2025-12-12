@@ -11,7 +11,6 @@
 html,body{
   margin:0;
   height:100%;
-  overflow:hidden; /* 🔒 PAGE DOES NOT MOVE */
   font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   background:#fff;
 }
@@ -66,50 +65,59 @@ html,body{
 
 /* ===== SOLAR SYSTEM ===== */
 .solar{
-  width:220px;
-  height:220px;
-  margin:10px auto 0;
+  width:260px;
+  height:260px;
+  margin:20px auto;
   position:relative;
 }
 
 .sun{
-  width:34px;
-  height:34px;
-  background:radial-gradient(circle,#ffe066,#facc15);
+  width:48px;
+  height:48px;
+  background:radial-gradient(circle at 30% 30%, #fff3b0, #fbbf24, #f59e0b);
   border-radius:50%;
   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
-  box-shadow:0 0 25px #facc15;
+  box-shadow:0 0 35px rgba(251,191,36,.9);
 }
 
 .orbit{
   position:absolute;
-  border:1px dashed #ccc;
+  border:1px dashed #d1d5db;
   border-radius:50%;
   animation:spin linear infinite;
 }
 
-.o1{width:110px;height:110px;top:55px;left:55px;animation-duration:6s}
-.o2{width:160px;height:160px;top:30px;left:30px;animation-duration:10s}
-.o3{width:210px;height:210px;top:5px;left:5px;animation-duration:14s}
+/* Orbits */
+.earth-orbit{width:160px;height:160px;top:50px;left:50px;animation-duration:12s}
+.moon-orbit{width:60px;height:60px;top:-6px;left:-6px;animation-duration:4s}
 
-.planet{
-  width:18px;
-  height:18px;
-  border-radius:6px;
+/* Earth */
+.earth{
+  width:26px;
+  height:26px;
+  background:radial-gradient(circle at 30% 30%, #60a5fa, #1e3a8a);
+  border-radius:50%;
   position:absolute;
-  top:-9px;
+  top:-13px;
   left:50%;
   transform:translateX(-50%);
-  box-shadow:0 3px 6px rgba(0,0,0,.4);
+  box-shadow:0 4px 8px rgba(0,0,0,.5);
 }
 
-/* realistic colors */
-.p1{background:linear-gradient(135deg,#2563eb,#60a5fa)}
-.p2{background:linear-gradient(135deg,#16a34a,#4ade80)}
-.p3{background:linear-gradient(135deg,#f59e0b,#fde047)}
+/* Moon */
+.moon{
+  width:12px;
+  height:12px;
+  background:radial-gradient(circle at 30% 30%, #e5e7eb, #9ca3af);
+  border-radius:50%;
+  position:absolute;
+  top:-6px;
+  left:50%;
+  transform:translateX(-50%);
+}
 
 @keyframes spin{
   from{transform:rotate(0deg)}
@@ -118,11 +126,11 @@ html,body{
 
 /* ===== TASKS ===== */
 .tasks{
-  padding:16px 20px;
+  padding:0 20px 120px; /* 🔑 space so nav never overlaps */
 }
 
 .tasks h3{
-  margin:0 0 12px;
+  margin:10px 0 14px;
 }
 
 .task{
@@ -147,16 +155,17 @@ html,body{
 .t2{background:#16a34a}
 .t3{background:#facc15;color:#000}
 
-/* ===== FLOATING NAV ===== */
+/* ===== BOTTOM NAV ===== */
 .nav-wrap{
-  position:absolute;
+  position:fixed;
   bottom:12px;
   left:12px;
   right:12px;
-  background:rgba(0,0,0,.06);
+  background:rgba(255,255,255,.85);
   backdrop-filter:blur(14px);
   border-radius:22px;
   padding:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.15);
 }
 
 .nav{
@@ -190,18 +199,16 @@ html,body{
   </div>
 </div>
 
-<!-- SOLAR -->
+<!-- SOLAR SYSTEM -->
 <div class="solar">
   <div class="sun"></div>
 
-  <div class="orbit o1">
-    <div class="planet p1"></div>
-  </div>
-  <div class="orbit o2">
-    <div class="planet p2"></div>
-  </div>
-  <div class="orbit o3">
-    <div class="planet p3"></div>
+  <div class="orbit earth-orbit">
+    <div class="earth">
+      <div class="orbit moon-orbit">
+        <div class="moon"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -212,9 +219,11 @@ html,body{
   <div class="task">
     <div class="task-icon t1">1</div> Task 1
   </div>
+
   <div class="task">
     <div class="task-icon t2">2</div> Task 2
   </div>
+
   <div class="task">
     <div class="task-icon t3">3</div> Task 3
   </div>
