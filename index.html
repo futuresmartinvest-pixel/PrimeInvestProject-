@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- ✅ ZOOM DISABLED but SCROLL ENABLED -->
 <meta name="viewport"
 content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 
@@ -253,11 +252,12 @@ html, body {
     <div class="nav-item">Tasks</div>
     <div class="nav-item">Wallet</div>
     <div class="nav-item">Referral</div>
-    <div class="nav-item" onclick="location.href='deposit.html'">VIP</div>
+    <!-- ✅ FIXED: GO TO VIP SELECTION -->
+    <div class="nav-item" onclick="location.href='vip.html'">VIP</div>
   </div>
 </div>
 
-<!-- ✅ GLOBAL (FIRESTORE) PROFIT + BALANCE -->
+<!-- GLOBAL FIRESTORE PROFIT ENGINE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
@@ -269,7 +269,6 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* 🔥 YOUR FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
   authDomain: "primeinvestproject2.firebaseapp.com",
@@ -284,7 +283,6 @@ const db = getFirestore(app);
 
 const DAY = 86400000;
 
-/* ✅ stable global userId saved on the phone */
 function getOrCreateUserId(){
   let id = localStorage.getItem("userId");
   if(!id){
@@ -297,7 +295,6 @@ function getOrCreateUserId(){
 const userId = getOrCreateUserId();
 const userRef = doc(db, "users", userId);
 
-/* ✅ ensure user doc exists */
 async function ensureUserDoc(){
   const snap = await getDoc(userRef);
   if(!snap.exists()){
@@ -305,36 +302,30 @@ async function ensureUserDoc(){
   }
 }
 
-/* ✅ apply VIP profit if user.vip exists */
 async function applyVIPProfit(){
   const snap = await getDoc(userRef);
   if(!snap.exists()) return;
-
   const user = snap.data();
-  if(!user.vip) return; // no vip -> no profit
+  if(!user.vip) return;
 
   const now = Date.now();
   const last = user.vip.lastProfitAt?.toMillis?.() || now;
-  const daysPassed = Math.floor((now - last) / DAY);
-  if(daysPassed <= 0) return;
+  const days = Math.floor((now - last) / DAY);
+  if(days <= 0) return;
 
-  const dailyProfit = user.vip.price * (user.vip.rate / 100);
-  const profit = dailyProfit * daysPassed;
+  const profit = user.vip.price * (user.vip.rate / 100) * days;
 
-  await updateDoc(userRef, {
+  await updateDoc(userRef,{
     balance: (user.balance || 0) + profit,
     "vip.lastProfitAt": serverTimestamp()
   });
 }
 
-/* ✅ update UI balance from Firestore */
 async function refreshBalanceUI(){
   const snap = await getDoc(userRef);
   if(!snap.exists()) return;
-  const balance = snap.data().balance || 0;
-
-  const el = document.querySelector(".balance-amount");
-  if(el) el.textContent = "$" + Number(balance).toFixed(2);
+  document.querySelector(".balance-amount").innerText =
+    "$" + Number(snap.data().balance || 0).toFixed(2);
 }
 
 await ensureUserDoc();
