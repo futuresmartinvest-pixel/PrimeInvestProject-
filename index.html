@@ -1,125 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PrimeInvest – Home</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PrimeGlobalPro – Home</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      margin: 0;
-      padding: 0;
-    }
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f6fa;
+  }
 
-    .container {
-      padding: 20px;
-    }
+  /* TOP BAR */
+  .top-bar {
+    background: #1a1a1a;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
+  .cube-icon {
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+  }
 
-    h2 {
-      margin-top: 0;
-    }
+  /* BALANCE CARD */
+  .balance-card {
+    background: white;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  }
 
-    .btn {
-      display: block;
-      width: 100%;
-      background: #1976d2;
-      color: white;
-      padding: 12px;
-      border-radius: 10px;
-      text-align: center;
-      text-decoration: none;
-      margin-bottom: 12px;
-      font-size: 18px;
-    }
+  .balance-amount {
+    font-size: 34px;
+    font-weight: bold;
+    text-align: center;
+  }
 
-    .vip-btn {
-      background: #e6b800;
-      color: black;
-      font-weight: bold;
-    }
+  .balance-label {
+    text-align: center;
+    color: #777;
+    margin-bottom: 15px;
+  }
 
-    .logout {
-      background: red;
-    }
+  /* VIP SECTION */
+  .vip-box {
+    background: #1a1a1a;
+    color: white;
+    margin: 20px;
+    padding: 15px;
+    border-radius: 12px;
+  }
 
-    .balance-box {
-      font-size: 26px;
-      font-weight: bold;
-      margin-top: 10px;
-      text-align: center;
-    }
-  </style>
+  .vip-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #333;
+  }
+
+  .vip-item:last-child {
+    border-bottom: none;
+  }
+
+  /* BOTTOM NAVIGATION */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: white;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid #ccc;
+  }
+
+  .nav-btn {
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+  }
+
+  .nav-btn.active {
+    color: #0066ff;
+    font-weight: bold;
+  }
+</style>
 </head>
 
 <body>
 
-  <div class="container">
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div id="userName">User</div>
 
-    <div class="card">
-      <h2>Welcome</h2>
-      <p><strong>Email:</strong> <span id="emailBox">Loading…</span></p>
-      <p class="balance-box">$<span id="balanceBox">0.00</span></p>
-    </div>
+  <!-- RUBIK CUBE -->
+  <img src="cube.png" class="cube-icon" onclick="location.href='cube.html'">
+</div>
 
-    <div class="card">
-      <h2>Actions</h2>
+<!-- BALANCE CARD -->
+<div class="balance-card">
+  <div class="balance-amount" id="balanceAmount">$0.00</div>
+  <div class="balance-label">Total Balance</div>
 
-      <a class="btn" href="tasks.html">Daily Tasks</a>
-      <a class="btn vip-btn" href="vip.html">VIP Section</a>
-      <a class="btn" href="referral.html">Referral Program</a>
-      <a class="btn" href="deposit.html">Deposit</a>
-      <a class="btn" href="withdraw.html">Withdraw</a>
-
-      <a class="btn logout" id="logoutBtn">Logout</a>
-    </div>
-
+  <div id="dailyEarnings" style="text-align:center; color:#0066ff; font-size:18px;">
+    +$0.00 Today
   </div>
+</div>
 
-  <!-- LOAD SCRIPT -->
-  <script type="module">
-    import { auth, db } from "./firebase.js";
-    import { onAuthStateChanged, signOut } 
-      from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { doc, getDoc } 
-      from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+<!-- VIP STATUS SECTION -->
+<div class="vip-box">
+  <h3 style="margin-top:0; text-align:center;">Active VIP Plans</h3>
+  <div id="vipList"></div>
+</div>
 
-    const balanceBox = document.getElementById("balanceBox");
-    const emailBox = document.getElementById("emailBox");
-    const logoutBtn = document.getElementById("logoutBtn");
+<!-- BOTTOM NAVIGATION -->
+<div class="bottom-nav">
+  <div class="nav-btn active" onclick="location.href='index.html'">Home</div>
+  <div class="nav-btn" onclick="location.href='tasks.html'">Tasks</div>
+  <div class="nav-btn" onclick="location.href='vip.html'">VIP</div>
+  <div class="nav-btn" onclick="location.href='profile.html'">Profile</div>
+</div>
 
-    // 🔒 AUTO REDIRECT IF NOT LOGGED IN
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        location.href = "auth.html"; // This page handles login/register
-        return;
-      }
+<script type="module">
+  import { auth, db } from "./firebase.js";
+  import {
+    doc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-      emailBox.textContent = user.email;
-
-      const snap = await getDoc(doc(db, "users", user.uid));
-
-      if (snap.exists()) {
-        const data = snap.data();
-        balanceBox.textContent = parseFloat(data.balance || 0).toFixed(2);
-      }
-    });
-
-    // 🔓 LOGOUT
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
       location.href = "auth.html";
+      return;
+    }
+
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+
+    if (!userDoc.exists()) return;
+
+    const data = userDoc.data();
+
+    // Show name
+    document.getElementById("userName").innerText = data.name;
+
+    // Show balance
+    document.getElementById("balanceAmount").innerText =
+      "$" + (data.balance || 0).toFixed(2);
+
+    // Daily earnings
+    document.getElementById("dailyEarnings").innerText =
+      "+$" + (data.todayEarned || 0).toFixed(2) + " Today";
+
+    // Show active VIPs
+    const vipBox = document.getElementById("vipList");
+    vipBox.innerHTML = "";
+
+    if (!data.vipPlans) {
+      vipBox.innerHTML = "<p>No active VIP plans.</p>";
+      return;
+    }
+
+    Object.keys(data.vipPlans).forEach(key => {
+      const plan = data.vipPlans[key];
+      if (plan.active) {
+        vipBox.innerHTML += `
+          <div class="vip-item">
+            <strong>${key.toUpperCase()}</strong>  
+            — $${plan.amount} earning ${plan.percent}% daily
+          </div>
+        `;
+      }
     });
-  </script>
+  });
+</script>
 
 </body>
 </html>
