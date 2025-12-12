@@ -89,17 +89,18 @@ async function load(){
 
       /* 1️⃣ ACTIVATE VIP FOR USER */
       await setDoc(
-        doc(db,"users",d.userId),
-        {
-          vip:{
-            level:d.vipLevel,
-            price:d.price,
-            rate:plan.rate,
-            lastProfitAt: serverTimestamp()
-          }
-        },
-        { merge:true }
-      );
+  doc(db,"users",d.userId),
+  {
+    balance: 0,
+    vip:{
+      level: d.vipLevel,
+      price: d.price,
+      rate: plan.rate,
+      lastProfitAt: serverTimestamp()
+    }
+  },
+  { merge:true }
+);
 
       /* 2️⃣ UPDATE REQUEST */
       await updateDoc(doc(db,"vip_requests",docSnap.id),{
