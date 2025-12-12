@@ -13,10 +13,7 @@ body{
   background:#0f172a;
   color:#fff;
 }
-h2{
-  text-align:center;
-  margin-bottom:16px;
-}
+h2{text-align:center;margin-bottom:16px}
 .card{
   background:#1e293b;
   border-radius:16px;
@@ -34,23 +31,34 @@ h2{
   font-size:16px;
   font-weight:700;
 }
-.vip-btn.active{
+.vip-btn.active{background:#22c55e}
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
   background:#22c55e;
+  font-weight:800;
+  font-size:16px;
 }
-input, button{
+input{
   width:100%;
   padding:12px;
-  margin-top:12px;
+  margin-top:10px;
   border-radius:10px;
   border:none;
 }
-button{
-  background:#22c55e;
-  font-weight:700;
-  font-size:16px;
+.hidden{display:none}
+.wallet{
+  background:#020617;
+  padding:14px;
+  border-radius:12px;
+  font-family:monospace;
+  word-break:break-all;
 }
-.hidden{
-  display:none;
+.copy{
+  margin-top:10px;
+  background:#334155;
 }
 </style>
 </head>
@@ -59,8 +67,8 @@ button{
 
 <h2>VIP Deposit</h2>
 
-<!-- VIP SELECT -->
-<div class="card">
+<!-- STEP 1: VIP SELECT -->
+<div class="card" id="step1">
   <div>Select VIP Amount</div>
 
   <button class="vip-btn" onclick="selectVIP(1,30)">VIP 1 – $30</button>
@@ -69,23 +77,30 @@ button{
   <button class="vip-btn" onclick="selectVIP(4,999)">VIP 4 – $999</button>
 </div>
 
-<!-- DEPOSIT -->
-<div class="card hidden" id="depositBox">
-  <div id="selectedText"></div>
+<!-- STEP 2: WALLET -->
+<div class="card hidden" id="step2">
+  <div id="vipText"></div>
+  <p>Send USDT (TRC20) to this wallet:</p>
+
+  <div class="wallet" id="wallet">
+    TX9EXAMPLEWALLETADDRESSTRC20XXXXXXXX
+  </div>
+
+  <button class="copy" onclick="copyWallet()">Copy Address</button>
+  <button onclick="goStep3()">I Have Paid</button>
+</div>
+
+<!-- STEP 3: RECEIPT -->
+<div class="card hidden" id="step3">
+  <div>Upload payment receipt</div>
   <input type="file" id="proof" accept="image/*">
   <button onclick="submitDeposit()">Confirm Deposit</button>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
   authDomain: "primeinvestproject2.firebaseapp.com",
@@ -98,7 +113,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* GLOBAL USER ID */
 function getUserId(){
   let id = localStorage.getItem("userId");
   if(!id){
@@ -112,33 +126,37 @@ const userId = getUserId();
 let vipLevel = null;
 let price = null;
 
-/* SELECT VIP */
-window.selectVIP = function(vip, p){
+window.selectVIP = function(vip,p){
   vipLevel = vip;
   price = p;
-
-  document.querySelectorAll(".vip-btn").forEach(b=>b.classList.remove("active"));
-  event.target.classList.add("active");
-
-  document.getElementById("depositBox").classList.remove("hidden");
-  document.getElementById("selectedText").innerText =
+  document.getElementById("vipText").innerText =
     `Selected VIP ${vip} – $${p}`;
+  document.getElementById("step1").classList.add("hidden");
+  document.getElementById("step2").classList.remove("hidden");
 };
 
-/* SUBMIT */
+window.copyWallet = function(){
+  navigator.clipboard.writeText(
+    document.getElementById("wallet").innerText
+  );
+  alert("Wallet copied");
+};
+
+window.goStep3 = function(){
+  document.getElementById("step2").classList.add("hidden");
+  document.getElementById("step3").classList.remove("hidden");
+};
+
 window.submitDeposit = async function(){
   const file = document.getElementById("proof").files[0];
-  if(!file || !vipLevel){
-    alert("Select VIP and upload receipt");
-    return;
-  }
+  if(!file) return alert("Upload receipt");
 
-  await addDoc(collection(db, "vip_requests"), {
+  await addDoc(collection(db,"vip_requests"),{
     userId,
     vipLevel,
     price,
-    status: "pending",
-    createdAt: serverTimestamp()
+    status:"pending",
+    createdAt:serverTimestamp()
   });
 
   alert("Deposit sent. Send receipt to admin on Telegram.");
