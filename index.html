@@ -8,11 +8,9 @@
 <style>
 :root{
   --bg:#ffffff;
-  --text:#000000;
-  --muted:#555;
-  --purple:#5b2bbd;
-  --purple-soft:#6f49c9;
-  --glass:rgba(0,0,0,0.05);
+  --text:#000;
+  --green:#22c55e;
+  --glass:rgba(0,0,0,0.06);
 }
 
 *{box-sizing:border-box}
@@ -46,23 +44,20 @@ body{
   background:linear-gradient(135deg,#ff9800,#ff5722);
 }
 
-.menu{
-  font-size:26px;
-  color:#000;
-}
+.menu{font-size:26px}
 
 /* ===== BALANCE ===== */
 .balance-card{
   margin:0 18px;
-  background:var(--purple-soft);
+  background:var(--green);
   border-radius:22px;
-  padding:20px;
-  color:#fff;
+  padding:22px;
+  color:#000;
 }
 
 .balance-title{
   font-size:14px;
-  opacity:.8;
+  opacity:.9;
 }
 
 .balance-row{
@@ -72,7 +67,7 @@ body{
 }
 
 .balance-amount{
-  font-size:34px;
+  font-size:36px;
   font-weight:700;
 }
 
@@ -83,69 +78,79 @@ body{
 }
 
 .balance-btn{
-  background:#ffffff33;
+  background:#ffffffaa;
   border-radius:12px;
-  padding:10px 16px;
+  padding:10px 18px;
   font-size:14px;
-  text-align:center;
 }
 
-/* ===== BANK CARD ===== */
-.bank-card{
-  margin:20px 18px;
-  height:170px;
-  border-radius:26px;
-  background:linear-gradient(135deg,#ff7043,#ff5252);
-  padding:20px;
-  color:#fff;
+/* ===== GLOBAL ANIMATION ===== */
+.globe-wrap{
+  margin:28px auto;
+  width:160px;
+  height:160px;
+  position:relative;
 }
 
-.bank-chip{
-  width:46px;
-  height:34px;
-  background:#fff;
-  border-radius:8px;
+.globe{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  border:4px solid #22c55e;
+  position:absolute;
 }
 
-.bank-number{
-  margin-top:32px;
-  letter-spacing:3px;
-  font-size:18px;
+.orbit{
+  position:absolute;
+  inset:-14px;
+  border-radius:50%;
+  border:2px dashed #22c55e;
+  animation:spin 12s linear infinite;
 }
 
-.bank-holder{
-  margin-top:10px;
-  opacity:.9;
+.orbit2{
+  inset:-28px;
+  animation-duration:18s;
+  opacity:.6;
+}
+
+@keyframes spin{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
 }
 
 /* ===== TASKS ===== */
 .section{
-  margin:20px 18px;
+  margin:18px;
 }
 
 .section-title{
   font-size:16px;
-  margin-bottom:14px;
   font-weight:600;
+  margin-bottom:14px;
 }
 
 .task{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:14px;
   margin-bottom:14px;
 }
 
 .task-icon{
-  width:42px;
-  height:42px;
+  width:44px;
+  height:44px;
   border-radius:14px;
-  background:#eee;
   display:flex;
   align-items:center;
   justify-content:center;
   font-weight:700;
+  color:#fff;
 }
+
+.t1{background:#2563eb}
+.t2{background:#16a34a}
+.t3{background:#facc15;color:#000}
 
 /* ===== FLOATING NAV WINDOW ===== */
 .nav-wrapper{
@@ -155,21 +160,14 @@ body{
   right:16px;
   padding:14px 8px;
   border-radius:22px;
-
   background:var(--glass);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-
-  box-shadow:
-    0 8px 30px rgba(0,0,0,0.15),
-    inset 0 0 0 1px rgba(0,0,0,0.04);
+  backdrop-filter:blur(14px);
+  box-shadow:0 8px 30px rgba(0,0,0,.15);
 }
 
-/* ===== NAV ===== */
 .nav{
   display:flex;
   justify-content:space-around;
-  align-items:center;
 }
 
 .nav-item{
@@ -179,13 +177,13 @@ body{
 }
 
 .nav-item.active{
-  color:#000;
   font-weight:600;
+  color:#000;
 }
 
 .nav-icon{
-  font-size:22px;
   display:block;
+  font-size:22px;
   margin-bottom:4px;
 }
 </style>
@@ -214,11 +212,11 @@ body{
   </div>
 </div>
 
-<!-- BANK CARD -->
-<div class="bank-card">
-  <div class="bank-chip"></div>
-  <div class="bank-number">12345 6789 123 0000</div>
-  <div class="bank-holder">Card Holder</div>
+<!-- GLOBAL ANIMATION -->
+<div class="globe-wrap">
+  <div class="orbit"></div>
+  <div class="orbit orbit2"></div>
+  <div class="globe"></div>
 </div>
 
 <!-- TASKS -->
@@ -226,22 +224,22 @@ body{
   <div class="section-title">Tasks</div>
 
   <div class="task">
-    <div class="task-icon">1</div>
+    <div class="task-icon t1">1</div>
     <div>Task 1</div>
   </div>
 
   <div class="task">
-    <div class="task-icon">2</div>
+    <div class="task-icon t2">2</div>
     <div>Task 2</div>
   </div>
 
   <div class="task">
-    <div class="task-icon">3</div>
+    <div class="task-icon t3">3</div>
     <div>Task 3</div>
   </div>
 </div>
 
-<!-- FLOATING NAV -->
+<!-- NAV -->
 <div class="nav-wrapper">
   <div class="nav">
     <div class="nav-item active">
