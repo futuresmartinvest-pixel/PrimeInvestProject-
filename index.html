@@ -257,67 +257,89 @@ html, body {
   </div>
 </div>
 
-<script>
-/* ===== CONFIG ===== */
-const VIP_PLANS = {
-  1:{price:30, rate:2.33},
-  2:{price:100, rate:3.33},
-  3:{price:499, rate:3.66},
-  4:{price:999, rate:3.99},
-  5:{price:4999, rate:4.33},
-  6:{price:9999, rate:4.99},
-  7:{price:49999, rate:6.99},
-  8:{price:99999, rate:7.33}
+<!-- ✅ GLOBAL (FIRESTORE) PROFIT + BALANCE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* 🔥 YOUR FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
+  authDomain: "primeinvestproject2.firebaseapp.com",
+  projectId: "primeinvestproject2",
+  storageBucket: "primeinvestproject2.firebasestorage.app",
+  messagingSenderId: "798977477628",
+  appId: "1:798977477628:web:c97d1fba72ad7865864079"
 };
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const DAY = 86400000;
 
-/* ===== STORAGE ===== */
-function getBalance(){
-  return Number(localStorage.getItem("balance") || 0);
-}
-function setBalance(v){
-  localStorage.setItem("balance", Number(v).toFixed(2));
-}
-function getVIP(){
-  return JSON.parse(localStorage.getItem("userVIP") || "{}");
-}
-function setVIP(v){
-  localStorage.setItem("userVIP", JSON.stringify(v));
+/* ✅ stable global userId saved on the phone */
+function getOrCreateUserId(){
+  let id = localStorage.getItem("userId");
+  if(!id){
+    id = "user_" + Math.random().toString(36).slice(2, 10) + "_" + Date.now();
+    localStorage.setItem("userId", id);
+  }
+  return id;
 }
 
-/* ===== PROFIT ENGINE ===== */
-function applyDailyProfit(){
-  let vip = getVIP();
-  let balance = getBalance();
-  let now = Date.now();
-  let changed = false;
+const userId = getOrCreateUserId();
+const userRef = doc(db, "users", userId);
 
-  Object.values(vip).forEach(v=>{
-    if(v.status !== "active") return;
-    let days = Math.floor((now - v.lastProfit) / DAY);
-    if(days <= 0) return;
-    balance += (v.price * v.rate / 100) * days;
-    v.lastProfit += days * DAY;
-    changed = true;
+/* ✅ ensure user doc exists */
+async function ensureUserDoc(){
+  const snap = await getDoc(userRef);
+  if(!snap.exists()){
+    await setDoc(userRef, { balance: 0, createdAt: serverTimestamp() }, { merge:true });
+  }
+}
+
+/* ✅ apply VIP profit if user.vip exists */
+async function applyVIPProfit(){
+  const snap = await getDoc(userRef);
+  if(!snap.exists()) return;
+
+  const user = snap.data();
+  if(!user.vip) return; // no vip -> no profit
+
+  const now = Date.now();
+  const last = user.vip.lastProfitAt?.toMillis?.() || now;
+  const daysPassed = Math.floor((now - last) / DAY);
+  if(daysPassed <= 0) return;
+
+  const dailyProfit = user.vip.price * (user.vip.rate / 100);
+  const profit = dailyProfit * daysPassed;
+
+  await updateDoc(userRef, {
+    balance: (user.balance || 0) + profit,
+    "vip.lastProfitAt": serverTimestamp()
   });
-
-  if(changed){
-    setBalance(balance);
-    setVIP(vip);
-  }
 }
 
-/* ===== UI SYNC ===== */
-function refreshBalanceUI(){
+/* ✅ update UI balance from Firestore */
+async function refreshBalanceUI(){
+  const snap = await getDoc(userRef);
+  if(!snap.exists()) return;
+  const balance = snap.data().balance || 0;
+
   const el = document.querySelector(".balance-amount");
-  if(el){
-    el.textContent = "$" + getBalance().toFixed(2);
-  }
+  if(el) el.textContent = "$" + Number(balance).toFixed(2);
 }
 
-applyDailyProfit();
-refreshBalanceUI();
+await ensureUserDoc();
+await applyVIPProfit();
+await refreshBalanceUI();
 </script>
 
 </body>
