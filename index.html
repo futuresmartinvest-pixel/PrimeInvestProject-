@@ -23,26 +23,20 @@ body{
   background:#7351c9;
   border-radius:24px;
 }
+.balance-title{opacity:.85}
 .balance-amount{
   font-size:44px;
   font-weight:800;
 }
 
-/* VIP STATUS */
+/* VIP CARD */
 .vip-card{
   margin:16px;
   padding:16px;
-  background:#000;
   border-radius:20px;
+  background:#ff6f5c;
 }
-.vip-title{
-  font-weight:800;
-  font-size:18px;
-}
-.vip-info{
-  margin-top:6px;
-  opacity:.9;
-}
+.vip-card b{font-size:18px}
 
 /* NAV */
 .nav{
@@ -68,14 +62,14 @@ body{
 
 <!-- BALANCE -->
 <div class="balance-card">
-  <div>Balance</div>
-  <div class="balance-amount">$0.00</div>
+  <div class="balance-title">Balance</div>
+  <div class="balance-amount" id="balance">$0.00</div>
 </div>
 
 <!-- VIP STATUS -->
-<div class="vip-card" id="vipBox">
-  <div class="vip-title">VIP Status</div>
-  <div class="vip-info" id="vipStatus">No active VIP</div>
+<div class="vip-card" id="vipCard">
+  <div><b>VIP:</b> None</div>
+  <div id="vipInfo">No active VIP</div>
 </div>
 
 <!-- NAV -->
@@ -87,6 +81,7 @@ body{
   <div onclick="location.href='deposit.html'">VIP</div>
 </div>
 
+<!-- 🔥 GLOBAL FIREBASE LOGIC -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
@@ -98,7 +93,7 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* FIREBASE */
+/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
   authDomain: "primeinvestproject2.firebaseapp.com",
@@ -110,22 +105,21 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 const DAY = 86400000;
 
-/* USER ID */
-function uid(){
+/* GLOBAL USER ID */
+function getUserId(){
   let id = localStorage.getItem("userId");
   if(!id){
-    id = "user_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+    id = "user_"+Math.random().toString(36).slice(2,10)+"_"+Date.now();
     localStorage.setItem("userId", id);
   }
   return id;
 }
+const userId = getUserId();
+const userRef = doc(db,"users",userId);
 
-const userRef = doc(db,"users",uid());
-
-/* ENSURE USER */
+/* ENSURE USER EXISTS */
 async function ensureUser(){
   const snap = await getDoc(userRef);
   if(!snap.exists()){
@@ -136,22 +130,15 @@ async function ensureUser(){
   }
 }
 
-/* VIP PROFIT + EXPIRE */
-async function processVIP(){
+/* APPLY VIP PROFIT */
+async function applyVIPProfit(){
   const snap = await getDoc(userRef);
   if(!snap.exists()) return;
-
   const user = snap.data();
-  if(!user.vip) return;
+
+  if(!user.vip || user.vip.status !== "active") return;
 
   const now = Date.now();
-  const expiresAt = user.vip.expiresAt?.toMillis?.() || 0;
-
-  if(now > expiresAt){
-    await updateDoc(userRef,{ vip:null });
-    return;
-  }
-
   const last = user.vip.lastProfitAt?.toMillis?.() || now;
   const days = Math.floor((now-last)/DAY);
   if(days<=0) return;
@@ -165,34 +152,27 @@ async function processVIP(){
   });
 }
 
-/* UI UPDATE */
+/* UPDATE UI */
 async function refreshUI(){
   const snap = await getDoc(userRef);
   if(!snap.exists()) return;
-  const data = snap.data();
+  const user = snap.data();
 
-  document.querySelector(".balance-amount").innerText =
-    "$"+(data.balance||0).toFixed(2);
+  document.getElementById("balance").innerText =
+    "$"+Number(user.balance||0).toFixed(2);
 
-  const vipBox = document.getElementById("vipStatus");
-
-  if(!data.vip){
+  const vipBox = document.getElementById("vipInfo");
+  if(user.vip && user.vip.status==="active"){
+    vipBox.innerText =
+      "VIP "+user.vip.level+" — "+user.vip.rate+"% daily";
+  }else{
     vipBox.innerText = "No active VIP";
-    return;
   }
-
-  const exp = data.vip.expiresAt.toDate().toLocaleDateString();
-
-  vipBox.innerHTML = `
-    VIP ${data.vip.level}<br>
-    Daily Rate: ${data.vip.rate}%<br>
-    Expires: ${exp}
-  `;
 }
 
 /* RUN */
 await ensureUser();
-await processVIP();
+await applyVIPProfit();
 await refreshUI();
 </script>
 
