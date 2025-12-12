@@ -2,184 +2,186 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Home</title>
+
+<!-- 🔒 ZOOM LOCK (CRITICAL) -->
+<meta name="viewport"
+content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+
+<title>PrimeGlobalPro</title>
 
 <style>
-:root{
-  --purple:#5b2fc4;
-  --purple-card:#7351c9;
-  --orange:#ff6a55;
-  --light:#ffffff;
-  --muted:#cfc3f3;
+/* 🔒 EXTRA ZOOM & SCROLL LOCK */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-*{
-  box-sizing:border-box;
+/* COLORS */
+:root {
+  --purple: #5b2fc2;
+  --purple-card: #7351c9;
+  --white: #ffffff;
+  --orange: #ff6f5c;
 }
 
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:var(--purple);
-  color:#fff;
-  padding-top:env(safe-area-inset-top);
+/* BODY */
+body {
+  background: var(--purple);
+  color: #fff;
 }
 
 /* HEADER */
-.topbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px 16px;
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
 }
 
-.avatar{
-  display:flex;
-  align-items:center;
-  gap:10px;
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: orange;
 }
 
-.avatar-circle{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#ffb347,#ff6a00);
-}
-
-.menu{
-  font-size:24px;
-}
-
-/* CONTENT */
-.container{
-  padding:16px 16px 110px;
+.username {
+  font-size: 22px;
+  font-weight: 600;
 }
 
 /* BALANCE CARD */
-.balance-card{
-  background:var(--purple-card);
-  border-radius:22px;
-  padding:18px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:18px;
+.balance-card {
+  margin: 16px;
+  padding: 20px;
+  border-radius: 24px;
+  background: var(--purple-card);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.balance-text{
-  font-size:14px;
-  opacity:.85;
+.balance-text {
+  font-size: 18px;
+  opacity: 0.8;
 }
 
-.balance-amount{
-  font-size:36px;
-  font-weight:700;
+.balance-amount {
+  font-size: 44px;
+  font-weight: 800;
 }
 
-.balance-actions{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.balance-btn{
-  background:rgba(255,255,255,.25);
-  border:none;
-  color:#fff;
-  padding:10px 18px;
-  border-radius:20px;
-  font-size:14px;
+.action-btn {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 18px;
+  font-size: 16px;
 }
 
-/* BANK CARD */
-.bank-card{
-  background:var(--orange);
-  border-radius:22px;
-  padding:20px;
-  margin-bottom:22px;
+/* CARD */
+.bank-card {
+  margin: 16px;
+  padding: 22px;
+  border-radius: 28px;
+  background: var(--orange);
 }
 
-.card-chip{
-  width:44px;
-  height:34px;
-  background:#ffd6c9;
-  border-radius:8px;
-  margin-bottom:20px;
+.card-chip {
+  width: 46px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.5);
+  margin-bottom: 18px;
 }
 
-.card-number{
-  font-size:22px;
-  letter-spacing:3px;
+.card-number {
+  font-size: 26px;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
 }
 
-.card-holder{
-  margin-top:10px;
-  opacity:.9;
+.card-holder {
+  font-size: 14px;
+  opacity: 0.9;
 }
 
 /* EXPENSES */
-.section-title{
-  font-size:18px;
-  margin-bottom:12px;
+.section-title {
+  margin: 20px 16px 10px;
+  font-size: 20px;
+  font-weight: 600;
 }
 
-.expense{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:18px;
+.expense {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12px 16px;
 }
 
-.expense-left{
-  display:flex;
-  align-items:center;
-  gap:14px;
+.expense-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
-.expense-icon{
-  width:44px;
-  height:44px;
-  border-radius:14px;
-  background:rgba(255,255,255,.2);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
+.expense-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
 }
 
-.expense-name{
-  font-size:16px;
+.expense-name {
+  font-size: 18px;
 }
 
-.expense-amount{
-  font-size:16px;
+.expense-amount {
+  font-size: 18px;
+  font-weight: 600;
 }
 
 /* BOTTOM NAV */
-.bottom-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#fff;
-  display:flex;
-  justify-content:space-around;
-  padding:10px 0 env(safe-area-inset-bottom);
-  border-top-left-radius:22px;
-  border-top-right-radius:22px;
-  color:#444;
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
 }
 
-.nav-item{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  font-size:12px;
+.nav-item {
+  text-align: center;
+  font-size: 14px;
+  color: #444;
 }
 
-.nav-item span{
-  font-size:22px;
+.nav-item.active {
+  color: var(--purple);
+  font-weight: 700;
 }
 </style>
 </head>
@@ -187,72 +189,64 @@ body{
 <body>
 
 <!-- HEADER -->
-<div class="topbar">
-  <div class="avatar">
-    <div class="avatar-circle"></div>
-    <div>Alex</div>
-  </div>
-  <div class="menu">≡</div>
+<div class="header">
+  <div class="avatar"></div>
+  <div class="username">Alex</div>
 </div>
 
-<!-- CONTENT -->
-<div class="container">
-
-  <!-- BALANCE -->
-  <div class="balance-card">
-    <div>
-      <div class="balance-text">Balance</div>
-      <div class="balance-amount">$0.00</div>
-    </div>
-    <div class="balance-actions">
-      <button class="balance-btn">Withdraw</button>
-      <button class="balance-btn">Send</button>
-    </div>
+<!-- BALANCE -->
+<div class="balance-card">
+  <div>
+    <div class="balance-text">Balance</div>
+    <div class="balance-amount">$0.00</div>
   </div>
-
-  <!-- BANK CARD -->
-  <div class="bank-card">
-    <div class="card-chip"></div>
-    <div class="card-number">1234 5678 9123 0000</div>
-    <div class="card-holder">Card Holder</div>
+  <div class="actions">
+    <button class="action-btn">Withdraw</button>
+    <button class="action-btn">Send</button>
   </div>
-
-  <!-- EXPENSES -->
-  <div class="section-title">This month expenses</div>
-
-  <div class="expense">
-    <div class="expense-left">
-      <div class="expense-icon">S</div>
-      <div class="expense-name">Shopping</div>
-    </div>
-    <div class="expense-amount">$8.00</div>
-  </div>
-
-  <div class="expense">
-    <div class="expense-left">
-      <div class="expense-icon">M</div>
-      <div class="expense-name">Movies</div>
-    </div>
-    <div class="expense-amount">$1.00</div>
-  </div>
-
-  <div class="expense">
-    <div class="expense-left">
-      <div class="expense-icon">F</div>
-      <div class="expense-name">Food</div>
-    </div>
-    <div class="expense-amount">$3.00</div>
-  </div>
-
 </div>
 
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <div class="nav-item"><span>🏠</span>Home</div>
-  <div class="nav-item"><span>📝</span>Tasks</div>
-  <div class="nav-item"><span>💼</span>Wallet</div>
-  <div class="nav-item"><span>👥</span>Referral</div>
-  <div class="nav-item"><span>⭐</span>VIP</div>
+<!-- CARD -->
+<div class="bank-card">
+  <div class="card-chip"></div>
+  <div class="card-number">1234 5678 9123 0000</div>
+  <div class="card-holder">Card Holder</div>
+</div>
+
+<!-- EXPENSES -->
+<div class="section-title">This month expenses</div>
+
+<div class="expense">
+  <div class="expense-left">
+    <div class="expense-icon">S</div>
+    <div class="expense-name">Shopping</div>
+  </div>
+  <div class="expense-amount">$8.00</div>
+</div>
+
+<div class="expense">
+  <div class="expense-left">
+    <div class="expense-icon">M</div>
+    <div class="expense-name">Movies</div>
+  </div>
+  <div class="expense-amount">$1.00</div>
+</div>
+
+<div class="expense">
+  <div class="expense-left">
+    <div class="expense-icon">F</div>
+    <div class="expense-name">Food</div>
+  </div>
+  <div class="expense-amount">$3.00</div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-item active">Home</div>
+  <div class="nav-item">Tasks</div>
+  <div class="nav-item">Wallet</div>
+  <div class="nav-item">Referral</div>
+  <div class="nav-item">VIP</div>
 </div>
 
 </body>
