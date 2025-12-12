@@ -2,58 +2,95 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin VIP Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Admin – VIP Approvals</title>
 
 <style>
-body{
-  margin:0;
-  padding:16px;
-  font-family:system-ui;
-  background:#0f172a;
-  color:#fff;
-}
-
-h2{margin-bottom:14px;}
-
-.card{
-  background:#1e293b;
-  padding:16px;
-  border-radius:16px;
-  margin-bottom:14px;
-}
-
-.card div{margin-bottom:6px;}
-
-button{
-  padding:10px 14px;
-  border:none;
-  border-radius:12px;
-  background:#22c55e;
-  font-weight:900;
-  cursor:pointer;
-}
+  body{
+    margin:0;
+    padding:16px;
+    font-family:system-ui;
+    background:#0b1220;
+    color:#fff;
+  }
+  h2{margin:8px 0 14px}
+  .hint{opacity:.75;margin:0 0 12px}
+  .card{
+    background:#141c2f;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:12px;
+  }
+  .row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .tag{
+    font-size:12px;
+    opacity:.8;
+    padding:6px 10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.06);
+  }
+  button{
+    padding:10px 12px;
+    border:none;
+    border-radius:12px;
+    font-weight:900;
+    cursor:pointer;
+  }
+  .approve{background:#22c55e}
+  .reject{background:#ef4444;color:#fff}
+  .reload{background:#fff;color:#000}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+  input{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:none;
+    margin:10px 0;
+  }
+  .lock{
+    background:#111827;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:14px;
+  }
 </style>
 </head>
 
 <body>
 
-<h2>Pending VIP Requests</h2>
-<div id="list"></div>
+<div class="topbar">
+  <h2>VIP Requests (Admin)</h2>
+  <button class="reload" id="refreshBtn">Refresh</button>
+</div>
+<p class="hint">Only pending requests will show. Approve = activates VIP globally for that user.</p>
+
+<!-- SIMPLE ADMIN LOCK (CHANGE PIN) -->
+<div class="lock" id="lockBox">
+  <b>Admin PIN</b>
+  <div style="opacity:.75;font-size:13px;margin-top:6px;">(Change the PIN in the code if you want)</div>
+  <input id="pin" type="password" placeholder="Enter PIN">
+  <button class="approve" id="unlockBtn">Unlock Admin Panel</button>
+</div>
+
+<div id="list" style="display:none;"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore,
   collection,
-  getDocs,
+  query,
+  where,
+  onSnapshot,
   doc,
-  setDoc,
   updateDoc,
+  setDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* 🔥 FIREBASE CONFIG */
+/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
   authDomain: "primeinvestproject2.firebaseapp.com",
@@ -66,61 +103,127 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* VIP RATES */
-const VIP_RATES = {
-  1:2.33, 2:3.33, 3:3.66, 4:3.99,
-  5:4.33, 6:4.99, 7:6.99, 8:7.33
+/* VIP PLANS (8) */
+const VIP_PLANS = {
+  1:{price:30, rate:2.33},
+  2:{price:100, rate:3.33},
+  3:{price:499, rate:3.66},
+  4:{price:999, rate:3.99},
+  5:{price:4999, rate:4.33},
+  6:{price:9999, rate:4.99},
+  7:{price:49999, rate:6.99},
+  8:{price:99999, rate:7.33}
 };
 
-/* LOAD REQUESTS */
-async function load(){
-  const snap = await getDocs(collection(db,"vip_requests"));
-  const list = document.getElementById("list");
-  list.innerHTML="";
+/* ADMIN PIN (CHANGE THIS) */
+const ADMIN_PIN = "2025";
 
-  snap.forEach(docSnap=>{
-    const r = docSnap.data();
-    if(r.status !== "pending") return;
+/* UI */
+const lockBox = document.getElementById("lockBox");
+const listEl = document.getElementById("list");
+const pinEl = document.getElementById("pin");
 
-    const div=document.createElement("div");
-    div.className="card";
-    div.innerHTML=`
-      <div><b>User:</b> ${r.userId}</div>
-      <div><b>VIP:</b> ${r.vipLevel}</div>
-      <div><b>Amount:</b> $${r.price}</div>
-      <button>Approve VIP</button>
-    `;
+document.getElementById("unlockBtn").onclick = () => {
+  if (pinEl.value.trim() !== ADMIN_PIN) return alert("Wrong PIN");
+  lockBox.style.display = "none";
+  listEl.style.display = "block";
+  startLive();
+};
 
-    div.querySelector("button").onclick = async ()=>{
-      /* ACTIVATE VIP */
-      await setDoc(
-        doc(db,"users",r.userId),
-        {
-          vip:{
-            level:r.vipLevel,
-            price:r.price,
-            rate:VIP_RATES[r.vipLevel],
-            lastProfitAt: serverTimestamp()
-          }
-        },
-        {merge:true}
-      );
+document.getElementById("refreshBtn").onclick = () => location.reload();
 
-      /* UPDATE REQUEST */
-      await updateDoc(doc(db,"vip_requests",docSnap.id),{
-        status:"approved",
-        approvedAt: serverTimestamp()
-      });
+/* LIVE LISTENER */
+function startLive(){
+  const q = query(collection(db, "vip_requests"), where("status", "==", "pending"));
 
-      alert("VIP Activated");
-      load();
-    };
+  onSnapshot(q, (snap) => {
+    listEl.innerHTML = "";
 
-    list.appendChild(div);
+    if (snap.empty){
+      listEl.innerHTML = `<div class="card">No pending VIP requests.</div>`;
+      return;
+    }
+
+    snap.forEach((docSnap) => {
+      const d = docSnap.data();
+      const plan = VIP_PLANS[d.vipLevel];
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <div class="row">
+          <div class="tag">Request ID: <b>${docSnap.id}</b></div>
+          <div class="tag">Status: <b>${d.status}</b></div>
+        </div>
+
+        <div style="margin-top:10px">
+          <div><b>User ID:</b> ${d.userId}</div>
+          <div><b>VIP Level:</b> VIP ${d.vipLevel}</div>
+          <div><b>Price:</b> $${d.price}</div>
+          <div><b>Rate:</b> ${d.rate ?? (plan?.rate ?? "?")} % daily</div>
+        </div>
+
+        <div class="row" style="margin-top:12px">
+          <button class="approve">Approve</button>
+          <button class="reject">Reject</button>
+        </div>
+      `;
+
+      const approveBtn = card.querySelector(".approve");
+      const rejectBtn = card.querySelector(".reject");
+
+      approveBtn.onclick = async () => {
+        try{
+          const chosen = VIP_PLANS[d.vipLevel];
+          if(!chosen) return alert("VIP level not found");
+
+          // Activate VIP in users/{userId}
+          const userRef = doc(db, "users", d.userId);
+
+          const now = Date.now();
+          const expiresAtMs = now + (30 * 24 * 60 * 60 * 1000);
+
+          await setDoc(userRef, {
+            vip: {
+              level: d.vipLevel,
+              price: d.price,
+              rate: chosen.rate,
+              status: "active",
+              startedAt: serverTimestamp(),
+              lastProfitAt: serverTimestamp(),
+              expiresAtMs: expiresAtMs
+            }
+          }, { merge: true });
+
+          // Mark request approved
+          await updateDoc(doc(db, "vip_requests", docSnap.id), {
+            status: "approved",
+            approvedAt: serverTimestamp()
+          });
+
+          alert("Approved ✅");
+        } catch(e){
+          alert("Approve failed: " + e.message);
+        }
+      };
+
+      rejectBtn.onclick = async () => {
+        try{
+          await updateDoc(doc(db, "vip_requests", docSnap.id), {
+            status: "rejected",
+            rejectedAt: serverTimestamp()
+          });
+          alert("Rejected ❌");
+        } catch(e){
+          alert("Reject failed: " + e.message);
+        }
+      };
+
+      listEl.appendChild(card);
+    });
   });
 }
-
-load();
 </script>
 
 </body>
