@@ -1,240 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>PrimeGlobalPro</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SmartInvest Home</title>
 
 <style>
-:root {
-  --purple: #5b2fc2;
-  --purple-light: #6f4bcf;
-  --purple-card: #7452c8;
-  --white: #ffffff;
-  --muted: rgba(255,255,255,0.7);
+body{
+  margin:0;
+  font-family: system-ui, sans-serif;
+  background:#5b2bbd;
 }
 
-* {
-  box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+.header{
+  padding:18px;
+  color:white;
+  font-size:20px;
+  font-weight:600;
 }
 
-body {
-  margin: 0;
-  background: var(--purple);
-  color: white;
+.balance-box{
+  background:#7351c9;
+  margin:16px;
+  border-radius:20px;
+  padding:20px;
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-/* HEADER */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
+.balance-amount{
+  font-size:36px;
+  font-weight:700;
 }
 
-.user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.btn{
+  background:#8f7ae6;
+  border:none;
+  color:white;
+  padding:10px 14px;
+  border-radius:14px;
+  margin-top:8px;
+  font-size:14px;
 }
 
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: orange;
+.card{
+  background:white;
+  margin:16px;
+  border-radius:20px;
+  padding:18px;
 }
 
-.menu {
-  font-size: 24px;
-}
-
-/* BALANCE CARD */
-.balance-card {
-  margin: 16px;
-  padding: 20px;
-  border-radius: 20px;
-  background: var(--purple-card);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.balance-left small {
-  color: var(--muted);
-}
-
-.balance-left h1 {
-  margin: 8px 0 0;
-  font-size: 36px;
-}
-
-.balance-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.action-btn {
-  padding: 10px 18px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.2);
-  color: white;
-  border: none;
-  font-size: 14px;
-}
-
-/* BANK CARD */
-.bank-card {
-  margin: 16px;
-  padding: 20px;
-  border-radius: 20px;
-  background: white;
-  color: #333;
-}
-
-.chip {
-  width: 40px;
-  height: 30px;
-  background: #eee;
-  border-radius: 6px;
-  margin-bottom: 16px;
-}
-
-.card-number {
-  font-size: 20px;
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-}
-
-/* EXPENSES */
-.section {
-  padding: 0 16px;
-}
-
-.section h3 {
-  margin: 20px 0 10px;
-  font-weight: normal;
-}
-
-.expense {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
-
-.expense-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* BOTTOM NAV */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  display: flex;
-  justify-content: space-around;
-  padding: 10px 0;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-}
-
-.nav-item {
-  text-align: center;
-  font-size: 12px;
-  color: #666;
-}
-
-.nav-item.active {
-  color: var(--purple);
+.nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:white;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="user">
-    <div class="avatar"></div>
-    <strong>Alex</strong>
-  </div>
-  <div class="menu">≡</div>
-</div>
+<div class="header">Alex</div>
 
-<!-- BALANCE -->
-<div class="balance-card">
-  <div class="balance-left">
-    <small>Balance</small>
-    <h1>$0.00</h1>
+<div class="balance-box">
+  <div>
+    <div>Balance</div>
+    <div class="balance-amount">$<span id="balance">0.00</span></div>
   </div>
-  <div class="balance-actions">
-    <button class="action-btn">Withdraw</button>
-    <button class="action-btn">Send</button>
+  <div>
+    <button class="btn">Withdraw</button><br>
+    <button class="btn">Deposit</button>
   </div>
 </div>
 
-<!-- BANK CARD -->
-<div class="bank-card">
-  <div class="chip"></div>
-  <div class="card-number">1234 5678 9123 0000</div>
-  <small>Card Holder</small>
+<div class="card">
+  <h3>VIP Earnings</h3>
+  <div id="vipStatus">No active VIP</div>
 </div>
 
-<!-- EXPENSES -->
-<div class="section">
-  <h3>This month expenses</h3>
-
-  <div class="expense">
-    <div class="expense-left">
-      <div class="icon">S</div>
-      <span>Shopping</span>
-    </div>
-    <span>$8.00</span>
-  </div>
-
-  <div class="expense">
-    <div class="expense-left">
-      <div class="icon">M</div>
-      <span>Movies</span>
-    </div>
-    <span>$1.00</span>
-  </div>
-
-  <div class="expense">
-    <div class="expense-left">
-      <div class="icon">F</div>
-      <span>Food</span>
-    </div>
-    <span>$3.00</span>
-  </div>
+<div class="nav">
+  <div>Home</div>
+  <div>Tasks</div>
+  <div>Wallet</div>
+  <div>Referral</div>
+  <div onclick="location.href='vip.html'">VIP</div>
 </div>
 
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <div class="nav-item active">🏠<br>Home</div>
-  <div class="nav-item">📝<br>Tasks</div>
-  <div class="nav-item">💼<br>Wallet</div>
-  <div class="nav-item">👥<br>Referral</div>
-  <div class="nav-item">⭐<br>VIP</div>
-</div>
+<script>
+/* ===== USER DATA ===== */
+let balance = parseFloat(localStorage.getItem("balance")) || 0;
+let userVIP = JSON.parse(localStorage.getItem("userVIP")) || {};
+let lastProfitTime = parseInt(localStorage.getItem("lastProfitTime")) || 0;
+
+/* ===== VIP CONFIG ===== */
+const vipRates = {
+  1:2.33, 2:3.33, 3:3.66, 4:3.99,
+  5:4.33, 6:4.99, 7:6.99, 8:7.33
+};
+
+const vipPrices = {
+  1:30, 2:100, 3:499, 4:999,
+  5:4999, 6:9999, 7:49999, 8:99999
+};
+
+/* ===== DAILY PROFIT CHECK ===== */
+const now = Date.now();
+const DAY = 24 * 60 * 60 * 1000;
+
+if(now - lastProfitTime >= DAY){
+  let totalProfit = 0;
+
+  for(const vipId in userVIP){
+    if(userVIP[vipId] === "active"){
+      const price = vipPrices[vipId];
+      const rate = vipRates[vipId];
+      const profit = (price * rate) / 100;
+      totalProfit += profit;
+    }
+  }
+
+  if(totalProfit > 0){
+    balance += totalProfit;
+    localStorage.setItem("balance", balance.toFixed(2));
+    localStorage.setItem("lastProfitTime", now);
+  }
+}
+
+/* ===== DISPLAY ===== */
+document.getElementById("balance").innerText = balance.toFixed(2);
+
+const vipActive = Object.keys(userVIP).filter(v=>userVIP[v]==="active");
+
+if(vipActive.length){
+  document.getElementById("vipStatus").innerText =
+    "Active VIPs: " + vipActive.map(v=>"VIP "+v).join(", ");
+}else{
+  document.getElementById("vipStatus").innerText = "No active VIP";
+}
+</script>
 
 </body>
 </html>
