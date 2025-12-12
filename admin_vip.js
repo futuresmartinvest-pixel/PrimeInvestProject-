@@ -1,121 +1,128 @@
+// ---------------------------------------------------------
+// IMPORTS (Firebase v10 CDN)
+// ---------------------------------------------------------
 import { auth, db } from "./firebase.js";
-import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
 import {
   collection,
   doc,
+  getDoc,
+  getDocs,
   updateDoc,
   deleteDoc,
-  onSnapshot,
   query,
   where,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// ----------------------------
-// ADMIN UID (ONLY YOU)
-// ----------------------------
-const ADMIN_UID = "za934MEck4Qd3IK2pHqplS6WPBe2";
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// Safe update of admin UID text
-const adminUIDBox = document.getElementById("adminUID");
-if (adminUIDBox) adminUIDBox.textContent = ADMIN_UID;
+// ---------------------------------------------------------
+// ADMIN UID — ONLY YOU!
+// ---------------------------------------------------------
+export const ADMIN_UID = "3xM6WyDqPTVkX0L4sOTNQ8f4VWO2"; // <-- your admin UID
 
-// ----------------------------
-// AUTH CHECK
-// ----------------------------
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    alert("You must log in first.");
-    location.href = "index.html";
-    return;
-  }
+// ---------------------------------------------------------
+// Load & Display Pending VIP Requests
+// ---------------------------------------------------------
+function loadVIPRequests() {
+  const container = document.getElementById("vipRequestsContainer");
+  container.innerHTML = "<p>Loading requests...</p>";
 
-  if (user.uid !== ADMIN_UID) {
-    alert("ACCESS DENIED — Admin only.");
-    location.href = "index.html";
-    return;
-  }
+  const q = query(collection(db, "vip_requests"), where("approved", "==", false));
 
-  loadVIPRequests();
-});
+  onSnapshot(q, (snapshot) => {
+    container.innerHTML = "";
 
-// ----------------------------
-// REAL-TIME VIP REQUESTS
-// ----------------------------
-async function loadVIPRequests() {
-  const container = document.getElementById("requests");
-  container.innerHTML = "Loading…";
-
-  const q = query(collection(db, "vipRequests"), where("status", "==", "pending"));
-
-  onSnapshot(q, async (snapshot) => {
     if (snapshot.empty) {
       container.innerHTML = "<p>No pending VIP requests.</p>";
       return;
     }
 
-    container.innerHTML = "";
-
-    for (const docSnap of snapshot.docs) {
+    snapshot.docs.forEach((docSnap) => {
       const data = docSnap.data();
 
-      // Load full user info
-      const userDoc = await getDoc(doc(db, "users", data.userId));
-      const userData = userDoc.exists() ? userDoc.data() : {};
+      const card = document.createElement("div");
+      card.style =
+        "background:white;padding:15px;margin-bottom:15px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.1);";
 
-      const email = data.email || userData.email || "Unknown Email";
-
-      const box = document.createElement("div");
-      box.className = "request-box";
-
-      box.innerHTML = `
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>User ID:</strong> ${data.userId}</p>
-        <p><strong>Status:</strong> ${data.status}</p>
-        <p><strong>Requested At:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
-
-        <button class="btn approve" onclick="approveVIP('${docSnap.id}', '${data.userId}')">Approve</button>
-        <button class="btn reject" onclick="rejectVIP('${docSnap.id}', '${data.userId}')">Reject</button>
+      card.innerHTML = `
+        <p><b>User:</b> ${data.email}</p>
+        <p><b>UID:</b> ${data.uid}</p>
+        <button class="approveBtn">Approve VIP</button>
+        <button class="rejectBtn" style="background:red;color:white;margin-left:10px;">Reject</button>
       `;
 
-      container.appendChild(box);
-    }
+      // Approve button
+      card.querySelector(".approveBtn").onclick = () =>
+        approveVIP(docSnap.id, data.uid);
+
+      // Reject button
+      card.querySelector(".rejectBtn").onclick = () =>
+        rejectVIP(docSnap.id);
+
+      container.appendChild(card);
+    });
   });
 }
 
-// ----------------------------
-// APPROVE VIP
-// ----------------------------
-window.approveVIP = async function (docId, userId) {
+// ---------------------------------------------------------
+// Approve VIP
+// ---------------------------------------------------------
+async function approveVIP(requestId, userUID) {
   try {
-    await updateDoc(doc(db, "users", userId), {
-      vipStatus: "approved"  // FIXED from "active"
+    // Update user document
+    const userRef = doc(db, "users", userUID);
+    await updateDoc(userRef, {
+      vip: true,
+      vipRequested: false
     });
 
-    await deleteDoc(doc(db, "vipRequests", docId));
+    // Remove request
+    await deleteDoc(doc(db, "vip_requests", requestId));
 
-    alert("VIP Approved!");
+    alert("VIP approved!");
   } catch (err) {
     alert("Error approving VIP: " + err.message);
   }
-};
+}
 
-// ----------------------------
-// REJECT VIP
-// ----------------------------
-window.rejectVIP = async function (docId, userId) {
+// ---------------------------------------------------------
+// Reject VIP
+// ---------------------------------------------------------
+async function rejectVIP(requestId) {
   try {
-    await updateDoc(doc(db, "users", userId), {
-      vipStatus: "rejected"
-    });
-
-    await deleteDoc(doc(db, "vipRequests", docId));
-
-    alert("VIP Rejected!");
+    await deleteDoc(doc(db, "vip_requests", requestId));
+    alert("VIP request rejected.");
   } catch (err) {
-    alert("Error rejecting VIP: " + err.message);
+    alert("Error rejecting: " + err.message);
   }
-};
+}
+
+// ---------------------------------------------------------
+// Initialize Admin VIP Page
+// ---------------------------------------------------------
+export function initAdminVIP() {
+  const container = document.getElementById("vipRequestsContainer");
+
+  if (!container) {
+    console.error("Missing <div id='vipRequestsContainer'>");
+    return;
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      container.innerHTML = "<p>Please log in as admin.</p>";
+      return;
+    }
+
+    if (user.uid !== ADMIN_UID) {
+      container.innerHTML = "<p>Access denied. Admin only.</p>";
+      return;
+    }
+
+    loadVIPRequests();
+  });
+}
