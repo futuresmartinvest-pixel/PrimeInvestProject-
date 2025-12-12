@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Referral Program – PrimeInvest</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a, #2a2a2a);
+      color: white;
+      padding: 20px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 25px;
+      margin-top: 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 25px rgba(0,0,0,0.5);
+      animation: fade 0.6s ease-out;
+    }
+
+    @keyframes fade {
+      from {opacity:0; transform: translateY(20px);}
+      to {opacity:1; transform: translateY(0);}
+    }
+
+    .title {
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #FFD700, #FFB700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .ref-box {
+      margin-top: 20px;
+      font-size: 20px;
+      padding: 12px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .gold {
+      background: linear-gradient(135deg, #FFD700, #FFB700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+    }
+
+    .copy-btn {
+      width: 100%;
+      padding: 12px;
+      background: #FFD700;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(255,215,0,0.5);
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 12px rgba(255,215,0,0.4); }
+      to { box-shadow: 0 0 22px rgba(255,215,0,1); }
+    }
+
+    .back-btn {
+      display: block;
+      margin-top: 20px;
+      text-align: center;
+      color: white;
+      text-decoration: none;
+      opacity: 0.8;
+      font-size: 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1 class="title">Referral Program</h1>
+
+  <div class="card">
+    <h2>Your Referral Code:</h2>
+    <div id="refCodeBox" class="ref-box gold">Loading…</div>
+
+    <h2 style="margin-top: 25px;">Your Referral Link:</h2>
+    <div id="refLinkBox" class="ref-box">Loading…</div>
+
+    <button class="copy-btn" id="copyBtn">COPY LINK</button>
+
+    <h2 style="margin-top: 30px;">Your Stats:</h2>
+
+    <div class="ref-box">
+      Referred Users: <span id="refCount" class="gold">0</span>
+    </div>
+
+    <div class="ref-box">
+      Total Earnings: $<span id="refEarn" class="gold">0.00</span>
+    </div>
+
+    <a href="index.html" class="back-btn">⬅ Back to Home</a>
+  </div>
+
+  <script type="module">
+    import { auth, db } from "./firebase.js";
+    import { onAuthStateChanged }
+      from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { doc, getDoc }
+      from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    const refCodeBox = document.getElementById("refCodeBox");
+    const refLinkBox = document.getElementById("refLinkBox");
+    const refCount = document.getElementById("refCount");
+    const refEarn = document.getElementById("refEarn");
+    const copyBtn = document.getElementById("copyBtn");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        location.href = "auth.html";
+        return;
+      }
+
+      const snap = await getDoc(doc(db, "users", user.uid));
+
+      if (!snap.exists()) return;
+
+      const data = snap.data();
+
+      const code = data.referralCode || user.uid.substring(0, 6).toUpperCase();
+      const link = `https://futuresmartinvest-pixel.github.io/PrimeInvestProject/?ref=${code}`;
+
+      refCodeBox.textContent = code;
+      refLinkBox.textContent = link;
+
+      refCount.textContent = data.referredUsers?.length || 0;
+      refEarn.textContent = (data.referralEarnings || 0).toFixed(2);
+
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(link);
+        alert("Referral link copied!");
+      };
+    });
+  </script>
+
+</body>
+</html>
