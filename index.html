@@ -1,316 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PrimeGlobalPro — Home</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Home</title>
 
-  <style>
-    /* =========================
-       HOME-ONLY (SCOPED) STYLES
-       Everything is prefixed with .pgp-home so it won't break other pages
-    ========================== */
+<style>
+:root{
+  --purple:#5b2fc4;
+  --purple-card:#7351c9;
+  --orange:#ff6a55;
+  --light:#ffffff;
+  --muted:#cfc3f3;
+}
 
-    :root{
-      --pgp-purple: #5b2bd6;
-      --pgp-purple-2: rgba(255,255,255,0.14);
-      --pgp-orange: #ff6b57;
-      --pgp-bg: #5b2bd6;
-      --pgp-text: #ffffff;
-      --pgp-muted: rgba(255,255,255,0.75);
-      --pgp-pill: rgba(255,255,255,0.18);
-      --pgp-pill-2: rgba(255,255,255,0.12);
-      --pgp-radius-lg: 28px;
-      --pgp-radius-md: 18px;
-    }
+*{
+  box-sizing:border-box;
+}
 
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--pgp-bg);
-      color: var(--pgp-text);
-      overflow-x:hidden;
-    }
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--purple);
+  color:#fff;
+  padding-top:env(safe-area-inset-top);
+}
 
-    .pgp-home{
-      min-height: 100vh;
-      display:flex;
-      flex-direction:column;
-    }
+/* HEADER */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 16px;
+}
 
-    .pgp-home .content{
-      padding: 18px 18px 92px; /* leave room for bottom nav */
-      max-width: 560px;
-      margin: 0 auto;
-      width: 100%;
-    }
+.avatar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
 
-    /* Top bar */
-    .pgp-home .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding: 14px 4px 10px;
-    }
-    .pgp-home .user{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-    .pgp-home .avatar{
-      width:46px;height:46px;border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, #ffcf33, #ff5a3d);
-      flex:0 0 auto;
-    }
-    .pgp-home .name{
-      font-size:26px;
-      font-weight:800;
-      letter-spacing:0.2px;
-    }
-    .pgp-home .menu{
-      width:40px;height:40px;border-radius:12px;
-      display:grid;place-items:center;
-      background: transparent;
-      border: 0;
-      color: var(--pgp-text);
-      font-size:24px;
-      opacity:0.95;
-    }
+.avatar-circle{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#ffb347,#ff6a00);
+}
 
-    /* Balance card */
-    .pgp-home .balance-card{
-      margin-top: 6px;
-      background: var(--pgp-purple-2);
-      border-radius: var(--pgp-radius-lg);
-      padding: 22px;
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:16px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
-    }
-    .pgp-home .balance-left .label{
-      font-size:18px;
-      color: var(--pgp-muted);
-      margin-bottom:8px;
-    }
-    .pgp-home .balance-left .amount{
-      font-size:54px;
-      font-weight:900;
-      line-height:1;
-      letter-spacing:0.5px;
-    }
-    .pgp-home .balance-actions{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      margin-top: 6px;
-    }
-    .pgp-home .pill-btn{
-      border:0;
-      border-radius: 22px;
-      padding: 14px 18px;
-      min-width: 120px;
-      background: var(--pgp-pill);
-      color: #fff;
-      font-size:18px;
-      font-weight:700;
-      cursor:pointer;
-    }
-    .pgp-home .pill-btn.secondary{
-      background: var(--pgp-pill-2);
-      font-weight:650;
-    }
+.menu{
+  font-size:24px;
+}
 
-    /* Bank card */
-    .pgp-home .bank-card{
-      margin-top: 18px;
-      background: var(--pgp-orange);
-      border-radius: var(--pgp-radius-lg);
-      padding: 22px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
-      position:relative;
-      overflow:hidden;
-    }
-    .pgp-home .chip{
-      width:54px;height:44px;border-radius:10px;
-      background: rgba(255,255,255,0.75);
-      opacity:0.75;
-      margin-bottom: 18px;
-    }
-    .pgp-home .card-number{
-      font-size:30px;
-      letter-spacing:3px;
-      color:#fff;
-      opacity:0.95;
-      margin-bottom: 10px;
-    }
-    .pgp-home .card-holder{
-      font-size:18px;
-      color:#fff;
-      opacity:0.9;
-    }
+/* CONTENT */
+.container{
+  padding:16px 16px 110px;
+}
 
-    /* Expenses section */
-    .pgp-home .section-title{
-      margin: 20px 4px 10px;
-      font-size:18px;
-      color: rgba(255,255,255,0.9);
-      font-weight:650;
-    }
-    .pgp-home .expense-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding: 14px 6px;
-      border-radius: 18px;
-      gap:12px;
-    }
-    .pgp-home .expense-left{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      min-width: 0;
-    }
-    .pgp-home .badge{
-      width:54px;height:54px;border-radius:18px;
-      background: rgba(255,255,255,0.16);
-      display:grid;place-items:center;
-      font-weight:800;
-      font-size:20px;
-      color:#fff;
-      flex:0 0 auto;
-    }
-    .pgp-home .expense-name{
-      font-size:20px;
-      color:#fff;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .pgp-home .expense-amt{
-      font-size:22px;
-      font-weight:800;
-      color:#fff;
-      opacity:0.95;
-    }
+/* BALANCE CARD */
+.balance-card{
+  background:var(--purple-card);
+  border-radius:22px;
+  padding:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
 
-    /* Bottom nav */
-    .pgp-home .bottom-nav{
-      position:fixed;
-      left:0; right:0; bottom:0;
-      background:#fff;
-      height:72px;
-      display:flex;
-      align-items:center;
-      justify-content:space-around;
-      z-index:999;
-      box-shadow: 0 -10px 28px rgba(0,0,0,0.18);
-    }
-    .pgp-home .nav-item{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:6px;
-      font-size:14px;
-      color:#222;
-      text-decoration:none;
-      width:20%;
-      padding-top: 6px;
-    }
-    .pgp-home .nav-item .ico{
-      font-size:26px;
-      line-height:1;
-    }
-    .pgp-home .nav-item.active{
-      font-weight:800;
-    }
-  </style>
+.balance-text{
+  font-size:14px;
+  opacity:.85;
+}
+
+.balance-amount{
+  font-size:36px;
+  font-weight:700;
+}
+
+.balance-actions{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.balance-btn{
+  background:rgba(255,255,255,.25);
+  border:none;
+  color:#fff;
+  padding:10px 18px;
+  border-radius:20px;
+  font-size:14px;
+}
+
+/* BANK CARD */
+.bank-card{
+  background:var(--orange);
+  border-radius:22px;
+  padding:20px;
+  margin-bottom:22px;
+}
+
+.card-chip{
+  width:44px;
+  height:34px;
+  background:#ffd6c9;
+  border-radius:8px;
+  margin-bottom:20px;
+}
+
+.card-number{
+  font-size:22px;
+  letter-spacing:3px;
+}
+
+.card-holder{
+  margin-top:10px;
+  opacity:.9;
+}
+
+/* EXPENSES */
+.section-title{
+  font-size:18px;
+  margin-bottom:12px;
+}
+
+.expense{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+
+.expense-left{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.expense-icon{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  background:rgba(255,255,255,.2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+}
+
+.expense-name{
+  font-size:16px;
+}
+
+.expense-amount{
+  font-size:16px;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0 env(safe-area-inset-bottom);
+  border-top-left-radius:22px;
+  border-top-right-radius:22px;
+  color:#444;
+}
+
+.nav-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  font-size:12px;
+}
+
+.nav-item span{
+  font-size:22px;
+}
+</style>
 </head>
 
 <body>
-  <div class="pgp-home">
-    <div class="content">
 
-      <div class="topbar">
-        <div class="user">
-          <div class="avatar"></div>
-          <div class="name" id="username">Alex</div>
-        </div>
-        <button class="menu" aria-label="menu">≡</button>
-      </div>
+<!-- HEADER -->
+<div class="topbar">
+  <div class="avatar">
+    <div class="avatar-circle"></div>
+    <div>Alex</div>
+  </div>
+  <div class="menu">≡</div>
+</div>
 
-      <div class="balance-card">
-        <div class="balance-left">
-          <div class="label">Balance</div>
-          <div class="amount" id="balanceAmount">$0.00</div>
-        </div>
-        <div class="balance-actions">
-          <button class="pill-btn" id="btnWithdraw">Withdraw</button>
-          <button class="pill-btn secondary" id="btnSend">Send</button>
-        </div>
-      </div>
+<!-- CONTENT -->
+<div class="container">
 
-      <div class="bank-card">
-        <div class="chip"></div>
-        <div class="card-number">1234 5678 9123 0000</div>
-        <div class="card-holder">Card Holder</div>
-      </div>
-
-      <div class="section-title">This month expenses</div>
-
-      <div class="expense-row">
-        <div class="expense-left">
-          <div class="badge">S</div>
-          <div class="expense-name">Shopping</div>
-        </div>
-        <div class="expense-amt">$8.00</div>
-      </div>
-
-      <div class="expense-row">
-        <div class="expense-left">
-          <div class="badge">M</div>
-          <div class="expense-name">Movies</div>
-        </div>
-        <div class="expense-amt">$1.00</div>
-      </div>
-
-      <div class="expense-row">
-        <div class="expense-left">
-          <div class="badge">F</div>
-          <div class="expense-name">Food</div>
-        </div>
-        <div class="expense-amt">$3.00</div>
-      </div>
-
+  <!-- BALANCE -->
+  <div class="balance-card">
+    <div>
+      <div class="balance-text">Balance</div>
+      <div class="balance-amount">$0.00</div>
     </div>
-
-    <nav class="bottom-nav">
-      <a class="nav-item active" href="index.html"><div class="ico">🏠</div><div>Home</div></a>
-      <a class="nav-item" href="tasks.html"><div class="ico">📝</div><div>Tasks</div></a>
-      <a class="nav-item" href="wallet.html"><div class="ico">💼</div><div>Wallet</div></a>
-      <a class="nav-item" href="referral.html"><div class="ico">👥</div><div>Referral</div></a>
-      <a class="nav-item" href="VIP.html"><div class="ico">⭐</div><div>VIP</div></a>
-    </nav>
+    <div class="balance-actions">
+      <button class="balance-btn">Withdraw</button>
+      <button class="balance-btn">Send</button>
+    </div>
   </div>
 
-  <script>
-    // HOME-ONLY JS (does not touch other pages)
+  <!-- BANK CARD -->
+  <div class="bank-card">
+    <div class="card-chip"></div>
+    <div class="card-number">1234 5678 9123 0000</div>
+    <div class="card-holder">Card Holder</div>
+  </div>
 
-    // Load display name if you have it saved
-    const savedName = localStorage.getItem("displayName");
-    if (savedName) document.getElementById("username").textContent = savedName;
+  <!-- EXPENSES -->
+  <div class="section-title">This month expenses</div>
 
-    // Load balance if you store it
-    const bal = Number(localStorage.getItem("balance") || "0");
-    document.getElementById("balanceAmount").textContent =
-      "$" + bal.toFixed(2);
+  <div class="expense">
+    <div class="expense-left">
+      <div class="expense-icon">S</div>
+      <div class="expense-name">Shopping</div>
+    </div>
+    <div class="expense-amount">$8.00</div>
+  </div>
 
-    // Buttons (use your existing pages)
-    document.getElementById("btnWithdraw").onclick = () => location.href = "withdraw.html";
-    document.getElementById("btnSend").onclick = () => location.href = "send.html";
-  </script>
+  <div class="expense">
+    <div class="expense-left">
+      <div class="expense-icon">M</div>
+      <div class="expense-name">Movies</div>
+    </div>
+    <div class="expense-amount">$1.00</div>
+  </div>
+
+  <div class="expense">
+    <div class="expense-left">
+      <div class="expense-icon">F</div>
+      <div class="expense-name">Food</div>
+    </div>
+    <div class="expense-amount">$3.00</div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item"><span>🏠</span>Home</div>
+  <div class="nav-item"><span>📝</span>Tasks</div>
+  <div class="nav-item"><span>💼</span>Wallet</div>
+  <div class="nav-item"><span>👥</span>Referral</div>
+  <div class="nav-item"><span>⭐</span>VIP</div>
+</div>
+
 </body>
 </html>
