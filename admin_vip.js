@@ -1,128 +1,74 @@
-// ---------------------------------------------------------
-// IMPORTS (Firebase v10 CDN)
-// ---------------------------------------------------------
-import { auth, db } from "./firebase.js";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
+  getFirestore,
   collection,
-  doc,
-  getDoc,
   getDocs,
+  doc,
   updateDoc,
-  deleteDoc,
-  query,
-  where,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
+  authDomain: "primeinvestproject2.firebaseapp.com",
+  projectId: "primeinvestproject2",
+  storageBucket: "primeinvestproject2.firebasestorage.app",
+  messagingSenderId: "798977477628",
+  appId: "1:798977477628:web:c97d1fba72ad7865864079"
+};
 
-// ---------------------------------------------------------
-// ADMIN UID — ONLY YOU!
-// ---------------------------------------------------------
-export const ADMIN_UID = "3xM6WyDqPTVkX0L4sOTNQ8f4VWO2"; // <-- your admin UID
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-// ---------------------------------------------------------
-// Load & Display Pending VIP Requests
-// ---------------------------------------------------------
-function loadVIPRequests() {
-  const container = document.getElementById("vipRequestsContainer");
-  container.innerHTML = "<p>Loading requests...</p>";
+const list = document.getElementById("vipList");
 
-  const q = query(collection(db, "vip_requests"), where("approved", "==", false));
+async function loadRequests(){
+  list.innerHTML = "";
+  const snap = await getDocs(collection(db,"vip_requests"));
 
-  onSnapshot(q, (snapshot) => {
-    container.innerHTML = "";
+  snap.forEach(d=>{
+    const r = d.data();
+    if(r.status !== "pending") return;
 
-    if (snapshot.empty) {
-      container.innerHTML = "<p>No pending VIP requests.</p>";
-      return;
-    }
-
-    snapshot.docs.forEach((docSnap) => {
-      const data = docSnap.data();
-
-      const card = document.createElement("div");
-      card.style =
-        "background:white;padding:15px;margin-bottom:15px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.1);";
-
-      card.innerHTML = `
-        <p><b>User:</b> ${data.email}</p>
-        <p><b>UID:</b> ${data.uid}</p>
-        <button class="approveBtn">Approve VIP</button>
-        <button class="rejectBtn" style="background:red;color:white;margin-left:10px;">Reject</button>
-      `;
-
-      // Approve button
-      card.querySelector(".approveBtn").onclick = () =>
-        approveVIP(docSnap.id, data.uid);
-
-      // Reject button
-      card.querySelector(".rejectBtn").onclick = () =>
-        rejectVIP(docSnap.id);
-
-      container.appendChild(card);
-    });
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <div>User: ${r.userId}</div>
+      <div>VIP ${r.vipLevel} — $${r.price}</div>
+      <button onclick="approve('${d.id}','${r.userId}',${r.vipLevel},${r.price})">
+        APPROVE
+      </button>
+    `;
+    list.appendChild(div);
   });
 }
 
-// ---------------------------------------------------------
-// Approve VIP
-// ---------------------------------------------------------
-async function approveVIP(requestId, userUID) {
-  try {
-    // Update user document
-    const userRef = doc(db, "users", userUID);
-    await updateDoc(userRef, {
-      vip: true,
-      vipRequested: false
-    });
-
-    // Remove request
-    await deleteDoc(doc(db, "vip_requests", requestId));
-
-    alert("VIP approved!");
-  } catch (err) {
-    alert("Error approving VIP: " + err.message);
-  }
-}
-
-// ---------------------------------------------------------
-// Reject VIP
-// ---------------------------------------------------------
-async function rejectVIP(requestId) {
-  try {
-    await deleteDoc(doc(db, "vip_requests", requestId));
-    alert("VIP request rejected.");
-  } catch (err) {
-    alert("Error rejecting: " + err.message);
-  }
-}
-
-// ---------------------------------------------------------
-// Initialize Admin VIP Page
-// ---------------------------------------------------------
-export function initAdminVIP() {
-  const container = document.getElementById("vipRequestsContainer");
-
-  if (!container) {
-    console.error("Missing <div id='vipRequestsContainer'>");
-    return;
-  }
-
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      container.innerHTML = "<p>Please log in as admin.</p>";
-      return;
+window.approve = async function(reqId,userId,vipLevel,price){
+  // Activate VIP in USERS
+  await updateDoc(doc(db,"users",userId),{
+    vip:{
+      level:vipLevel,
+      price:price,
+      rate:getRate(vipLevel),
+      lastProfitAt:serverTimestamp()
     }
-
-    if (user.uid !== ADMIN_UID) {
-      container.innerHTML = "<p>Access denied. Admin only.</p>";
-      return;
-    }
-
-    loadVIPRequests();
   });
+
+  // Mark request approved
+  await updateDoc(doc(db,"vip_requests",reqId),{
+    status:"approved",
+    approvedAt:serverTimestamp()
+  });
+
+  alert("VIP ACTIVATED");
+  loadRequests();
+};
+
+function getRate(v){
+  return {
+    1:2.33,2:3.33,3:3.66,4:3.99,
+    5:4.33,6:4.99,7:6.99,8:7.33
+  }[v];
 }
+
+loadRequests();
