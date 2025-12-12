@@ -8,22 +8,16 @@
 <style>
 body{
   margin:0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:system-ui,sans-serif;
   background:#f5f5f5;
 }
-
 .header{
   background:#b7ff2c;
   padding:20px;
   font-size:22px;
   font-weight:700;
-  text-align:center;
 }
-
-.container{
-  padding:16px;
-}
-
+.container{padding:16px;}
 .vip-card{
   background:#fff;
   border-radius:16px;
@@ -31,17 +25,6 @@ body{
   margin-bottom:14px;
   box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
-
-.vip-title{
-  font-size:18px;
-  font-weight:700;
-}
-
-.vip-info{
-  margin-top:6px;
-  color:#555;
-}
-
 .vip-btn{
   margin-top:12px;
   background:#000;
@@ -51,32 +34,18 @@ body{
   width:100%;
   border-radius:12px;
   font-size:16px;
-  cursor:pointer;
 }
-
-.vip-btn:disabled{
-  background:#999;
-  cursor:not-allowed;
-}
-
-.back{
-  padding:12px;
-  display:block;
-  text-decoration:none;
-  color:#000;
-}
+.vip-btn:disabled{background:#999;}
+.status{margin-top:8px;font-weight:600;}
 </style>
 </head>
 
 <body>
 
 <div class="header">VIP Membership</div>
-<a class="back" href="index.html">← Back to Home</a>
-
 <div class="container" id="vipList"></div>
 
 <script>
-/* ===== VIP PLANS ===== */
 const vipPlans = [
  {id:1, price:30, rate:2.33},
  {id:2, price:100, rate:3.33},
@@ -88,52 +57,68 @@ const vipPlans = [
  {id:8, price:99999, rate:7.33},
 ];
 
-/* ===== LOCAL USER DATA ===== */
-const userId = localStorage.getItem("userId") || "UNKNOWN";
-const userVIP = JSON.parse(localStorage.getItem("userVIP")) || {};
+let wallet = JSON.parse(localStorage.getItem("wallet")) || {balance:0};
+let userVIP = JSON.parse(localStorage.getItem("userVIP")) || {};
 
-const vipList = document.getElementById("vipList");
+function applyDailyProfit(){
+  const now = Date.now();
+  Object.values(userVIP).forEach(vip=>{
+    if(vip.status!=="active") return;
+    if(now > vip.expiry){
+      vip.status="expired";
+      return;
+    }
+    if(now - vip.lastProfit >= 86400000){
+      wallet.balance += vip.dailyProfit;
+      vip.lastProfit = now;
+    }
+  });
+  localStorage.setItem("wallet", JSON.stringify(wallet));
+  localStorage.setItem("userVIP", JSON.stringify(userVIP));
+}
+applyDailyProfit();
 
-/* ===== RENDER VIPS ===== */
+const list = document.getElementById("vipList");
+
 vipPlans.forEach(vip=>{
-  const status = userVIP[vip.id]; // undefined | pending | active
-
+  const v = userVIP[vip.id];
   const div = document.createElement("div");
-  div.className = "vip-card";
+  div.className="vip-card";
 
-  div.innerHTML = `
-    <div class="vip-title">VIP ${vip.id}</div>
-    <div class="vip-info">Price: $${vip.price}</div>
-    <div class="vip-info">Daily Profit: ${vip.rate}%</div>
-    <button class="vip-btn" ${status ? "disabled" : ""}>
-      ${status === "active" ? "Activated" : status === "pending" ? "Pending Approval" : "Activate VIP"}
-    </button>
+  let statusText = "Not active";
+  if(v){
+    if(v.status==="active") statusText="✅ Active";
+    if(v.status==="pending") statusText="⏳ Pending approval";
+    if(v.status==="expired") statusText="❌ Expired";
+  }
+
+  div.innerHTML=`
+    <h3>VIP ${vip.id}</h3>
+    <div>Price: $${vip.price}</div>
+    <div>Daily Profit: ${(vip.price*vip.rate/100).toFixed(2)} USD</div>
+    <div class="status">${statusText}</div>
+    <button class="vip-btn" ${v?"disabled":""}>Activate VIP</button>
   `;
 
-  if(!status){
-    div.querySelector("button").onclick = ()=>{
-      const message =
-        "VIP REQUEST\n\n" +
-        "VIP Level: VIP " + vip.id + "\n" +
-        "Amount: $" + vip.price + "\n" +
-        "Daily Profit: " + vip.rate + "%\n" +
-        "User ID: " + userId + "\n\n" +
-        "Please send deposit screenshot below 👇";
-
-      const telegramUrl =
-        "https://t.me/SmartInvest202?text=" + encodeURIComponent(message);
-
-      userVIP[vip.id] = "pending";
-      localStorage.setItem("userVIP", JSON.stringify(userVIP));
-
-      window.open(telegramUrl, "_blank");
+  if(!v){
+    div.querySelector("button").onclick=()=>{
+      userVIP[vip.id]={
+        status:"pending",
+        price:vip.price,
+        dailyProfit:(vip.price*vip.rate/100),
+        start:0,
+        expiry:0,
+        lastProfit:0
+      };
+      localStorage.setItem("userVIP",JSON.stringify(userVIP));
+      window.open("https://t.me/SmartInvest202","_blank");
+      alert("Send deposit proof to Telegram for approval");
       location.reload();
     };
   }
 
-  vipList.appendChild(div);
+  list.appendChild(div);
 });
 </script>
-
 </body>
 </html>
