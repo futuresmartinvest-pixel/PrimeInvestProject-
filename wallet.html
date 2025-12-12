@@ -1,46 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Your Wallet</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deposit</title>
 
-  <style>
-    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
-    .card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-
-    .history-card {
-      background: white;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #1976d2;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      margin-top: 10px;
-    }
-  </style>
+<style>
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#0b1220;
+  color:#fff;
+  padding:16px;
+}
+.card{
+  background:#121a2f;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+}
+.btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#22c55e;
+  font-weight:700;
+  font-size:16px;
+}
+.address{
+  word-break:break-all;
+  background:#0f172a;
+  padding:12px;
+  border-radius:10px;
+  margin-top:10px;
+}
+.small{
+  opacity:.7;
+  font-size:14px;
+}
+</style>
 </head>
 
 <body>
 
-  <h1>Your Wallet</h1>
+<h2>Deposit USDT (TRC-20)</h2>
 
-  <div class="card">
-    <h2>Balance: £<span id="balanceAmount">0.00</span></h2>
-    <button onclick="requestWithdrawal()">Withdraw</button>
+<div class="card">
+  <div class="small">Network</div>
+  <h3>TRON (TRC-20)</h3>
+
+  <div class="small">Deposit Address</div>
+  <div class="address" id="addr">
+TT...ZKH4p
   </div>
 
-  <h2>Transaction History</h2>
-  <div id="historyList"></div>
+  <button class="btn" onclick="copy()">Copy Address</button>
+</div>
 
-  <script type="module" src="./wallet.js"></script>
+<div class="card">
+  <div class="small">After payment</div>
+  <p>Send payment receipt to admin</p>
+  <button class="btn" onclick="goTelegram()">Send Receipt</button>
+</div>
+
+<script>
+function copy(){
+  navigator.clipboard.writeText(
+    "TTHLd1pCtYstvRKtWkx7qfHQmWRuxZKH4p"
+  );
+  alert("Address copied");
+}
+
+function goTelegram(){
+  location.href = "https://t.me/SmartInvest202";
+}
+</script>
 
 </body>
 </html>
