@@ -14,67 +14,63 @@ body{
   color:#000;
 }
 
-/* GRID */
-.vip-grid{
+h2{
+  margin-bottom:16px;
+}
+
+.grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
   gap:14px;
 }
 
-/* VIP BOX */
 .vip-box{
-  border-radius:14px;
+  background:rgba(0,0,0,0.03); /* almost invisible */
+  border-radius:16px;
   padding:16px;
-  background:rgba(0,0,0,0.03); /* invisible look */
-  box-shadow:0 4px 10px rgba(0,0,0,0.06);
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.vip-box:hover{
-  background:rgba(0,0,0,0.06);
+  box-shadow:0 6px 18px rgba(0,0,0,0.08);
 }
 
 .vip-title{
   font-size:18px;
-  font-weight:700;
+  font-weight:800;
 }
 
-.vip-price{
+.vip-info{
   margin-top:6px;
-  font-size:16px;
+  font-size:14px;
+  opacity:.7;
 }
 
-.vip-rate{
-  margin-top:4px;
-  color:#16a34a;
-  font-weight:600;
-}
-
-/* HEADER */
-h2{
-  text-align:center;
-  margin-bottom:20px;
+.vip-btn{
+  margin-top:12px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:12px;
+  background:#22c55e;
+  font-weight:900;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<h2>VIP Membership</h2>
+<h2>Select VIP Plan</h2>
 
-<div class="vip-grid" id="vipGrid"></div>
+<div class="grid" id="vipGrid"></div>
 
 <script>
 const VIPS = [
- {id:1, price:30, rate:2.33},
- {id:2, price:100, rate:3.33},
- {id:3, price:499, rate:3.66},
- {id:4, price:999, rate:3.99},
- {id:5, price:4999, rate:4.33},
- {id:6, price:9999, rate:4.99},
- {id:7, price:49999, rate:6.99},
- {id:8, price:99999, rate:7.33},
+  {id:1, price:30, rate:2.33},
+  {id:2, price:100, rate:3.33},
+  {id:3, price:499, rate:3.66},
+  {id:4, price:999, rate:3.99},
+  {id:5, price:4999, rate:4.33},
+  {id:6, price:9999, rate:4.99},
+  {id:7, price:49999, rate:6.99},
+  {id:8, price:99999, rate:7.33}
 ];
 
 const grid = document.getElementById("vipGrid");
@@ -82,14 +78,14 @@ const grid = document.getElementById("vipGrid");
 VIPS.forEach(v=>{
   const div = document.createElement("div");
   div.className = "vip-box";
-
   div.innerHTML = `
     <div class="vip-title">VIP ${v.id}</div>
-    <div class="vip-price">$${v.price}</div>
-    <div class="vip-rate">${v.rate}% Daily</div>
+    <div class="vip-info">$${v.price}</div>
+    <div class="vip-info">${v.rate}% Daily Profit</div>
+    <button class="vip-btn">Select</button>
   `;
 
-  div.onclick = ()=>{
+  div.querySelector("button").onclick = ()=>{
     location.href = `deposit.html?vip=${v.id}&price=${v.price}`;
   };
 
