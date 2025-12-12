@@ -15,6 +15,8 @@ body{
   background:#5b2fc2;
   color:#fff;
 }
+
+/* BALANCE */
 .balance-card{
   margin:16px;
   padding:20px;
@@ -25,6 +27,24 @@ body{
   font-size:44px;
   font-weight:800;
 }
+
+/* VIP STATUS */
+.vip-card{
+  margin:16px;
+  padding:16px;
+  background:#000;
+  border-radius:20px;
+}
+.vip-title{
+  font-weight:800;
+  font-size:18px;
+}
+.vip-info{
+  margin-top:6px;
+  opacity:.9;
+}
+
+/* NAV */
 .nav{
   position:fixed;
   bottom:16px;
@@ -37,17 +57,28 @@ body{
   padding:12px;
   border-radius:26px;
 }
-.nav div{font-weight:600}
+.nav div{
+  font-weight:600;
+  cursor:pointer;
+}
 </style>
 </head>
 
 <body>
 
+<!-- BALANCE -->
 <div class="balance-card">
   <div>Balance</div>
   <div class="balance-amount">$0.00</div>
 </div>
 
+<!-- VIP STATUS -->
+<div class="vip-card" id="vipBox">
+  <div class="vip-title">VIP Status</div>
+  <div class="vip-info" id="vipStatus">No active VIP</div>
+</div>
+
+<!-- NAV -->
 <div class="nav">
   <div>Home</div>
   <div onclick="location.href='tasks.html'">Tasks</div>
@@ -98,11 +129,14 @@ const userRef = doc(db,"users",uid());
 async function ensureUser(){
   const snap = await getDoc(userRef);
   if(!snap.exists()){
-    await setDoc(userRef,{balance:0,createdAt:serverTimestamp()});
+    await setDoc(userRef,{
+      balance:0,
+      createdAt:serverTimestamp()
+    });
   }
 }
 
-/* VIP CHECK + AUTO EXPIRE + PROFIT */
+/* VIP PROFIT + EXPIRE */
 async function processVIP(){
   const snap = await getDoc(userRef);
   if(!snap.exists()) return;
@@ -113,13 +147,11 @@ async function processVIP(){
   const now = Date.now();
   const expiresAt = user.vip.expiresAt?.toMillis?.() || 0;
 
-  /* ❌ VIP EXPIRED */
   if(now > expiresAt){
     await updateDoc(userRef,{ vip:null });
     return;
   }
 
-  /* ✅ APPLY PROFIT */
   const last = user.vip.lastProfitAt?.toMillis?.() || now;
   const days = Math.floor((now-last)/DAY);
   if(days<=0) return;
@@ -133,17 +165,35 @@ async function processVIP(){
   });
 }
 
-/* UI */
-async function refresh(){
+/* UI UPDATE */
+async function refreshUI(){
   const snap = await getDoc(userRef);
   if(!snap.exists()) return;
+  const data = snap.data();
+
   document.querySelector(".balance-amount").innerText =
-    "$"+(snap.data().balance||0).toFixed(2);
+    "$"+(data.balance||0).toFixed(2);
+
+  const vipBox = document.getElementById("vipStatus");
+
+  if(!data.vip){
+    vipBox.innerText = "No active VIP";
+    return;
+  }
+
+  const exp = data.vip.expiresAt.toDate().toLocaleDateString();
+
+  vipBox.innerHTML = `
+    VIP ${data.vip.level}<br>
+    Daily Rate: ${data.vip.rate}%<br>
+    Expires: ${exp}
+  `;
 }
 
+/* RUN */
 await ensureUser();
 await processVIP();
-await refresh();
+await refreshUI();
 </script>
 
 </body>
