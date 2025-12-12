@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin VIP Panel</title>
+<title>VIP Admin Panel</title>
 
 <style>
 body{
@@ -13,39 +13,48 @@ body{
   background:#0f172a;
   color:#fff;
 }
+h2{margin-bottom:16px;}
 .card{
   background:#1e293b;
-  padding:14px;
   border-radius:14px;
-  margin-bottom:12px;
+  padding:14px;
+  margin-bottom:14px;
 }
 button{
   margin-top:10px;
   padding:10px;
+  width:100%;
   border:none;
   border-radius:10px;
   font-weight:700;
-  background:#22c55e;
+  cursor:pointer;
 }
+.approve{background:#22c55e;color:#000;}
+.pending{color:#facc15;}
+.approved{color:#22c55e;}
 </style>
 </head>
 
 <body>
 
 <h2>VIP Requests</h2>
-<div id="list">Loading…</div>
+<div id="vipList"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore,
   collection,
-  getDocs,
+  query,
+  where,
+  onSnapshot,
   doc,
   updateDoc,
+  getDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
   authDomain: "primeinvestproject2.firebaseapp.com",
@@ -58,61 +67,73 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+/* VIP RATES */
 const VIP_RATES = {
-  1:2.33, 2:3.33, 3:3.66, 4:3.99,
-  5:4.33, 6:4.99, 7:6.99, 8:7.33
+  1: 2.33,
+  2: 3.33,
+  3: 3.66,
+  4: 3.99,
+  5: 4.33,
+  6: 4.99,
+  7: 6.99,
+  8: 7.33
 };
 
-const list = document.getElementById("list");
+const vipList = document.getElementById("vipList");
 
-async function load(){
-  const snap = await getDocs(collection(db, "vip_requests"));
-  list.innerHTML = "";
+/* LOAD REQUESTS (REALTIME) */
+const q = query(
+  collection(db, "vip_requests"),
+  where("status", "==", "pending")
+);
 
-  snap.forEach(d=>{
-    const v = d.data();
-    if(v.status !== "pending") return;
+onSnapshot(q, (snap) => {
+  vipList.innerHTML = "";
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
 
     const div = document.createElement("div");
     div.className = "card";
 
     div.innerHTML = `
-      <div>User ID: ${v.userId}</div>
-      <div>VIP Level: ${v.vipLevel}</div>
-      <div>Price: $${v.price}</div>
-      <button>Approve</button>
+      <div><b>User:</b> ${data.userId}</div>
+      <div><b>VIP Level:</b> ${data.vipLevel}</div>
+      <div><b>Price:</b> $${data.price}</div>
+      <div class="pending"><b>Status:</b> pending</div>
+      <button class="approve">Approve VIP</button>
     `;
 
-    div.querySelector("button").onclick = async ()=>{
-      // 1️⃣ mark request approved
-      await updateDoc(doc(db,"vip_requests",d.id),{
-        status:"approved",
-        approvedAt: serverTimestamp()
-      });
+    div.querySelector("button").onclick = async () => {
+      const userRef = doc(db, "users", data.userId);
+      const userSnap = await getDoc(userRef);
 
-      // 2️⃣ activate VIP on user
-      await updateDoc(doc(db,"users",v.userId),{
-        vip:{
-          level: v.vipLevel,
-          price: v.price,
-          rate: VIP_RATES[v.vipLevel],
-          lastProfitAt: Date.now()
+      if (!userSnap.exists()) {
+        alert("❌ User document does not exist");
+        return;
+      }
+
+      /* 1️⃣ ACTIVATE VIP ON USER */
+      await updateDoc(userRef, {
+        vip: {
+          level: data.vipLevel,
+          price: data.price,
+          rate: VIP_RATES[data.vipLevel],
+          lastProfitAt: serverTimestamp()
         }
       });
 
-      alert("VIP ACTIVATED");
-      load();
+      /* 2️⃣ MARK REQUEST APPROVED */
+      await updateDoc(doc(db, "vip_requests", docSnap.id), {
+        status: "approved",
+        approvedAt: serverTimestamp()
+      });
+
+      alert("✅ VIP Approved");
     };
 
-    list.appendChild(div);
+    vipList.appendChild(div);
   });
-
-  if(!list.innerHTML){
-    list.innerHTML = "No pending requests";
-  }
-}
-
-load();
+});
 </script>
 
 </body>
