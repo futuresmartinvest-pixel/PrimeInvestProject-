@@ -8,31 +8,36 @@
 <style>
 *{box-sizing:border-box}
 
-html{
-  overscroll-behavior-y:auto; /* ✅ allow pull-to-refresh */
-}
-
-body{
+html,body{
   margin:0;
+  padding:0;
+  height:100vh;
+  overflow:hidden; /* 🚫 NO SCROLL */
   font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-  background:#fff;
-  overflow-y:auto; /* ✅ allow scrolling */
+  background:#000;
 }
 
-/* ===== BALANCE CARD ===== */
-.balance-card{
-  margin:18px;
+/* ===== APP WRAPPER ===== */
+.app{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ===== TOP CARD ===== */
+.top-card{
+  margin:16px;
   background:#000;
-  color:#fff;
   border-radius:26px;
   padding:18px;
+  color:#fff;
 }
 
-.balance-header{
+.top-header{
   display:flex;
   align-items:center;
   gap:12px;
-  margin-bottom:16px;
+  margin-bottom:14px;
 }
 
 .avatar{
@@ -49,7 +54,7 @@ body{
 }
 
 .amount{
-  font-size:38px;
+  font-size:36px;
   font-weight:700;
 }
 
@@ -61,76 +66,87 @@ body{
 
 .action-btn{
   background:#1f1f1f;
-  color:#fff;
   padding:10px 18px;
   border-radius:14px;
   font-size:14px;
+  text-align:center;
+}
+
+/* ===== CONTENT AREA ===== */
+.content{
+  flex:1;
+  background:#fff;
+  border-top-left-radius:28px;
+  border-top-right-radius:28px;
+  padding-top:20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
 /* ===== SOLAR SYSTEM ===== */
 .solar{
+  position:relative;
   width:260px;
   height:260px;
-  margin:20px auto;
-  position:relative;
 }
 
 .sun{
-  width:48px;
-  height:48px;
-  background:radial-gradient(circle at 30% 30%, #fff3b0, #fbbf24, #f59e0b);
-  border-radius:50%;
   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
-  box-shadow:0 0 35px rgba(251,191,36,.9);
-}
-
-.orbit{
-  position:absolute;
-  border:1px dashed #d1d5db;
+  width:60px;
+  height:60px;
   border-radius:50%;
-  animation:spin linear infinite;
+  background:radial-gradient(circle,#fff6b0,#fbbf24,#f59e0b);
+  box-shadow:0 0 40px rgba(251,191,36,.9);
 }
 
 .earth-orbit{
-  width:170px;
-  height:170px;
-  top:45px;
-  left:45px;
-  animation-duration:14s
-}
-
-.moon-orbit{
-  width:70px;
-  height:70px;
-  top:-8px;
-  left:-8px;
-  animation-duration:5s
+  position:absolute;
+  width:190px;
+  height:190px;
+  border:1px dashed #ccc;
+  border-radius:50%;
+  top:35px;
+  left:35px;
+  animation:spin 18s linear infinite;
 }
 
 .earth{
-  width:28px;
-  height:28px;
-  background:radial-gradient(circle at 30% 30%, #60a5fa, #1e3a8a);
-  border-radius:8px;
   position:absolute;
   top:-14px;
   left:50%;
   transform:translateX(-50%);
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 30% 30%, #7dd3fc, #1e40af);
   box-shadow:0 6px 10px rgba(0,0,0,.4);
 }
 
-.moon{
-  width:14px;
-  height:14px;
-  background:radial-gradient(circle at 30% 30%, #e5e7eb, #9ca3af);
-  border-radius:6px;
+.moon-orbit{
   position:absolute;
-  top:-7px;
+  width:70px;
+  height:70px;
+  border:1px dashed #ddd;
+  border-radius:50%;
+  top:-20px;
+  left:-20px;
+  animation:spin 6s linear infinite;
+}
+
+.moon{
+  position:absolute;
+  top:-6px;
   left:50%;
   transform:translateX(-50%);
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:radial-gradient(circle,#f5f5f5,#9ca3af);
 }
 
 @keyframes spin{
@@ -140,18 +156,19 @@ body{
 
 /* ===== TASKS ===== */
 .tasks{
-  padding:0 20px 160px; /* ✅ ensures nav never overlaps */
+  width:100%;
+  padding:16px 24px;
 }
 
 .tasks h3{
-  margin:10px 0 14px;
+  margin:14px 0;
 }
 
 .task{
   display:flex;
   align-items:center;
   gap:14px;
-  margin-bottom:14px;
+  margin-bottom:12px;
 }
 
 .task-icon{
@@ -170,81 +187,77 @@ body{
 .t3{background:#facc15;color:#000}
 
 /* ===== BOTTOM NAV ===== */
-.nav-wrap{
-  position:fixed;
-  bottom:12px;
-  left:12px;
-  right:12px;
-  background:rgba(255,255,255,.9);
-  backdrop-filter:blur(14px);
-  border-radius:22px;
-  padding:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,.15);
-}
-
 .nav{
+  height:70px;
+  background:#fff;
   display:flex;
   justify-content:space-around;
+  align-items:center;
   font-size:12px;
+  box-shadow:0 -10px 25px rgba(0,0,0,.15);
 }
 
 .nav span{
-  display:block;
   font-size:22px;
+  display:block;
 }
 </style>
 </head>
 
 <body>
 
-<!-- BALANCE -->
-<div class="balance-card">
-  <div class="balance-header">
-    <div class="avatar"></div>
-    <strong>Alex</strong>
-  </div>
+<div class="app">
 
-  <div class="balance-row">
-    <div class="amount">$0.00</div>
-    <div class="actions">
-      <div class="action-btn">Withdraw</div>
-      <div class="action-btn">Deposit</div>
+  <!-- TOP -->
+  <div class="top-card">
+    <div class="top-header">
+      <div class="avatar"></div>
+      <strong>Alex</strong>
     </div>
-  </div>
-</div>
 
-<!-- SOLAR SYSTEM -->
-<div class="solar">
-  <div class="sun"></div>
-
-  <div class="orbit earth-orbit">
-    <div class="earth">
-      <div class="orbit moon-orbit">
-        <div class="moon"></div>
+    <div class="balance-row">
+      <div class="amount">$0.00</div>
+      <div class="actions">
+        <div class="action-btn">Withdraw</div>
+        <div class="action-btn">Deposit</div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- TASKS -->
-<div class="tasks">
-  <h3>Tasks</h3>
+  <!-- CONTENT -->
+  <div class="content">
 
-  <div class="task">
-    <div class="task-icon t1">1</div> Task 1
+    <div class="solar">
+      <div class="sun"></div>
+
+      <div class="earth-orbit">
+        <div class="earth">
+          <div class="moon-orbit">
+            <div class="moon"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tasks">
+      <h3>Tasks</h3>
+
+      <div class="task">
+        <div class="task-icon t1">1</div> Task 1
+      </div>
+
+      <div class="task">
+        <div class="task-icon t2">2</div> Task 2
+      </div>
+
+      <div class="task">
+        <div class="task-icon t3">3</div> Task 3
+      </div>
+    </div>
+
   </div>
 
-  <div class="task">
-    <div class="task-icon t2">2</div> Task 2
-  </div>
-
-  <div class="task">
-    <div class="task-icon t3">3</div> Task 3
-  </div>
-</div>
-
-<!-- NAV -->
-<div class="nav-wrap">
+  <!-- NAV -->
   <div class="nav">
     <div><span>🏠</span>Home</div>
     <div><span>📝</span>Tasks</div>
@@ -252,6 +265,7 @@ body{
     <div><span>👥</span>Referral</div>
     <div><span>⭐</span>VIP</div>
   </div>
+
 </div>
 
 </body>
