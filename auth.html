@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrimeInvest – Login</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #004cff, #9c27b0);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .card {
+      width: 90%;
+      max-width: 380px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.3);
+      animation: fade 0.6s ease;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .switch {
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      margin-bottom: 12px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #ffe600;
+      color: black;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background: #ffdb00;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+
+    <div class="title">PrimeInvest</div>
+
+    <div id="loginBox">
+      <div style="text-align:center; margin-bottom:10px;">Login</div>
+
+      <input id="loginEmail" type="email" placeholder="Email" />
+      <input id="loginPass" type="password" placeholder="Password" />
+
+      <button class="btn" id="loginBtn">Login</button>
+
+      <div class="switch">
+        Don’t have an account?
+        <span style="color:#ffe600; cursor:pointer;" id="showRegister">Register</span>
+      </div>
+    </div>
+
+    <div id="registerBox" class="hidden">
+
+      <div style="text-align:center; margin-bottom:10px;">Create Account</div>
+
+      <input id="regName" type="text" placeholder="Full Name" />
+      <input id="regEmail" type="email" placeholder="Email" />
+      <input id="regPass" type="password" placeholder="Password" />
+      <input id="regRef" type="text" placeholder="Referral Code (Optional)" />
+
+      <button class="btn" id="registerBtn">Register</button>
+
+      <div class="switch">
+        Already have an account?
+        <span style="color:#ffe600; cursor:pointer;" id="showLogin">Login</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { auth, db } from "./firebase.js";
+    import {
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    import {
+      doc, setDoc
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    // Switch views
+    const loginBox = document.getElementById("loginBox");
+    const registerBox = document.getElementById("registerBox");
+
+    document.getElementById("showRegister").onclick = () => {
+      loginBox.classList.add("hidden");
+      registerBox.classList.remove("hidden");
+    };
+
+    document.getElementById("showLogin").onclick = () => {
+      registerBox.classList.add("hidden");
+      loginBox.classList.remove("hidden");
+    };
+
+    // LOGIN
+    document.getElementById("loginBtn").onclick = async () => {
+      const email = loginEmail.value.trim();
+      const pass = loginPass.value.trim();
+
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        location.href = "index.html";
+      } catch (err) {
+        alert("Login failed: " + err.message);
+      }
+    };
+
+    // REGISTER
+    document.getElementById("registerBtn").onclick = async () => {
+      const name = regName.value.trim();
+      const email = regEmail.value.trim();
+      const pass = regPass.value.trim();
+      const ref = regRef.value.trim();
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+        const uid = userCredential.user.uid;
+
+        // Create Firestore user data
+        await setDoc(doc(db, "users", uid), {
+          name: name,
+          email: email,
+          balance: 0,
+          referral: ref || null,
+          vip: false,
+          createdAt: new Date().toISOString()
+        });
+
+        location.href = "index.html";
+
+      } catch (err) {
+        alert("Registration failed: " + err.message);
+      }
+    };
+  </script>
+
+</body>
+</html>
