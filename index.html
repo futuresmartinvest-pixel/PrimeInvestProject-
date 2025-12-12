@@ -3,37 +3,31 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- 🔒 ZOOM LOCK (CRITICAL) -->
+<!-- ✅ ZOOM DISABLED but SCROLL ENABLED -->
 <meta name="viewport"
 content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 
 <title>PrimeGlobalPro</title>
 
 <style>
-/* 🔒 EXTRA ZOOM & SCROLL LOCK */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  touch-action: manipulation;
-  overscroll-behavior: none;
-  -webkit-user-select: none;
-  user-select: none;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #5b2fc2;
+  color: #fff;
+
+  /* ✅ allow pull-to-refresh */
+  overscroll-behavior-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* COLORS */
 :root {
   --purple: #5b2fc2;
   --purple-card: #7351c9;
-  --white: #ffffff;
   --orange: #ff6f5c;
-}
-
-/* BODY */
-body {
-  background: var(--purple);
-  color: #fff;
 }
 
 /* HEADER */
@@ -159,18 +153,27 @@ body {
   font-weight: 600;
 }
 
-/* BOTTOM NAV */
-.nav {
+/* 🔥 INVISIBLE FLOATING NAV LAYER */
+.nav-wrapper {
   position: fixed;
-  bottom: 0;
+  bottom: 16px; /* 👈 moved UP */
   left: 0;
   right: 0;
-  background: #fff;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.nav {
+  width: calc(100% - 32px);
+  background: rgba(255,255,255,0.92); /* 👈 almost invisible */
+  backdrop-filter: blur(14px);
   display: flex;
   justify-content: space-around;
-  padding: 10px 0;
-  border-top-left-radius: 22px;
-  border-top-right-radius: 22px;
+  padding: 12px 0;
+  border-radius: 26px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  pointer-events: auto;
 }
 
 .nav-item {
@@ -182,6 +185,11 @@ body {
 .nav-item.active {
   color: var(--purple);
   font-weight: 700;
+}
+
+/* SPACE so content doesn't hide under nav */
+.spacer {
+  height: 120px;
 }
 </style>
 </head>
@@ -240,13 +248,17 @@ body {
   <div class="expense-amount">$3.00</div>
 </div>
 
-<!-- NAV -->
-<div class="nav">
-  <div class="nav-item active">Home</div>
-  <div class="nav-item">Tasks</div>
-  <div class="nav-item">Wallet</div>
-  <div class="nav-item">Referral</div>
-  <div class="nav-item">VIP</div>
+<div class="spacer"></div>
+
+<!-- FLOATING NAV -->
+<div class="nav-wrapper">
+  <div class="nav">
+    <div class="nav-item active">Home</div>
+    <div class="nav-item">Tasks</div>
+    <div class="nav-item">Wallet</div>
+    <div class="nav-item">Referral</div>
+    <div class="nav-item">VIP</div>
+  </div>
 </div>
 
 </body>
