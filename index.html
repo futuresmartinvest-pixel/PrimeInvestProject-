@@ -260,6 +260,124 @@ html, body {
     <div class="nav-item">VIP</div>
   </div>
 </div>
+<script>
+/* ===============================
+   GLOBAL STORAGE STRUCTURE
+   ===============================
 
+localStorage.balance = "0.00"
+
+localStorage.userVIP = {
+  1: {
+    price: 30,
+    rate: 2.33,
+    status: "pending" | "active",
+    start: timestamp,
+    lastProfit: timestamp
+  }
+}
+
+=============================== */
+
+/* ===== VIP CONFIG ===== */
+const VIP_PLANS = {
+  1:{price:30, rate:2.33},
+  2:{price:100, rate:3.33},
+  3:{price:499, rate:3.66},
+  4:{price:999, rate:3.99},
+  5:{price:4999, rate:4.33},
+  6:{price:9999, rate:4.99},
+  7:{price:49999, rate:6.99},
+  8:{price:99999, rate:7.33}
+};
+
+const DAY = 24 * 60 * 60 * 1000;
+
+/* ===== HELPERS ===== */
+function getBalance(){
+  return Number(localStorage.getItem("balance") || 0);
+}
+
+function setBalance(v){
+  localStorage.setItem("balance", Number(v).toFixed(2));
+}
+
+function getVIP(){
+  return JSON.parse(localStorage.getItem("userVIP") || "{}");
+}
+
+function setVIP(v){
+  localStorage.setItem("userVIP", JSON.stringify(v));
+}
+
+/* ===== USER CLICKS VIP ===== */
+window.requestVIP = function(vipId){
+  let vip = getVIP();
+  if(vip[vipId]) return alert("VIP already requested");
+
+  vip[vipId] = {
+    price: VIP_PLANS[vipId].price,
+    rate: VIP_PLANS[vipId].rate,
+    status: "pending",
+    start: 0,
+    lastProfit: 0
+  };
+
+  setVIP(vip);
+
+  window.open("https://t.me/SmartInvest202", "_blank");
+  alert("Send deposit screenshot to Telegram for approval");
+};
+
+/* ===== ADMIN ACTIVATES VIP (RUN IN CONSOLE) ===== */
+window.adminApproveVIP = function(vipId){
+  let vip = getVIP();
+  if(!vip[vipId] || vip[vipId].status !== "pending"){
+    console.log("No pending VIP");
+    return;
+  }
+
+  vip[vipId].status = "active";
+  vip[vipId].start = Date.now();
+  vip[vipId].lastProfit = Date.now();
+
+  setVIP(vip);
+  console.log("VIP ACTIVATED", vip[vipId]);
+};
+
+/* ===== DAILY PROFIT ENGINE ===== */
+function applyDailyProfit(){
+  let vip = getVIP();
+  let balance = getBalance();
+  let now = Date.now();
+  let changed = false;
+
+  Object.values(vip).forEach(v=>{
+    if(v.status !== "active") return;
+
+    let days = Math.floor((now - v.lastProfit) / DAY);
+    if(days <= 0) return;
+
+    let dailyProfit = (v.price * v.rate / 100);
+    balance += dailyProfit * days;
+    v.lastProfit += days * DAY;
+    changed = true;
+  });
+
+  if(changed){
+    setBalance(balance);
+    setVIP(vip);
+  }
+}
+
+/* ===== WITHDRAW LOCK ===== */
+window.canWithdraw = function(){
+  let vip = getVIP();
+  return Object.values(vip).some(v=>v.status === "active");
+};
+
+/* ===== AUTO RUN ===== */
+applyDailyProfit();
+</script>
 </body>
 </html>
