@@ -8,7 +8,7 @@
 <style>
 body{
   margin:0;
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background:#f5f5f5;
 }
 
@@ -17,6 +17,7 @@ body{
   padding:20px;
   font-size:22px;
   font-weight:700;
+  text-align:center;
 }
 
 .container{
@@ -50,10 +51,12 @@ body{
   width:100%;
   border-radius:12px;
   font-size:16px;
+  cursor:pointer;
 }
 
 .vip-btn:disabled{
   background:#999;
+  cursor:not-allowed;
 }
 
 .back{
@@ -73,6 +76,7 @@ body{
 <div class="container" id="vipList"></div>
 
 <script>
+/* ===== VIP PLANS ===== */
 const vipPlans = [
  {id:1, price:30, rate:2.33},
  {id:2, price:100, rate:3.33},
@@ -84,30 +88,45 @@ const vipPlans = [
  {id:8, price:99999, rate:7.33},
 ];
 
+/* ===== LOCAL USER DATA ===== */
+const userId = localStorage.getItem("userId") || "UNKNOWN";
 const userVIP = JSON.parse(localStorage.getItem("userVIP")) || {};
 
 const vipList = document.getElementById("vipList");
 
+/* ===== RENDER VIPS ===== */
 vipPlans.forEach(vip=>{
-  const active = userVIP[vip.id];
+  const status = userVIP[vip.id]; // undefined | pending | active
 
   const div = document.createElement("div");
-  div.className="vip-card";
+  div.className = "vip-card";
 
   div.innerHTML = `
     <div class="vip-title">VIP ${vip.id}</div>
     <div class="vip-info">Price: $${vip.price}</div>
-    <div class="vip-info">Daily Rate: ${vip.rate}%</div>
-    <button class="vip-btn" ${active?"disabled":""}>
-      ${active ? "Activated" : "Activate VIP"}
+    <div class="vip-info">Daily Profit: ${vip.rate}%</div>
+    <button class="vip-btn" ${status ? "disabled" : ""}>
+      ${status === "active" ? "Activated" : status === "pending" ? "Pending Approval" : "Activate VIP"}
     </button>
   `;
 
-  if(!active){
+  if(!status){
     div.querySelector("button").onclick = ()=>{
+      const message =
+        "VIP REQUEST\n\n" +
+        "VIP Level: VIP " + vip.id + "\n" +
+        "Amount: $" + vip.price + "\n" +
+        "Daily Profit: " + vip.rate + "%\n" +
+        "User ID: " + userId + "\n\n" +
+        "Please send deposit screenshot below 👇";
+
+      const telegramUrl =
+        "https://t.me/SmartInvest202?text=" + encodeURIComponent(message);
+
       userVIP[vip.id] = "pending";
       localStorage.setItem("userVIP", JSON.stringify(userVIP));
-      alert("VIP request sent. Please complete deposit and wait for admin approval.");
+
+      window.open(telegramUrl, "_blank");
       location.reload();
     };
   }
