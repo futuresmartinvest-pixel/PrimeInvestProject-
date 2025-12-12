@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>PrimeGlobalPro – Home</title>
 
 <style>
 :root{
   --purple:#5b2bbd;
-  --purple-dark:#4a21a8;
+  --purple-soft:#6f49c9;
   --card:#ffffff22;
-  --orange:#ff8a65;
+  --orange:#ff7043;
   --text:#ffffff;
   --muted:#d1c4e9;
 }
@@ -22,10 +22,10 @@ body{
   font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   background:var(--purple);
   color:var(--text);
-  padding-bottom:90px;
+  padding-bottom:80px;
 }
 
-/* ===== TOP ===== */
+/* TOP */
 .top{
   padding:22px;
   display:flex;
@@ -36,24 +36,22 @@ body{
 .user{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:12px;
 }
 
 .avatar{
-  width:36px;
-  height:36px;
+  width:42px;
+  height:42px;
   border-radius:50%;
   background:linear-gradient(135deg,#ff9800,#ff5722);
 }
 
-.menu{
-  font-size:26px;
-}
+.menu{font-size:26px}
 
-/* ===== BALANCE CARD ===== */
+/* BALANCE CARD */
 .balance-card{
   margin:0 18px;
-  background:var(--card);
+  background:var(--purple-soft);
   border-radius:20px;
   padding:20px;
 }
@@ -70,7 +68,7 @@ body{
 }
 
 .balance-amount{
-  font-size:32px;
+  font-size:34px;
   font-weight:700;
 }
 
@@ -82,31 +80,31 @@ body{
 
 .balance-btn{
   background:#ffffff33;
-  border-radius:10px;
-  padding:8px 14px;
-  font-size:13px;
+  border-radius:12px;
+  padding:10px 16px;
+  font-size:14px;
+  text-align:center;
 }
 
-/* ===== BANK CARD ===== */
+/* BANK CARD */
 .bank-card{
   margin:20px 18px;
   height:170px;
-  border-radius:22px;
+  border-radius:24px;
   background:linear-gradient(135deg,#ff7043,#ff5252);
   padding:20px;
-  position:relative;
 }
 
 .bank-chip{
-  width:42px;
-  height:32px;
+  width:46px;
+  height:34px;
   background:#fff;
-  border-radius:6px;
-  opacity:.85;
+  border-radius:8px;
+  opacity:.9;
 }
 
 .bank-number{
-  margin-top:30px;
+  margin-top:32px;
   letter-spacing:3px;
   font-size:18px;
 }
@@ -116,33 +114,33 @@ body{
   opacity:.9;
 }
 
-/* ===== EXPENSES ===== */
+/* TASKS */
 .section{
   margin:20px 18px;
 }
 
 .section-title{
   font-size:15px;
-  margin-bottom:10px;
-}
-
-.expense{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
   margin-bottom:14px;
 }
 
-.exp-left{
+.task{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+}
+
+.task-left{
   display:flex;
   align-items:center;
   gap:12px;
 }
 
-.exp-icon{
-  width:40px;
-  height:40px;
-  border-radius:12px;
+.task-icon{
+  width:42px;
+  height:42px;
+  border-radius:14px;
   background:#ffffff33;
   display:flex;
   align-items:center;
@@ -150,21 +148,13 @@ body{
   font-weight:700;
 }
 
-.exp-name{
-  font-size:14px;
-}
-
-.exp-amount{
-  font-weight:600;
-}
-
-/* ===== BOTTOM NAV ===== */
+/* BOTTOM NAV – NO WHITE BAR */
 .nav{
   position:fixed;
   bottom:0;
   left:0;
   right:0;
-  background:#fff;
+  background:transparent;
   display:flex;
   justify-content:space-around;
   padding:10px 0 14px;
@@ -173,11 +163,11 @@ body{
 .nav-item{
   text-align:center;
   font-size:12px;
-  color:#6b7280;
+  color:#d1c4e9;
 }
 
 .nav-item.active{
-  color:#5b2bbd;
+  color:#fff;
   font-weight:600;
 }
 
@@ -194,7 +184,7 @@ body{
 <div class="top">
   <div class="user">
     <div class="avatar"></div>
-    <div id="username">User name</div>
+    <div id="username">Alex</div>
   </div>
   <div class="menu">≡</div>
 </div>
@@ -206,7 +196,7 @@ body{
     <div class="balance-amount" id="balance">$0.00</div>
     <div class="balance-actions">
       <div class="balance-btn">Withdraw</div>
-      <div class="balance-btn">Send</div>
+      <div class="balance-btn">Deposit</div>
     </div>
   </div>
 </div>
@@ -218,32 +208,29 @@ body{
   <div class="bank-holder">Card Holder</div>
 </div>
 
-<!-- EXPENSES -->
+<!-- TASKS -->
 <div class="section">
-  <div class="section-title">This month expenses</div>
+  <div class="section-title">Tasks</div>
 
-  <div class="expense">
-    <div class="exp-left">
-      <div class="exp-icon">S</div>
-      <div class="exp-name">Shopping</div>
+  <div class="task">
+    <div class="task-left">
+      <div class="task-icon">1</div>
+      <div>Task 1</div>
     </div>
-    <div class="exp-amount">$8.00</div>
   </div>
 
-  <div class="expense">
-    <div class="exp-left">
-      <div class="exp-icon">M</div>
-      <div class="exp-name">Movies</div>
+  <div class="task">
+    <div class="task-left">
+      <div class="task-icon">2</div>
+      <div>Task 2</div>
     </div>
-    <div class="exp-amount">$1.00</div>
   </div>
 
-  <div class="expense">
-    <div class="exp-left">
-      <div class="exp-icon">F</div>
-      <div class="exp-name">Food</div>
+  <div class="task">
+    <div class="task-left">
+      <div class="task-icon">3</div>
+      <div>Task 3</div>
     </div>
-    <div class="exp-amount">$3.00</div>
   </div>
 </div>
 
@@ -255,29 +242,6 @@ body{
   <div class="nav-item"><span class="nav-icon">👥</span>Referral</div>
   <div class="nav-item"><span class="nav-icon">⭐</span>VIP</div>
 </div>
-
-<!-- FIREBASE -->
-<script type="module">
-import { auth, db } from "./firebase.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-const balanceEl = document.getElementById("balance");
-const userEl = document.getElementById("username");
-
-onAuthStateChanged(auth, async(user)=>{
-  if(!user){
-    location.href="auth.html";
-    return;
-  }
-  const snap = await getDoc(doc(db,"users",user.uid));
-  if(!snap.exists()) return;
-
-  const data = snap.data();
-  balanceEl.textContent = "$" + (data.balance||0).toFixed(2);
-  userEl.textContent = data.name || "User name";
-});
-</script>
 
 </body>
 </html>
