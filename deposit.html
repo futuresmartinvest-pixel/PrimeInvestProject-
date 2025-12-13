@@ -2,12 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <title>VIP Deposit</title>
 
@@ -22,7 +21,6 @@ body{
   justify-content:center;
   align-items:center;
 }
-
 .card{
   background:rgba(255,255,255,.12);
   border:1px solid rgba(255,255,255,.25);
@@ -33,7 +31,6 @@ body{
   max-width:360px;
   text-align:center;
 }
-
 button{
   margin-top:18px;
   width:100%;
@@ -44,14 +41,6 @@ button{
   font-weight:900;
   background:linear-gradient(135deg,#22c55e,#16a34a);
   color:#000;
-  cursor:pointer;
-}
-button:disabled{
-  opacity:.6;
-}
-.small{
-  opacity:.8;
-  font-size:13px;
 }
 </style>
 </head>
@@ -59,9 +48,9 @@ button:disabled{
 <body>
 
 <div class="card">
-  <h2 id="title">VIP</h2>
+  <h2 id="title"></h2>
   <p id="price"></p>
-  <p class="small">Your request will be sent for admin approval.</p>
+  <p style="opacity:.8;font-size:13px">Request will be reviewed by admin</p>
   <button id="sendBtn">Send VIP Request</button>
 </div>
 
@@ -72,10 +61,11 @@ import {
   doc,
   getDoc,
   setDoc,
+  addDoc,
+  collection,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
   authDomain: "primeinvestproject2.firebaseapp.com",
@@ -88,62 +78,55 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* SAFE USER ID */
-function getUserId(){
-  let id = localStorage.getItem("userId");
-  if(!id){
-    alert("User not found");
-    throw new Error("No userId");
-  }
-  return id;
+const userId = localStorage.getItem("userId");
+if(!userId){
+  alert("User not found");
+  location.href = "vip.html";
 }
-const userId = getUserId();
 
-/* READ & VALIDATE URL PARAMS */
 const params = new URLSearchParams(location.search);
 const vipLevel = Number(params.get("vip"));
 const price = Number(params.get("price"));
 
-/* HARD VALIDATION (ANTI-TAMPER) */
-const VALID_VIPS = {
-  1:30, 2:100, 3:499, 4:999,
-  5:4999, 6:9999, 7:49999, 8:99999
+const VALID = {
+  1:30,2:100,3:499,4:999,5:4999,6:9999,7:49999,8:99999
 };
-
-if(!VALID_VIPS[vipLevel] || VALID_VIPS[vipLevel] !== price){
-  alert("Invalid VIP request");
+if(VALID[vipLevel] !== price){
+  alert("Invalid request");
   location.href = "vip.html";
 }
 
-/* UI */
 document.getElementById("title").textContent = `VIP ${vipLevel}`;
 document.getElementById("price").textContent = `Price: $${price}`;
 
-/* SUBMIT REQUEST */
-const btn = document.getElementById("sendBtn");
-
-btn.onclick = async ()=>{
-  btn.disabled = true;
-
-  /* Prevent duplicate pending requests */
+document.getElementById("sendBtn").onclick = async ()=>{
   const reqRef = doc(db,"vip_requests",`${userId}_vip_${vipLevel}`);
   const snap = await getDoc(reqRef);
 
   if(snap.exists() && snap.data().status === "pending"){
-    alert("You already have a pending request");
-    btn.disabled = false;
+    alert("Already pending");
     return;
   }
 
   await setDoc(reqRef,{
-    userId: userId,
-    vipLevel: vipLevel,
-    price: price,
-    status: "pending",
-    createdAt: serverTimestamp()
+    userId,
+    vipLevel,
+    price,
+    status:"pending",
+    createdAt:serverTimestamp()
   });
 
-  alert("VIP request sent. Await admin approval.");
+  /* AUDIT LOG */
+  await addDoc(collection(db,"audit_logs"),{
+    type:"VIP_REQUEST",
+    userId,
+    vipLevel,
+    price,
+    actor:"user",
+    createdAt:serverTimestamp()
+  });
+
+  alert("Request sent");
   location.href = "index.html";
 };
 </script>
