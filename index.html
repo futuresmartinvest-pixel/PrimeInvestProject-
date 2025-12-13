@@ -1,194 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
 <title>PrimeGlobalPro</title>
 
 <style>
 :root{
   --glass-bg: rgba(255,255,255,0.12);
   --glass-border: rgba(255,255,255,0.25);
-  --glow-cyan: #00f6ff;
-  --glow-violet: #9b7cff;
-  --text-main: #ffffff;
-  --text-muted: rgba(255,255,255,0.7);
+  --glow: 0 0 30px rgba(120,200,255,0.35);
 }
 
 *{box-sizing:border-box}
 
 body{
   margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
   min-height:100vh;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color:var(--text-main);
   background:
-    radial-gradient(circle at 20% 20%, #6b5cff, transparent 40%),
-    radial-gradient(circle at 80% 30%, #00eaff, transparent 45%),
-    radial-gradient(circle at 50% 80%, #ff7ad9, transparent 45%),
-    #05070c;
+    radial-gradient(circle at 20% 20%, #7f5cff55, transparent 40%),
+    radial-gradient(circle at 80% 70%, #00e5ff55, transparent 40%),
+    linear-gradient(180deg,#05070f,#0a0f24);
+  color:#fff;
   overflow-x:hidden;
 }
 
-/* GLASS BASE */
+/* GLASS CARD */
 .glass{
   background:var(--glass-bg);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border:1px solid var(--glass-border);
-  border-radius:24px;
+  border-radius:22px;
+  box-shadow:var(--glow);
 }
 
-/* BANK CARD */
-.card-wrap{
-  padding:20px;
-  display:flex;
-  justify-content:center;
-}
-
-.bank-card{
-  width:100%;
+/* TOP CARD */
+.balance-card{
+  margin:20px auto 10px;
+  width:92%;
   max-width:420px;
-  padding:22px;
-  position:relative;
-  box-shadow:0 0 40px rgba(0,255,255,.25);
-}
-
-.card-balance{
+  padding:20px;
   text-align:center;
-  font-size:38px;
-  font-weight:800;
 }
-
-.card-label{
-  text-align:center;
+.balance-card h2{
+  margin:0;
   font-size:14px;
   opacity:.8;
 }
-
+.balance{
+  font-size:42px;
+  font-weight:800;
+  margin:6px 0;
+}
 .vip-badge{
-  position:absolute;
-  top:14px;
-  right:14px;
-  padding:6px 12px;
+  font-size:13px;
+  padding:4px 12px;
   border-radius:999px;
-  font-size:12px;
-  background:linear-gradient(135deg,var(--glow-cyan),var(--glow-violet));
-  color:#000;
-  font-weight:700;
+  display:inline-block;
+  background:rgba(255,255,255,0.2);
 }
 
 /* ENERGY CORE */
 .core-wrap{
-  margin:30px 0 110px;
   display:flex;
   justify-content:center;
+  margin:30px 0;
 }
-
 .energy-core{
-  width:200px;
-  height:200px;
+  width:180px;
+  height:180px;
   border-radius:50%;
   background:
-    radial-gradient(circle at center, rgba(255,255,255,.9), rgba(255,255,255,.1) 45%, transparent 70%),
-    radial-gradient(circle at 30% 30%, var(--glow-cyan), transparent 60%),
-    radial-gradient(circle at 70% 70%, var(--glow-violet), transparent 60%);
-  box-shadow:
-    0 0 40px rgba(0,255,255,.6),
-    inset 0 0 30px rgba(255,255,255,.35);
+    radial-gradient(circle at 30% 30%, #aafcff, transparent 35%),
+    radial-gradient(circle at 70% 70%, #7b61ff, transparent 40%),
+    rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,.35);
+  backdrop-filter: blur(14px);
+  box-shadow:0 0 60px rgba(120,200,255,.6);
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
   transition:transform .08s ease;
 }
-
 .energy-core:active{
   transform:scale(.96);
 }
+.energy-core span{
+  font-size:18px;
+  opacity:.85;
+}
 
-.tap-info{
+/* SCORE */
+.score{
   text-align:center;
-  margin-top:14px;
-  font-size:14px;
-  color:var(--text-muted);
+  font-size:18px;
+  margin-top:10px;
+  opacity:.9;
 }
 
-/* NAV BAR */
-.nav-wrap{
-  position:fixed;
-  bottom:18px;
-  left:0;
-  right:0;
-  display:flex;
-  justify-content:center;
-}
-
+/* BOTTOM NAV */
 .nav{
-  width:calc(100% - 32px);
+  position:fixed;
+  bottom:14px;
+  left:50%;
+  transform:translateX(-50%);
+  width:92%;
   max-width:420px;
-  padding:14px 0;
+  padding:12px;
   display:flex;
   justify-content:space-around;
 }
-
-.nav .glass{
-  display:flex;
-  justify-content:space-around;
-  width:100%;
-}
-
 .nav button{
   background:none;
   border:none;
-  color:white;
+  color:#fff;
   font-size:22px;
   opacity:.6;
 }
-
 .nav button.active{
   opacity:1;
-  text-shadow:0 0 12px var(--glow-cyan);
+  text-shadow:0 0 12px #7cf;
 }
+
+.spacer{height:120px}
 </style>
 </head>
 
 <body>
 
-<!-- BANK CARD -->
-<div class="card-wrap">
-  <div class="bank-card glass">
-    <div class="vip-badge" id="vipBadge">VIP 0</div>
-    <div class="card-label">Balance</div>
-    <div class="card-balance" id="balance">$0.00</div>
-  </div>
+<!-- BALANCE CARD -->
+<div class="glass balance-card">
+  <h2>Balance</h2>
+  <div class="balance">$0.00</div>
+  <div class="vip-badge" id="vipBadge">VIP: None</div>
 </div>
 
 <!-- ENERGY CORE -->
 <div class="core-wrap">
-  <div>
-    <div class="energy-core" id="tapCore"></div>
-    <div class="tap-info" id="tapInfo">Tap to generate score</div>
+  <div class="energy-core" id="tapCore">
+    <span>TAP</span>
   </div>
 </div>
+
+<div class="score">
+  Score: <b id="score">0</b>
+</div>
+
+<div class="spacer"></div>
 
 <!-- NAV -->
-<div class="nav-wrap">
-  <div class="nav glass">
-    <button class="active">🏠</button>
-    <button onclick="location.href='tasks.html'">📋</button>
-    <button onclick="location.href='wallet.html'">💳</button>
-    <button onclick="location.href='referral.html'">🔗</button>
-    <button onclick="location.href='vip.html'">💎</button>
-  </div>
+<div class="glass nav">
+  <button class="active">🏠</button>
+  <button onclick="location.href='tasks.html'">📋</button>
+  <button onclick="location.href='wallet.html'">💳</button>
+  <button onclick="location.href='referral.html'">🔗</button>
+  <button onclick="location.href='vip.html'">👑</button>
 </div>
 
-<!-- FIREBASE + LOGIC -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } 
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+/* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
   authDomain: "primeinvestproject2.firebaseapp.com",
@@ -201,83 +181,78 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const SCORE_TO_USD = 10000000;
-const DAILY_LIMIT_FREE = 500000;
-
-const MULTI = {
-  0:1,1:5,2:10,3:20,4:40,5:80,6:800,7:8000,8:80000
-};
-
+/* USER */
 function uid(){
-  let id = localStorage.getItem("uid");
-  if(!id){
-    id = "user_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
-    localStorage.setItem("uid",id);
+  let u=localStorage.getItem("uid");
+  if(!u){
+    u="user_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+    localStorage.setItem("uid",u);
   }
-  return id;
+  return u;
 }
-
 const userRef = doc(db,"users",uid());
 
+/* TAP CONFIG */
+const SCORE_TO_DOLLAR = 10000000;
+const MULTIPLIERS = {
+  0:1, 1:5, 2:10, 3:20, 4:40, 5:80, 6:800, 7:8000, 8:80000
+};
+const DAILY_LIMIT = 500000;
+
+/* STATE */
+let state = {score:0, tapsToday:0, vipLevel:0, balance:0};
+
+/* INIT */
 async function init(){
   const snap = await getDoc(userRef);
   if(!snap.exists()){
     await setDoc(userRef,{
-      balance:0,
-      score:0,
-      tapsToday:0,
-      lastTapReset:Date.now(),
-      vip:{level:0},
-      createdAt:serverTimestamp()
+      balance:0, score:0, tapsToday:0, vipLevel:0,
+      lastTapReset:serverTimestamp()
     });
   }
+  await refresh();
 }
 
-function resetDaily(user){
-  if(Date.now() - (user.lastTapReset||0) > 86400000){
-    return { tapsToday:0, lastTapReset:Date.now() };
-  }
-  return {};
-}
-
-async function refreshUI(){
+/* REFRESH */
+async function refresh(){
   const snap = await getDoc(userRef);
-  const u = snap.data();
-  document.getElementById("balance").innerText = "$"+(u.balance||0).toFixed(2);
-  document.getElementById("vipBadge").innerText = "VIP "+(u.vip?.level||0);
+  if(!snap.exists()) return;
+  state = snap.data();
+
+  document.querySelector(".balance").innerText =
+    "$"+(state.balance||0).toFixed(2);
+  document.getElementById("score").innerText = state.score||0;
+  document.getElementById("vipBadge").innerText =
+    "VIP: "+(state.vipLevel||"None");
 }
 
+/* TAP */
 document.getElementById("tapCore").onclick = async ()=>{
   const snap = await getDoc(userRef);
   const u = snap.data();
-  const vip = u.vip?.level||0;
-  const multi = MULTI[vip];
-  const dailyLimit = vip===0 ? DAILY_LIMIT_FREE : Infinity;
 
-  if(u.tapsToday >= dailyLimit) return;
-
-  const gained = multi;
-  let score = (u.score||0)+gained;
-  let balance = u.balance||0;
-
-  if(score >= SCORE_TO_USD){
-    const usd = Math.floor(score/SCORE_TO_USD);
-    balance += usd;
-    score = score % SCORE_TO_USD;
+  if(u.vipLevel==0 && u.tapsToday>=DAILY_LIMIT){
+    alert("Daily limit reached");
+    return;
   }
 
+  const gain = MULTIPLIERS[u.vipLevel||0];
+  const newScore = (u.score||0)+gain;
+  const newBalance =
+    Math.floor(newScore/SCORE_TO_DOLLAR) -
+    Math.floor((u.score||0)/SCORE_TO_DOLLAR);
+
   await updateDoc(userRef,{
-    ...resetDaily(u),
-    score,
-    balance,
-    tapsToday:(u.tapsToday||0)+1
+    score:newScore,
+    tapsToday:(u.tapsToday||0)+1,
+    balance:(u.balance||0)+newBalance
   });
 
-  refreshUI();
+  refresh();
 };
 
-await init();
-await refreshUI();
+init();
 </script>
 
 </body>
