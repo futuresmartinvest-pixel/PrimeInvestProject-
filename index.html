@@ -244,7 +244,8 @@ function refresh(){
 
 tapBtn.onclick = ()=>{
   if(!authReady){
-    return; // wait until Firebase auth finishes
+    alert("Auth loading, please wait");
+    return;
   }
 
   if(!state.loggedIn){
@@ -252,12 +253,12 @@ tapBtn.onclick = ()=>{
     return;
   }
 
-  if(state.day !== todayKey()){
-    state.day = todayKey();
-    state.tapsToday = 0;
+  if(state.day!==todayKey()){
+    state.day=todayKey();
+    state.tapsToday=0;
   }
 
-  if(!state.vip && state.tapsToday >= NONVIP_DAILY_LIMIT){
+  if(!state.vip && state.tapsToday>=NONVIP_DAILY_LIMIT){
     alert("Daily limit reached");
     return;
   }
