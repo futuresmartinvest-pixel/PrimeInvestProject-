@@ -244,13 +244,12 @@ function refresh(){
 
   tapBtn.onclick = () => {
 
-  // 1️⃣ Auth not ready yet
+  // 1️⃣ Wait until Firebase auth finishes
   if (!authReady) {
-    alert("Auth loading, please wait");
-    return;
+    return; // silently wait, NO alert
   }
 
-  // 2️⃣ User not logged in
+  // 2️⃣ User not logged in → go to login page
   if (!state.loggedIn) {
     location.href = "auth.html";
     return;
