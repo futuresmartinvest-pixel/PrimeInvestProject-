@@ -72,12 +72,29 @@ h2{text-align:center;margin:0 0 14px}
     <div class="stat"><span>Referral Earnings</span><span id="refEarnings">$0.00</span></div>
   </div>
 
+  <!-- ✅ ADDED -->
+  <div class="glass">
+    <h2>Invited Users</h2>
+    <div id="refList"></div>
+  </div>
+  <!-- ✅ ADDED -->
+
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+  getFirestore, 
+  doc, 
+  getDoc, 
+  updateDoc,
+  collection,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+/* ✅ ADDED IMPORTS */
 
 const firebaseConfig = {
   apiKey: "AIzaSyA1HZLZRY9UADNVBnoBIlG3b-bCkojxs",
@@ -120,6 +137,30 @@ onAuthStateChanged(auth, async user=>{
   document.getElementById("refCode").textContent = data.referralCode;
   document.getElementById("refCount").textContent = data.referralCount || 0;
   document.getElementById("refEarnings").textContent = "$"+(data.referralEarnings||0).toFixed(2);
+
+  /* ✅ ADDED */
+  const list = document.getElementById("refList");
+  list.innerHTML = "";
+
+  const q = query(
+    collection(db,"referrals"),
+    where("inviterUid","==",user.uid)
+  );
+
+  const snapRefs = await getDocs(q);
+
+  if(snapRefs.empty){
+    list.innerHTML = "<div style='opacity:.7'>No referrals yet</div>";
+  }else{
+    snapRefs.forEach(d=>{
+      const r = d.data();
+      const row = document.createElement("div");
+      row.className = "stat";
+      row.innerHTML = `<span>${r.invitedEmail}</span><span>+1%</span>`;
+      list.appendChild(row);
+    });
+  }
+  /* ✅ ADDED */
 });
 
 window.copyLink = ()=>{
