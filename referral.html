@@ -1,157 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Referral Program – PrimeInvest</title>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0a0a0a, #2a2a2a);
-      color: white;
-      padding: 20px;
-    }
+<title>Referral Program</title>
 
-    .card {
-      background: rgba(255,255,255,0.08);
-      border-radius: 18px;
-      padding: 25px;
-      margin-top: 20px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 4px 25px rgba(0,0,0,0.5);
-      animation: fade 0.6s ease-out;
-    }
+<style>
+*{box-sizing:border-box}
 
-    @keyframes fade {
-      from {opacity:0; transform: translateY(20px);}
-      to {opacity:1; transform: translateY(0);}
-    }
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 20% 20%, #7f5cff55, transparent 40%),
+    radial-gradient(circle at 80% 70%, #00e5ff55, transparent 40%),
+    linear-gradient(180deg,#05070f,#0a0f24);
+  color:#fff;
+}
 
-    .title {
-      text-align: center;
-      font-size: 30px;
-      font-weight: bold;
-      background: linear-gradient(90deg, #FFD700, #FFB700);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+/* GLASS */
+.glass{
+  background:rgba(255,255,255,0.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius:22px;
+  box-shadow:0 0 25px rgba(120,200,255,0.35);
+}
 
-    .ref-box {
-      margin-top: 20px;
-      font-size: 20px;
-      padding: 12px;
-      background: rgba(255,255,255,0.12);
-      border-radius: 10px;
-      text-align: center;
-    }
+/* HEADER */
+h1{
+  text-align:center;
+  margin:20px 0 16px;
+  font-weight:800;
+}
 
-    .gold {
-      background: linear-gradient(135deg, #FFD700, #FFB700);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: bold;
-    }
+/* CONTAINER */
+.container{
+  max-width:420px;
+  margin:auto;
+  padding:16px;
+}
 
-    .copy-btn {
-      width: 100%;
-      padding: 12px;
-      background: #FFD700;
-      color: black;
-      border: none;
-      border-radius: 10px;
-      margin-top: 15px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 0 15px rgba(255,215,0,0.5);
-      animation: glow 2s infinite alternate;
-    }
+/* BLOCK */
+.block{
+  padding:18px;
+  margin-bottom:16px;
+}
 
-    @keyframes glow {
-      from { box-shadow: 0 0 12px rgba(255,215,0,0.4); }
-      to { box-shadow: 0 0 22px rgba(255,215,0,1); }
-    }
+.label{
+  font-size:14px;
+  opacity:.8;
+  margin-bottom:6px;
+}
 
-    .back-btn {
-      display: block;
-      margin-top: 20px;
-      text-align: center;
-      color: white;
-      text-decoration: none;
-      opacity: 0.8;
-      font-size: 18px;
-    }
-  </style>
+.value{
+  font-size:18px;
+  font-weight:700;
+  word-break:break-all;
+}
+
+/* INPUT LOOK */
+.fake-input{
+  background:rgba(0,0,0,.35);
+  padding:12px;
+  border-radius:14px;
+  margin-top:6px;
+}
+
+/* BUTTON */
+button{
+  width:100%;
+  margin-top:12px;
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  font-weight:900;
+  font-size:16px;
+  background:linear-gradient(135deg,#ffd36e,#ffb700);
+  color:#000;
+  cursor:pointer;
+}
+
+/* STATS */
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:10px;
+}
+
+.stat{
+  padding:14px;
+  text-align:center;
+}
+
+.stat b{
+  display:block;
+  font-size:22px;
+  margin-top:4px;
+}
+
+.back{
+  text-align:center;
+  margin-top:16px;
+  opacity:.7;
+  cursor:pointer;
+}
+</style>
 </head>
 
 <body>
 
-  <h1 class="title">Referral Program</h1>
+<h1>Referral Program</h1>
 
-  <div class="card">
-    <h2>Your Referral Code:</h2>
-    <div id="refCodeBox" class="ref-box gold">Loading…</div>
+<div class="container">
 
-    <h2 style="margin-top: 25px;">Your Referral Link:</h2>
-    <div id="refLinkBox" class="ref-box">Loading…</div>
+  <div class="glass block">
+    <div class="label">Your Referral Code</div>
+    <div class="fake-input value" id="refCode">Loading...</div>
 
-    <button class="copy-btn" id="copyBtn">COPY LINK</button>
+    <div class="label" style="margin-top:14px">Your Referral Link</div>
+    <div class="fake-input value" id="refLink">Loading...</div>
 
-    <h2 style="margin-top: 30px;">Your Stats:</h2>
-
-    <div class="ref-box">
-      Referred Users: <span id="refCount" class="gold">0</span>
-    </div>
-
-    <div class="ref-box">
-      Total Earnings: $<span id="refEarn" class="gold">0.00</span>
-    </div>
-
-    <a href="index.html" class="back-btn">⬅ Back to Home</a>
+    <button onclick="copyLink()">COPY LINK</button>
   </div>
 
-  <script type="module">
-    import { auth, db } from "./firebase.js";
-    import { onAuthStateChanged }
-      from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { doc, getDoc }
-      from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+  <div class="glass block">
+    <div class="label">Your Stats</div>
+    <div class="stats">
+      <div class="glass stat">
+        Referred
+        <b id="refCount">0</b>
+      </div>
+      <div class="glass stat">
+        Earnings
+        <b id="refEarning">$0.00</b>
+      </div>
+    </div>
+  </div>
 
-    const refCodeBox = document.getElementById("refCodeBox");
-    const refLinkBox = document.getElementById("refLinkBox");
-    const refCount = document.getElementById("refCount");
-    const refEarn = document.getElementById("refEarn");
-    const copyBtn = document.getElementById("copyBtn");
+  <div class="back" onclick="location.href='index.html'">
+    ← Back to Home
+  </div>
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        location.href = "auth.html";
-        return;
-      }
+</div>
 
-      const snap = await getDoc(doc(db, "users", user.uid));
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-      if (!snap.exists()) return;
+/* FIREBASE */
+const firebaseConfig = {
+  apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
+  authDomain: "primeinvestproject2.firebaseapp.com",
+  projectId: "primeinvestproject2",
+  storageBucket: "primeinvestproject2.firebasestorage.app",
+  messagingSenderId: "798977477628",
+  appId: "1:798977477628:web:c97d1fba72ad7865864079"
+};
 
-      const data = snap.data();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-      const code = data.referralCode || user.uid.substring(0, 6).toUpperCase();
-      const link = `https://futuresmartinvest-pixel.github.io/PrimeInvestProject/?ref=${code}`;
+/* USER ID */
+function uid(){
+  let id = localStorage.getItem("userId");
+  if(!id){
+    id = "user_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+    localStorage.setItem("userId",id);
+  }
+  return id;
+}
 
-      refCodeBox.textContent = code;
-      refLinkBox.textContent = link;
+const userRef = doc(db,"users",uid());
 
-      refCount.textContent = data.referredUsers?.length || 0;
-      refEarn.textContent = (data.referralEarnings || 0).toFixed(2);
+async function load(){
+  const snap = await getDoc(userRef);
 
-      copyBtn.onclick = () => {
-        navigator.clipboard.writeText(link);
-        alert("Referral link copied!");
-      };
+  if(!snap.exists()){
+    await setDoc(userRef,{
+      referralCode: uid().slice(-6).toUpperCase(),
+      referred:0,
+      referralEarning:0,
+      createdAt:serverTimestamp()
     });
-  </script>
+  }
+
+  const data = (await getDoc(userRef)).data();
+
+  const code = data.referralCode;
+  const link = location.origin + "/index.html?ref=" + code;
+
+  document.getElementById("refCode").innerText = code;
+  document.getElementById("refLink").innerText = link;
+  document.getElementById("refCount").innerText = data.referred || 0;
+  document.getElementById("refEarning").innerText =
+    "$"+Number(data.referralEarning||0).toFixed(2);
+}
+
+window.copyLink = ()=>{
+  navigator.clipboard.writeText(document.getElementById("refLink").innerText);
+  alert("Referral link copied");
+};
+
+load();
+</script>
 
 </body>
 </html>
