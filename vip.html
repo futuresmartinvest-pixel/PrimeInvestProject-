@@ -2,6 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+
+<!-- IMPORTANT: prevent mobile cache bug -->
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
 <meta name="viewport"
 content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -57,22 +63,8 @@ h1{
   min-height:180px;
 }
 
-.vip-title{
-  font-size:18px;
-  font-weight:800;
-}
-.vip-price{
-  font-size:26px;
-  font-weight:900;
-  margin:6px 0;
-}
-.vip-power{
-  font-size:14px;
-  opacity:.85;
-}
-
 /* BUTTON */
-button{
+.vip-btn{
   margin-top:10px;
   padding:12px;
   border:none;
@@ -95,76 +87,84 @@ button{
 
 <div class="grid">
 
+  <!-- VIP 1 -->
   <div class="glass vip-card">
     <div>
-      <div class="vip-title">VIP 1</div>
-      <div class="vip-price">$30</div>
-      <div class="vip-power">Tap power: 5×</div>
+      <b>VIP 1</b>
+      <div>$30</div>
+      <small>Tap power: 5×</small>
     </div>
-    <button onclick="go(1,30)">Deposit</button>
+    <button class="vip-btn" data-vip="1" data-price="30">Deposit</button>
   </div>
 
+  <!-- VIP 2 -->
   <div class="glass vip-card">
     <div>
-      <div class="vip-title">VIP 2</div>
-      <div class="vip-price">$100</div>
-      <div class="vip-power">Tap power: 10×</div>
+      <b>VIP 2</b>
+      <div>$100</div>
+      <small>Tap power: 10×</small>
     </div>
-    <button onclick="go(2,100)">Deposit</button>
+    <button class="vip-btn" data-vip="2" data-price="100">Deposit</button>
   </div>
 
+  <!-- VIP 3 -->
   <div class="glass vip-card">
     <div>
-      <div class="vip-title">VIP 3</div>
-      <div class="vip-price">$499</div>
-      <div class="vip-power">Tap power: 20×</div>
+      <b>VIP 3</b>
+      <div>$499</div>
+      <small>Tap power: 20×</small>
     </div>
-    <button onclick="go(3,499)">Deposit</button>
+    <button class="vip-btn" data-vip="3" data-price="499">Deposit</button>
   </div>
 
+  <!-- VIP 4 -->
   <div class="glass vip-card">
     <div>
-      <div class="vip-title">VIP 4</div>
-      <div class="vip-price">$999</div>
-      <div class="vip-power">Tap power: 40×</div>
+      <b>VIP 4</b>
+      <div>$999</div>
+      <small>Tap power: 40×</small>
     </div>
-    <button onclick="go(4,999)">Deposit</button>
+    <button class="vip-btn" data-vip="4" data-price="999">Deposit</button>
   </div>
 
+  <!-- VIP 5 -->
   <div class="glass vip-card">
     <div>
-      <div class="vip-title">VIP 5</div>
-      <div class="vip-price">$4,999</div>
-      <div class="vip-power">Tap power: 80×</div>
+      <b>VIP 5</b>
+      <div>$4,999</div>
+      <small>Tap power: 80×</small>
     </div>
-    <button onclick="go(5,4999)">Deposit</button>
+    <button class="vip-btn" data-vip="5" data-price="4999">Deposit</button>
   </div>
 
+  <!-- VIP 6 -->
   <div class="glass vip-card">
     <div>
-      <div class="vip-title">VIP 6</div>
-      <div class="vip-price">$9,999</div>
-      <div class="vip-power">Tap power: 800×</div>
+      <b>VIP 6</b>
+      <div>$9,999</div>
+      <small>Tap power: 800×</small>
     </div>
-    <button onclick="go(6,9999)">Deposit</button>
+    <button class="vip-btn" data-vip="6" data-price="9999">Deposit</button>
   </div>
 
+  <!-- VIP 7 -->
   <div class="glass vip-card">
     <div>
-      <div class="vip-title">VIP 7</div>
-      <div class="vip-price">$49,999</div>
-      <div class="vip-power">Tap power: 8000×</div>
+      <b>VIP 7</b>
+      <div>$49,999</div>
+      <small>Tap power: 8000×</small>
     </div>
-    <button onclick="go(7,49999)">Deposit</button>
+    <button class="vip-btn" data-vip="7" data-price="49999">Deposit</button>
   </div>
 
+  <!-- VIP 8 -->
   <div class="glass vip-card">
     <div>
-      <div class="vip-title">VIP 8</div>
-      <div class="vip-price">$99,999</div>
-      <div class="vip-power">Tap power: 80000×</div>
+      <b>VIP 8</b>
+      <div>$99,999</div>
+      <small>Tap power: 80000×</small>
     </div>
-    <button onclick="go(8,99999)">Deposit</button>
+    <button class="vip-btn" data-vip="8" data-price="99999">Deposit</button>
   </div>
 
 </div>
@@ -172,9 +172,14 @@ button{
 <div class="spacer"></div>
 
 <script>
-function go(vip,price){
-  location.href = "deposit.html?vip="+vip+"&price="+price;
-}
+/* SAFE CLICK HANDLING (NO DUPLICATES, NO MIS-ROUTING) */
+document.querySelectorAll(".vip-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const vip = btn.dataset.vip;
+    const price = btn.dataset.price;
+    window.location.assign(`deposit.html?vip=${vip}&price=${price}`);
+  });
+});
 </script>
 
 </body>
