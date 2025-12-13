@@ -150,6 +150,8 @@ body{
 
 <body>
 
+
+
 <!-- TOP MENU -->
 <div class="top-menu">
   <button onclick="toggleMenu()">
@@ -159,65 +161,44 @@ body{
       <circle cx="12" cy="19" r="1.5"/>
     </svg>
   </button>
-<div class="menu-box" id="menuBox">
 
-  <!-- USER INFO -->
-  <div class="menu-user" id="menuUser">
-    <div class="menu-avatar">👤</div>
-    <div class="menu-user-info">
-      <small>Signed in as</small>
-      <div id="menuEmail"></div>
+  <div class="menu-box" id="menuBox">
+
+    <!-- USER INFO -->
+    <div class="menu-user" id="menuUser" style="display:none;">
+      <div class="menu-avatar">👤</div>
+      <div class="menu-user-info">
+        <small>Signed in as</small>
+        <div id="menuEmail"></div>
+      </div>
     </div>
-  </div>
 
-  <hr style="border:0;border-top:1px solid rgba(255,255,255,.15)">
+    <!-- LANGUAGE -->
+    <button onclick="setLang('en')">🌐 English</button>
+    <button onclick="setLang('fa')">🌐 فارسی</button>
+    <button onclick="setLang('ar')">🌐 العربية</button>
 
-  <button id="loginBtn" onclick="location.href='auth.html'">🔐 Login</button>
+    <hr style="border:0;border-top:1px solid rgba(255,255,255,.15)">
 
-  <div id="loginEmailInfo"
-       style="display:none;font-size:12px;opacity:.7;padding:6px 12px;">
-  </div>
+    <!-- AUTH -->
+    <button id="loginBtn" onclick="location.href='auth.html'">🔐 Login</button>
 
-  <button id="logoutBtn" onclick="logout()">🚪 Logout</button>
-  <button id="adminBtn" onclick="location.href='admin_vip.html'">🛠 Admin Panel</button>
+    <div id="loginEmailInfo"
+         style="display:none;
+                font-size:12px;
+                opacity:.75;
+                padding:6px 12px;
+                word-break:break-all;">
+    </div>
 
-</div>
-  </div>
+    <button id="logoutBtn" onclick="logout()" style="display:none;">🚪 Logout</button>
+    <button id="adminBtn" onclick="location.href='admin_vip.html'" style="display:none;">
+      🛠 Admin Panel
+    </button>
 
-  <!-- LANGUAGE -->
-  <button onclick="setLang('en')">🌐 English</button>
-  <button onclick="setLang('fa')">🌐 فارسی</button>
-  <button onclick="setLang('ar')">🌐 العربية</button>
-
-  <hr style="border:0;border-top:1px solid rgba(255,255,255,.15)">
-
-  <!-- ACTIONS -->
-<button id="loginBtn" onclick="location.href='auth.html'">🔐 Login</button>
-
-<div id="loginEmailInfo"
-     style="
-       display:none;
-       font-size:12px;
-       opacity:.75;
-       padding:6px 12px 10px;
-       word-break:break-all;
-     ">
-</div>
-  </div>
-  <button id="logoutBtn" onclick="logout()">🚪 Logout</button>
-  <button id="adminBtn" onclick="location.href='admin_vip.html'">🛠 Admin Panel</button>
-
-</div>
-</div>
-
-<div class="wrap" id="app" style="display:none">
-  <div class="glass card">
-    <div>Balance</div>
-    <div class="amount">$0.00</div>
-    <div class="vip-pill" id="vip">VIP: None</div>
   </div>
 </div>
-
+  
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
