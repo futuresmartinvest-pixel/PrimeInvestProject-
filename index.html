@@ -242,29 +242,36 @@ function refresh(){
   elBalance.textContent = "$"+(state.balance+usdVal).toFixed(2);
 }
 
-tapBtn.onclick = ()=>{
-  if(!authReady){
+  tapBtn.onclick = () => {
+
+  // 1️⃣ Auth not ready yet
+  if (!authReady) {
     alert("Auth loading, please wait");
     return;
   }
 
-  if(!state.loggedIn){
-    alert("Please login first");
+  // 2️⃣ User not logged in
+  if (!state.loggedIn) {
+    location.href = "auth.html";
     return;
   }
 
-  if(state.day!==todayKey()){
-    state.day=todayKey();
-    state.tapsToday=0;
+  // 3️⃣ New day reset
+  if (state.day !== todayKey()) {
+    state.day = todayKey();
+    state.tapsToday = 0;
   }
 
-  if(!state.vip && state.tapsToday>=NONVIP_DAILY_LIMIT){
+  // 4️⃣ Daily limit check
+  if (!state.vip && state.tapsToday >= NONVIP_DAILY_LIMIT) {
     alert("Daily limit reached");
     return;
   }
 
+  // 5️⃣ Tap success
   state.score += state.power;
   state.tapsToday++;
+
   refresh();
 };
 
