@@ -244,9 +244,13 @@ window.setLang = ()=>{};
 onAuthStateChanged(auth, async user => {
   if (!user) {
     loginBtn.style.display = "block";
-    logoutBtn.style.display = "none";
-    adminBtn.style.display = "none";
-    menuUser.style.display = "none";
+logoutBtn.style.display = "none";
+adminBtn.style.display = "none";
+menuUser.style.display = "none";
+
+const loginEmailInfo = document.getElementById("loginEmailInfo");
+loginEmailInfo.style.display = "none";
+loginEmailInfo.textContent = "";
     return;
   }
 
@@ -254,6 +258,11 @@ onAuthStateChanged(auth, async user => {
   logoutBtn.style.display = "block";
   menuUser.style.display = "block";
   menuEmail.textContent = user.email;
+  const loginEmailInfo = document.getElementById("loginEmailInfo");
+
+loginBtn.style.display = "block"; // keep Login visible
+loginEmailInfo.style.display = "block";
+loginEmailInfo.textContent = user.email;
 
   const snap = await getDoc(doc(db,"users",user.uid));
   const u = snap.exists() ? snap.data() : {};
