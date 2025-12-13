@@ -219,7 +219,15 @@ const vipEl = document.getElementById("vip");
 
 window.toggleMenu = () =>
   menuBox.style.display = menuBox.style.display === "block" ? "none" : "block";
-
+document.addEventListener("click", e => {
+  if (
+    menuBox.style.display === "block" &&
+    !menuBox.contains(e.target) &&
+    !e.target.closest(".top-menu")
+  ) {
+    menuBox.style.display = "none";
+  }
+});
 window.go = p => location.href = p;
 window.logout = async () => { await signOut(auth); location.href="auth.html"; };
 
