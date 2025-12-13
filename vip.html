@@ -4,176 +4,196 @@
 <meta charset="UTF-8">
 <meta name="viewport"
 content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
 <title>VIP Plans</title>
 
 <style>
-*{box-sizing:border-box}
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,BlinkMacSystemFont;
+    min-height:100vh;
+    color:#fff;
+    background:
+      radial-gradient(circle at 18% 18%, rgba(165,120,255,.45), transparent 42%),
+      radial-gradient(circle at 82% 75%, rgba(0,220,255,.35), transparent 45%),
+      radial-gradient(circle at 40% 85%, rgba(255,160,90,.22), transparent 40%),
+      linear-gradient(180deg,#05070f,#0a0f24);
+  }
 
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont;
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 20% 20%, #7f5cff55, transparent 40%),
-    radial-gradient(circle at 80% 70%, #00e5ff55, transparent 40%),
-    linear-gradient(180deg,#05070f,#0a0f24);
-  color:#fff;
-}
+  .wrap{padding:18px 16px 110px; max-width:420px; margin:0 auto;}
+  h1{margin:10px 0 18px; text-align:center; font-weight:900; letter-spacing:.5px;}
 
-/* GLASS */
-.glass{
-  background:rgba(255,255,255,0.12);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border:1px solid rgba(255,255,255,0.25);
-  border-radius:22px;
-  box-shadow:0 0 25px rgba(120,200,255,0.35);
-}
+  .glass{
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.22);
+    box-shadow:0 18px 50px rgba(0,0,0,.35);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius:24px;
+  }
 
-/* HEADER */
-h1{
-  text-align:center;
-  margin:20px 0 10px;
-  font-weight:800;
-}
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
 
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-  padding:16px;
-  max-width:420px;
-  margin:auto;
-}
+  .card{
+    padding:16px;
+    min-height:190px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+  }
+  .top b{font-size:18px}
+  .price{font-size:32px; font-weight:900; margin:8px 0}
+  .meta{opacity:.85; font-weight:700}
+  .btn{
+    border:none;
+    border-radius:16px;
+    padding:12px;
+    font-weight:900;
+    cursor:pointer;
+    background:linear-gradient(135deg,#ffd36e,#ffb700);
+    color:#000;
+  }
 
-/* VIP CARD */
-.vip-card{
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  min-height:180px;
-}
-
-.vip-title{
-  font-size:18px;
-  font-weight:800;
-}
-.vip-price{
-  font-size:26px;
-  font-weight:900;
-  margin:6px 0;
-}
-.vip-power{
-  font-size:14px;
-  opacity:.85;
-}
-
-/* BUTTON */
-button{
-  margin-top:10px;
-  padding:12px;
-  border:none;
-  border-radius:14px;
-  font-weight:800;
-  font-size:16px;
-  background:linear-gradient(135deg,#ffd36e,#ffb700);
-  color:#000;
-  cursor:pointer;
-}
-
-/* NAV SPACE */
-.spacer{height:80px}
+  /* Bottom nav (icons only) */
+  .nav-wrap{
+    position:fixed; left:0; right:0; bottom:16px;
+    display:flex; justify-content:center;
+    pointer-events:none; padding:0 16px;
+  }
+  .nav{
+    width:min(420px,100%);
+    pointer-events:auto;
+    display:flex; justify-content:space-around; align-items:center;
+    padding:14px; border-radius:26px;
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.22);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow:0 18px 50px rgba(0,0,0,.35);
+  }
+  .nav button{
+    all:unset;
+    width:52px; height:44px;
+    display:flex; justify-content:center; align-items:center;
+    border-radius:16px;
+    cursor:pointer;
+    opacity:.9;
+  }
+  .nav button.active{
+    background:rgba(255,255,255,0.18);
+    border:1px solid rgba(255,255,255,0.22);
+    opacity:1;
+  }
+  .ico{width:24px;height:24px;fill:#fff;opacity:.95}
 </style>
 </head>
 
 <body>
+<div class="wrap">
+  <h1>VIP Plans</h1>
 
-<h1>VIP Plans</h1>
-
-<div class="grid">
-
-  <div class="glass vip-card">
-    <div>
-      <div class="vip-title">VIP 1</div>
-      <div class="vip-price">$30</div>
-      <div class="vip-power">Tap power: 5×</div>
+  <div class="grid">
+    <div class="glass card">
+      <div class="top">
+        <b>VIP 1</b>
+        <div class="price">$30</div>
+        <div class="meta">Tap power: 5×</div>
+      </div>
+      <button class="btn" onclick="go(1,30)">Deposit</button>
     </div>
-    <button onclick="go(1,30)">Deposit</button>
-  </div>
 
-  <div class="glass vip-card">
-    <div>
-      <div class="vip-title">VIP 2</div>
-      <div class="vip-price">$100</div>
-      <div class="vip-power">Tap power: 10×</div>
+    <div class="glass card">
+      <div class="top">
+        <b>VIP 2</b>
+        <div class="price">$100</div>
+        <div class="meta">Tap power: 10×</div>
+      </div>
+      <button class="btn" onclick="go(2,100)">Deposit</button>
     </div>
-    <button onclick="go(2,100)">Deposit</button>
-  </div>
 
-  <div class="glass vip-card">
-    <div>
-      <div class="vip-title">VIP 3</div>
-      <div class="vip-price">$499</div>
-      <div class="vip-power">Tap power: 20×</div>
+    <div class="glass card">
+      <div class="top">
+        <b>VIP 3</b>
+        <div class="price">$499</div>
+        <div class="meta">Tap power: 20×</div>
+      </div>
+      <button class="btn" onclick="go(3,499)">Deposit</button>
     </div>
-    <button onclick="go(3,499)">Deposit</button>
-  </div>
 
-  <div class="glass vip-card">
-    <div>
-      <div class="vip-title">VIP 4</div>
-      <div class="vip-price">$999</div>
-      <div class="vip-power">Tap power: 40×</div>
+    <div class="glass card">
+      <div class="top">
+        <b>VIP 4</b>
+        <div class="price">$999</div>
+        <div class="meta">Tap power: 40×</div>
+      </div>
+      <button class="btn" onclick="go(4,999)">Deposit</button>
     </div>
-    <button onclick="go(4,999)">Deposit</button>
-  </div>
 
-  <div class="glass vip-card">
-    <div>
-      <div class="vip-title">VIP 5</div>
-      <div class="vip-price">$4,999</div>
-      <div class="vip-power">Tap power: 80×</div>
+    <div class="glass card">
+      <div class="top">
+        <b>VIP 5</b>
+        <div class="price">$4,999</div>
+        <div class="meta">Tap power: 80×</div>
+      </div>
+      <button class="btn" onclick="go(5,4999)">Deposit</button>
     </div>
-    <button onclick="go(5,4999)">Deposit</button>
-  </div>
 
-  <div class="glass vip-card">
-    <div>
-      <div class="vip-title">VIP 6</div>
-      <div class="vip-price">$9,999</div>
-      <div class="vip-power">Tap power: 800×</div>
+    <div class="glass card">
+      <div class="top">
+        <b>VIP 6</b>
+        <div class="price">$9,999</div>
+        <div class="meta">Tap power: 800×</div>
+      </div>
+      <button class="btn" onclick="go(6,9999)">Deposit</button>
     </div>
-    <button onclick="go(6,9999)">Deposit</button>
-  </div>
 
-  <div class="glass vip-card">
-    <div>
-      <div class="vip-title">VIP 7</div>
-      <div class="vip-price">$49,999</div>
-      <div class="vip-power">Tap power: 8000×</div>
+    <div class="glass card">
+      <div class="top">
+        <b>VIP 7</b>
+        <div class="price">$49,999</div>
+        <div class="meta">Tap power: 8000×</div>
+      </div>
+      <button class="btn" onclick="go(7,49999)">Deposit</button>
     </div>
-    <button onclick="go(7,49999)">Deposit</button>
-  </div>
 
-  <div class="glass vip-card">
-    <div>
-      <div class="vip-title">VIP 8</div>
-      <div class="vip-price">$99,999</div>
-      <div class="vip-power">Tap power: 80000×</div>
+    <div class="glass card">
+      <div class="top">
+        <b>VIP 8</b>
+        <div class="price">$99,999</div>
+        <div class="meta">Tap power: 80000×</div>
+      </div>
+      <button class="btn" onclick="go(8,99999)">Deposit</button>
     </div>
-    <button onclick="go(8,99999)">Deposit</button>
   </div>
-
 </div>
 
-<div class="spacer"></div>
+<div class="nav-wrap">
+  <div class="nav">
+    <button title="Home" onclick="location.href='index.html'">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M12 3 2 12h3v8h6v-5h2v5h6v-8h3z"/></svg>
+    </button>
+    <button title="Tasks" onclick="location.href='tasks.html'">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M7 7h14v2H7V7zm0 4h14v2H7v-2zm0 4h14v2H7v-2zM3 7h2v2H3V7zm0 4h2v2H3v-2zm0 4h2v2H3v-2z"/></svg>
+    </button>
+    <button title="Wallet" onclick="location.href='wallet.html'">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M3 7a3 3 0 0 1 3-3h12a2 2 0 0 1 2 2v2h-5a3 3 0 0 0 0 6h5v2a2 2 0 0 1-2 2H6a3 3 0 0 1-3-3V7zm18 5h-5a1 1 0 0 0 0 2h5v-2z"/></svg>
+    </button>
+    <button title="Referral" onclick="location.href='referral.html'">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1-1.4-1.4 1-1a3 3 0 1 0-4.2-4.2l-1 1a3 3 0 0 0 0 4.2L10 13zm4-2a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1 1.4 1.4-1 1a3 3 0 1 0 4.2 4.2l1-1a3 3 0 0 0 0-4.2L14 11z"/></svg>
+    </button>
+    <button class="active" title="VIP" onclick="location.href='vip.html'">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M12 2 9 7 3 8l4 4-1 6 6-3 6 3-1-6 4-4-6-1-3-5z"/></svg>
+    </button>
+  </div>
+</div>
 
 <script>
-function go(vip,price){
-  location.href = "deposit.html?vip="+vip+"&price="+price;
+function go(vip, price){
+  location.href = "deposit.html?vip=" + vip + "&price=" + price;
 }
 </script>
 
