@@ -1,64 +1,109 @@
-/* BACKGROUND */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>VIP Plans</title>
+
+<style>
+*{box-sizing:border-box}
+
 body{
   margin:0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  min-height:100vh;
   background:
-    radial-gradient(circle at 20% 10%, #8b7cff66, transparent 45%),
-    radial-gradient(circle at 80% 80%, #00e5ff55, transparent 45%),
-    linear-gradient(180deg, #050817, #0b1130);
+    radial-gradient(circle at 20% 20%, #7f5cff55, transparent 40%),
+    radial-gradient(circle at 80% 70%, #00e5ff55, transparent 40%),
+    linear-gradient(180deg,#05070f,#0a0f24);
   color:#fff;
 }
 
-/* VIP CARD — SAME SIZE, GLACIER STYLE */
-.vip-card{
-  background: rgba(255,255,255,0.14);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
-  border-radius: 26px;
-  padding: 22px;
-  box-shadow:
-    0 0 30px rgba(140,200,255,0.35),
-    inset 0 0 0 1px rgba(255,255,255,0.28);
-  border: 1px solid rgba(255,255,255,0.25);
+/* GLASS */
+.glass{
+  background:rgba(255,255,255,0.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius:22px;
+  box-shadow:0 0 25px rgba(120,200,255,0.35);
 }
 
-/* TEXT */
-.vip-card h3{
-  font-size:18px;
+/* HEADER */
+h1{
+  text-align:center;
+  margin:20px 0;
   font-weight:800;
-  margin:0;
 }
 
-.vip-card .price{
-  font-size:32px;
-  font-weight:900;
-  margin:8px 0;
-}
-
-.vip-card .power{
-  opacity:.85;
-  font-size:14px;
-}
-
-/* DEPOSIT BUTTON */
-.vip-card button{
-  width:100%;
-  margin-top:16px;
-  padding:14px;
-  border:none;
-  border-radius:18px;
-  font-size:16px;
-  font-weight:800;
-  cursor:pointer;
-  background: linear-gradient(135deg,#ffd36e,#ffb700);
-  color:#000;
-  box-shadow:0 6px 16px rgba(255,200,80,.45);
-}
-
-/* GRID — SAME LAYOUT */
-.vip-grid{
+/* GRID */
+.grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:18px;
-  padding:18px;
+  gap:16px;
+  padding:16px;
+  max-width:420px;
+  margin:auto;
 }
+
+/* CARD */
+.vip-card{
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  min-height:180px;
+}
+
+.vip-title{font-size:18px;font-weight:800}
+.vip-price{font-size:26px;font-weight:900;margin:6px 0}
+.vip-power{font-size:14px;opacity:.85}
+
+button{
+  margin-top:12px;
+  padding:12px;
+  border:none;
+  border-radius:14px;
+  font-weight:800;
+  font-size:16px;
+  background:linear-gradient(135deg,#ffd36e,#ffb700);
+  color:#000;
+}
+</style>
+</head>
+
+<body>
+
+<h1>VIP Plans</h1>
+
+<div class="grid">
+
+  <div class="glass vip-card">
+    <div>
+      <div class="vip-title">VIP 1</div>
+      <div class="vip-price">$30</div>
+      <div class="vip-power">Tap power: 5×</div>
+    </div>
+    <button onclick="go(1,30)">Deposit</button>
+  </div>
+
+  <div class="glass vip-card">
+    <div>
+      <div class="vip-title">VIP 2</div>
+      <div class="vip-price">$100</div>
+      <div class="vip-power">Tap power: 10×</div>
+    </div>
+    <button onclick="go(2,100)">Deposit</button>
+  </div>
+
+</div>
+
+<script>
+function go(vip,price){
+  location.href="deposit.html?vip="+vip+"&price="+price;
+}
+</script>
+
+</body>
+</html>
