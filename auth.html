@@ -173,18 +173,56 @@ registerBtn.onclick=async()=>{
     msg.innerHTML=`<div class="error">Passwords do not match</div>`;
     return;
   }
+
   try{
-    const c=await createUserWithEmailAndPassword(auth,regEmail.value,regPassword.value);
+    const c = await createUserWithEmailAndPassword(
+      auth,
+      regEmail.value,
+      regPassword.value
+    );
+
+    // create user with own referral code
     await setDoc(doc(db,"users",c.user.uid),{
       fullName: fullName.value,
       country: country.value,
       address: address.value,
-      referral: referral.value || null,
+      referredBy: referral.value || null,
+      referralCode: c.user.uid.slice(0,8).toUpperCase(),
+      referralCount: 0,
+      referralEarnings: 0,
       createdAt: serverTimestamp(),
-      vip:{level:0}
+      vip:{ level:0 }
     });
+
+    // handle inviter (if referral code was used)
+    if(referral.value){
+      const q = query(
+        collection(db,"users"),
+        where("referralCode","==",referral.value)
+      );
+      const snap = await getDocs(q);
+
+      if(!snap.empty){
+        const inviterDoc = snap.docs[0];
+
+        await updateDoc(inviterDoc.ref,{
+          referralCount: increment(1)
+        });
+
+        await addDoc(collection(db,"referrals"),{
+          inviterUid: inviterDoc.id,
+          invitedUid: c.user.uid,
+          invitedEmail: regEmail.value,
+          createdAt: serverTimestamp()
+        });
+      }
+    }
+
     location.href="index.html";
-  }catch(e){msg.innerHTML=`<div class="error">${e.message}</div>`}
+
+  }catch(e){
+    msg.innerHTML=`<div class="error">${e.message}</div>`;
+  }
 };
 
 /* RESET */
