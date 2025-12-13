@@ -17,16 +17,14 @@ body{
     radial-gradient(circle at 82% 75%, rgba(0,220,255,.35), transparent 45%),
     radial-gradient(circle at 40% 85%, rgba(255,160,90,.22), transparent 40%),
     linear-gradient(180deg,#05070f,#0a0f24);
-  overflow-x:hidden;
 }
 
 .wrap{padding:18px 16px 120px; max-width:420px; margin:0 auto;}
 
 .glass{
-  background:rgba(255,255,255,0.12);
-  border:1px solid rgba(255,255,255,0.22);
-  box-shadow:0 18px 50px rgba(0,0,0,.35);
-  backdrop-filter: blur(18px);
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  backdrop-filter:blur(18px);
   border-radius:24px;
 }
 
@@ -37,50 +35,35 @@ body{
   display:inline-block;
   padding:8px 14px;
   border-radius:999px;
-  background:rgba(255,255,255,0.14);
-  border:1px solid rgba(255,255,255,0.18);
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.18);
   font-weight:700;
 }
-
-.tap-area{display:flex;justify-content:center;margin:24px 0}
-.orb{
-  width:260px;height:260px;
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-weight:900;letter-spacing:2px;
-  border:1px solid rgba(255,255,255,.3);
-  opacity:.6;
-}
-
-.stats{padding:14px 16px}
-.row{display:flex;justify-content:space-between;font-weight:700}
 
 /* TOP MENU */
 .top-menu{
   position:fixed;
   top:14px;
   right:14px;
-  z-index:10;
+  z-index:20;
 }
 .top-menu button{
   all:unset;
   cursor:pointer;
   padding:8px;
-  border-radius:50%;
 }
 .menu-box{
   display:none;
   position:absolute;
   right:0;
   top:36px;
-  min-width:180px;
-  background:rgba(0,0,0,.85);
-  border-radius:14px;
-  padding:6px;
+  width:220px;
+  background:rgba(0,0,0,.9);
+  border-radius:16px;
+  padding:8px;
 }
 .menu-box button{
   all:unset;
-  display:block;
   width:100%;
   padding:10px 12px;
   cursor:pointer;
@@ -89,6 +72,14 @@ body{
 .menu-box button:hover{
   background:rgba(255,255,255,.12);
 }
+.menu-user{
+  display:none;
+  padding:10px 12px;
+  margin-bottom:6px;
+  border-bottom:1px solid rgba(255,255,255,.15);
+}
+.menu-user small{opacity:.6;font-size:12px}
+.menu-user div{font-weight:800;font-size:13px;word-break:break-all}
 
 /* NAV */
 .nav-wrap{
@@ -114,12 +105,7 @@ body{
   cursor:pointer;
 }
 .nav button.active{background:#000}
-.nav svg{
-  width:22px;height:22px;
-  stroke:#000;
-  stroke-width:2;
-  fill:none;
-}
+.nav svg{width:22px;height:22px;stroke:#000;stroke-width:2;fill:none}
 .nav button.active svg{stroke:#fff}
 </style>
 </head>
@@ -135,71 +121,44 @@ body{
       <circle cx="12" cy="19" r="1.5"/>
     </svg>
   </button>
- <div class="menu-box" id="menuBox">
 
-  <!-- ✅ USER INFO -->
-  <div id="menuUser"
-       style="display:none;
-              padding:10px 12px;
-              margin:6px;
-              border-radius:12px;
-              background:rgba(255,255,255,.08);
-              font-size:13px;
-              font-weight:700;">
-    Logged in as<br>
-    <span id="menuEmail" style="font-weight:900;font-size:14px;"></span>
+  <div class="menu-box" id="menuBox">
+
+    <div class="menu-user" id="menuUser">
+      <small>Logged in as</small>
+      <div id="menuEmail"></div>
+    </div>
+
+    <button onclick="setLang('en')">English</button>
+    <button onclick="setLang('fa')">فارسی</button>
+    <button onclick="setLang('ar')">العربية</button>
+
+    <hr style="border:0;border-top:1px solid rgba(255,255,255,.15)">
+
+    <button id="loginBtn" onclick="location.href='auth.html'">Login</button>
+    <button id="logoutBtn" onclick="logout()">Logout</button>
+    <button id="adminBtn" onclick="location.href='admin_vip.html'">Admin Panel</button>
   </div>
-
-  <button onclick="setLang('en')">English</button>
-  <button onclick="setLang('fa')">فارسی</button>
-  <button onclick="setLang('ar')">العربية</button>
-
-  <hr style="border:0;border-top:1px solid rgba(255,255,255,.15)">
-
-  <button id="loginBtn" onclick="location.href='auth.html'">Login</button>
-  <button id="logoutBtn" onclick="logout()">Logout</button>
-  <button id="adminBtn" onclick="location.href='admin_vip.html'">Admin Panel</button>
- </div> 
 </div>
 
 <div class="wrap" id="app" style="display:none">
   <div class="glass card">
     <div>Balance</div>
-    <div class="amount" id="balance">$0.00</div>
+    <div class="amount">$0.00</div>
     <div class="vip-pill" id="vip">VIP: None</div>
-  </div>
-<div id="loginStatus" style="margin-top:8px;font-size:13px;opacity:.85;"></div>
-  <!-- TAP VISUAL ONLY (DISABLED) -->
-  <div class="tap-area">
-    <div class="orb glass">TAP</div>
-  </div>
-
-  <div class="glass stats">
-    <div class="row"><span>Score</span><span>—</span></div>
-    <div class="row"><span>Tap power</span><span>—</span></div>
-    <div class="row"><span>Today taps</span><span>—</span></div>
-    <div class="row"><span>Score → USD</span><span>$0.00</span></div>
   </div>
 </div>
 
-<!-- NAV BAR -->
+<!-- NAV -->
 <div class="nav-wrap">
   <div class="nav">
-    <button class="active" onclick="goNav('index')">
+    <button class="active" onclick="go('index.html')">
       <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h5v-5h4v5h5V10"/></svg>
     </button>
-    <button onclick="goNav('tasks')">
-      <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M8 9h8M8 13h8"/></svg>
-    </button>
-    <button onclick="goNav('wallet')">
-      <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M16 12h3"/></svg>
-    </button>
-    <button onclick="goNav('referral')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c2-4 14-4 16 0"/></svg>
-    </button>
-    <button onclick="goNav('vip')">
-      <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
-    </button>
+    <button onclick="go('tasks.html')"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/></svg></button>
+    <button onclick="go('wallet.html')"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/></svg></button>
+    <button onclick="go('referral.html')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/></svg></button>
+    <button onclick="go('vip.html')"><svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3"/></svg></button>
   </div>
 </div>
 
@@ -217,86 +176,39 @@ const app = initializeApp({
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const menuBox=document.getElementById("menuBox");
-const loginBtn=document.getElementById("loginBtn");
-const logoutBtn=document.getElementById("logoutBtn");
-const adminBtn=document.getElementById("adminBtn");
-const vipEl=document.getElementById("vip");
+const menuBox = document.getElementById("menuBox");
+const menuUser = document.getElementById("menuUser");
+const menuEmail = document.getElementById("menuEmail");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const adminBtn = document.getElementById("adminBtn");
+const vipEl = document.getElementById("vip");
 
-window.toggleMenu=()=>menuBox.style.display=menuBox.style.display==="block"?"none":"block";
-window.goNav = (page) => {
-  if (page === "index") {
-    location.href = "index.html";
-    return;
-  }
+window.toggleMenu = () =>
+  menuBox.style.display = menuBox.style.display === "block" ? "none" : "block";
 
-  if (page === "tasks") {
-    location.href = "tasks.html";
-    return;
-  }
+window.go = p => location.href = p;
+window.logout = async () => { await signOut(auth); location.href="auth.html"; };
 
-  if (page === "wallet") {
-    location.href = "wallet.html";
-    return;
-  }
-
-  if (page === "referral") {
-    location.href = "referral.html";
-    return;
-  }
-
-  if (page === "vip") {
-    location.href = "vip.html";
-    return;
-  }
-};
-window.logout=async()=>{await signOut(auth);location.href="auth.html";};
-
-const langs={
-  en:{login:"Login",logout:"Logout",admin:"Admin Panel"},
-  fa:{login:"ورود",logout:"خروج",admin:"مدیریت"},
-  ar:{login:"تسجيل الدخول",logout:"تسجيل الخروج",admin:"لوحة الإدارة"}
-};
-window.setLang=l=>{
-  loginBtn.textContent=langs[l].login;
-  logoutBtn.textContent=langs[l].logout;
-  adminBtn.textContent=langs[l].admin;
-};
-setLang("en");
+window.setLang = ()=>{};
 
 onAuthStateChanged(auth, async user => {
-
-  const menuUser = document.getElementById("menuUser");
-  const menuEmail = document.getElementById("menuEmail");
-
-  // 🚫 NOT LOGGED IN
   if (!user) {
     loginBtn.style.display = "block";
     logoutBtn.style.display = "none";
     adminBtn.style.display = "none";
-
-    if (menuUser) menuUser.style.display = "none";
-
-    document.getElementById("app").style.display = "none";
+    menuUser.style.display = "none";
     return;
   }
 
-  // ✅ LOGGED IN
   loginBtn.style.display = "none";
   logoutBtn.style.display = "block";
+  menuUser.style.display = "block";
+  menuEmail.textContent = user.email;
 
-  if (menuUser && menuEmail) {
-    menuUser.style.display = "block";
-    menuEmail.textContent = user.email;
-  }
-
-  // Load user data
-  const snap = await getDoc(doc(db, "users", user.uid));
+  const snap = await getDoc(doc(db,"users",user.uid));
   const u = snap.exists() ? snap.data() : {};
-
   vipEl.textContent = "VIP: " + (u.vip?.level || "None");
-
-  // Admin only
   adminBtn.style.display = u.role === "admin" ? "block" : "none";
 
   document.getElementById("app").style.display = "block";
