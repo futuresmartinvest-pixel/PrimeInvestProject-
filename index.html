@@ -208,7 +208,32 @@ const adminBtn=document.getElementById("adminBtn");
 const vipEl=document.getElementById("vip");
 
 window.toggleMenu=()=>menuBox.style.display=menuBox.style.display==="block"?"none":"block";
-window.goNav=p=>location.href=p+".html";
+window.goNav = (page) => {
+  if (page === "index") {
+    location.href = "index.html";
+    return;
+  }
+
+  if (page === "tasks") {
+    location.href = "tasks.html";
+    return;
+  }
+
+  if (page === "wallet") {
+    location.href = "wallet.html";
+    return;
+  }
+
+  if (page === "referral") {
+    location.href = "referral.html";
+    return;
+  }
+
+  if (page === "vip") {
+    location.href = "vip.html";
+    return;
+  }
+};
 window.logout=async()=>{await signOut(auth);location.href="auth.html";};
 
 const langs={
