@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport"
-content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>PrimeGlobalPro</title>
 
 <style>
@@ -16,12 +15,11 @@ body{
   background:
     radial-gradient(circle at 18% 18%, rgba(165,120,255,.45), transparent 42%),
     radial-gradient(circle at 82% 75%, rgba(0,220,255,.35), transparent 45%),
-    radial-gradient(circle at 40% 85%, rgba(255,160,90,.22), transparent 40%),
     linear-gradient(180deg,#05070f,#0a0f24);
   overflow-x:hidden;
 }
 
-.wrap{padding:18px 16px 110px; max-width:420px; margin:0 auto;}
+.wrap{padding:18px 16px 120px; max-width:420px; margin:0 auto;}
 
 .glass{
   background:rgba(255,255,255,0.12);
@@ -31,83 +29,62 @@ body{
   border-radius:24px;
 }
 
-.card{text-align:center;padding:18px}
-.amount{font-size:52px;font-weight:900;margin:6px 0}
+.card{padding:18px;text-align:center}
+.amount{font-size:52px;font-weight:900}
 .vip-pill{
   display:inline-block;
   padding:8px 14px;
   border-radius:999px;
-  background:rgba(255,255,255,.14);
+  background:rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.18);
+  font-weight:700;
 }
 
-.tap-area{display:flex;justify-content:center;margin:22px 0}
+.tap-area{margin:24px auto 14px;display:flex;justify-content:center}
 .orb{
-  width:min(250px,72vw);
-  height:min(250px,72vw);
-  border-radius:50%;
+  width:min(260px,72vw);
+  height:min(260px,72vw);
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.28);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(120,255,255,.55), transparent 45%),
+    radial-gradient(circle at 70% 75%, rgba(170,110,255,.55), transparent 48%),
+    rgba(255,255,255,0.08);
   display:flex;
   align-items:center;
   justify-content:center;
   font-weight:900;
-  border:1px solid rgba(255,255,255,.3);
+  letter-spacing:2px;
+  cursor:pointer;
 }
 
-.stats{padding:14px 16px}
+.stats{margin-top:14px;padding:14px 16px}
 .row{display:flex;justify-content:space-between;font-weight:700}
 
-/* menu */
-.menu{
-  position:absolute;top:14px;right:14px;
-}
-.menu button{
-  background:none;border:none;color:#fff;font-size:22px;
-}
-.menu-box{
-  display:none;
-  position:absolute;right:0;top:30px;
-  background:rgba(0,0,0,.75);
-  border-radius:14px;
-  padding:8px;
-}
-.menu-box button{
-  display:block;
-  width:100%;
-  background:none;
-  border:none;
-  color:#fff;
-  padding:10px;
-  text-align:left;
-}
-
-/* bottom nav */
+/* NAV */
 .nav-wrap{
   position:fixed;
-  left:0; right:0; bottom:16px;
-  display:flex;
-  justify-content:center;
-  pointer-events:none;
+  left:0;right:0;bottom:16px;
+  display:flex;justify-content:center;
 }
 .nav{
-  pointer-events:auto;
   width:min(420px,100%);
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
+  display:flex;justify-content:space-around;
   padding:14px;
   border-radius:26px;
   background:rgba(255,255,255,0.14);
   border:1px solid rgba(255,255,255,0.22);
+  backdrop-filter:blur(18px);
 }
 .nav button{
   all:unset;
   width:52px;height:44px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:flex;justify-content:center;align-items:center;
   border-radius:16px;
+  cursor:pointer;
 }
 .nav button.active{
-  background:rgba(255,255,255,.2);
+  background:rgba(255,255,255,0.22);
 }
 .ico{width:24px;height:24px;fill:#fff}
 </style>
@@ -115,16 +92,7 @@ body{
 
 <body>
 
-<div class="menu">
-  <button onclick="toggleMenu()">⋮</button>
-  <div class="menu-box" id="menuBox">
-    <button onclick="changePassword()">Change password</button>
-    <button onclick="logout()">Logout</button>
-  </div>
-</div>
-
 <div class="wrap">
-
   <div class="glass card">
     <div>Balance</div>
     <div class="amount" id="balance">$0.00</div>
@@ -136,18 +104,16 @@ body{
   </div>
 
   <div class="glass stats">
-    <div class="row"><span>Score</span><span id="score">0</span></div>
-    <div class="row"><span>Tap power</span><span id="power">1×</span></div>
-    <div class="row"><span>Today taps</span><span id="today">0 / 500000</span></div>
+    <div class="row"><span>Score</span><b id="score">0</b></div>
+    <div class="row"><span>Tap power</span><b id="power">1×</b></div>
+    <div class="row"><span>Today taps</span><b id="today">0 / 500000</b></div>
   </div>
-
 </div>
 
-<!-- bottom nav -->
 <div class="nav-wrap">
   <div class="nav">
     <button class="active"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3 2 12h3v8h6v-5h2v5h6v-8h3z"/></svg></button>
-    <button onclick="location.href='tasks.html'"><svg class="ico" viewBox="0 0 24 24"><path d="M7 7h14v2H7z"/></svg></button>
+    <button onclick="location.href='tasks.html'"><svg class="ico" viewBox="0 0 24 24"><path d="M4 6h16v2H4z"/></svg></button>
     <button onclick="location.href='wallet.html'"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7h18v10H3z"/></svg></button>
     <button onclick="location.href='referral.html'"><svg class="ico" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 1 0-7"/></svg></button>
     <button onclick="location.href='vip.html'"><svg class="ico" viewBox="0 0 24 24"><path d="M12 2 9 7 3 8l4 4"/></svg></button>
@@ -156,68 +122,66 @@ body{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth,onAuthStateChanged,signOut,sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore,doc,getDoc,runTransaction,serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const app=initializeApp({
-  apiKey:"AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
-  authDomain:"primeinvestproject2.firebaseapp.com",
-  projectId:"primeinvestproject2"
-});
-const auth=getAuth(app);
-const db=getFirestore(app);
+const firebaseConfig = {
+  apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
+  authDomain: "primeinvestproject2.firebaseapp.com",
+  projectId: "primeinvestproject2"
+};
 
-const SCORE_PER_USD=10000000;
-const LIMIT=500000;
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
 const MULT={0:1,1:5,2:10,3:20,4:40,5:80,6:800,7:8000,8:80000};
-let ref;
+const LIMIT=500000;
+const SCORE_USD=10000000;
 
-onAuthStateChanged(auth,async u=>{
-  if(!u){location.replace("auth.html");return;}
-  ref=doc(db,"users",u.uid);
-  const s=await getDoc(ref);
-  if(!s.exists()){
-    await runTransaction(db,tx=>{
-      tx.set(ref,{score:0,tapsToday:0,tapsDate:new Date().toDateString(),createdAt:serverTimestamp()});
-    });
-  }
+const el={
+  balance:balance,
+  vip:vip,
+  score:score,
+  power:power,
+  today:today,
+  tap:tapBtn
+};
+
+let userRef;
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){location.href="auth.html";return;}
+  userRef=doc(db,"users",user.uid);
   refresh();
 });
 
-function today(){return new Date().toDateString();}
-
 async function refresh(){
-  const s=await getDoc(ref);
-  const d=s.data();
-  const vip=d.vip?.level||0;
-  const p=MULT[vip]||1;
-  document.getElementById("vip").textContent=vip?`VIP: ${vip}`:"VIP: None";
-  document.getElementById("power").textContent=p+"×";
-  document.getElementById("score").textContent=d.score||0;
-  document.getElementById("balance").textContent="$"+((d.score||0)/SCORE_PER_USD).toFixed(2);
-  document.getElementById("today").textContent=`${d.tapsToday||0} / ${vip?"∞":LIMIT}`;
+  const snap=await getDoc(userRef);
+  if(!snap.exists())return;
+  const u=snap.data();
+  const lvl=u.vip?.level||0;
+  const taps=u.tapsToday||0;
+  el.vip.textContent=lvl?`VIP: ${lvl}`:"VIP: None";
+  el.power.textContent=(MULT[lvl]||1)+"×";
+  el.score.textContent=u.score||0;
+  el.today.textContent=lvl?`${taps} / ∞`:`${taps} / ${LIMIT}`;
+  el.balance.textContent="$"+((u.balance||0)+(u.score||0)/SCORE_USD).toFixed(2);
 }
 
-tapBtn.onclick=async()=>{
-  try{
-    await runTransaction(db,async tx=>{
-      const s=await tx.get(ref);
-      const d=s.data();
-      let taps=d.tapsToday||0;
-      let date=d.tapsDate||today();
-      const vip=d.vip?.level||0;
-      const p=MULT[vip]||1;
-      if(date!==today()){taps=0;date=today();}
-      if(vip===0&&taps>=LIMIT)throw "Daily limit reached";
-      tx.update(ref,{score:(d.score||0)+p,tapsToday:taps+1,tapsDate:date});
+el.tap.onclick=async()=>{
+  await runTransaction(db,async tx=>{
+    const snap=await tx.get(userRef);
+    const u=snap.data();
+    const lvl=u.vip?.level||0;
+    if(lvl===0 && u.tapsToday>=LIMIT) return;
+    tx.update(userRef,{
+      score:(u.score||0)+(MULT[lvl]||1),
+      tapsToday:(u.tapsToday||0)+1
     });
-    refresh();
-  }catch(e){alert(e);}
+  });
+  refresh();
 };
-
-window.toggleMenu=()=>menuBox.style.display=menuBox.style.display?"":"block";
-window.logout=async()=>{await signOut(auth);location.replace("auth.html");};
-window.changePassword=async()=>{await sendPasswordResetEmail(auth,auth.currentUser.email);alert("Password reset email sent");};
 </script>
 
 </body>
