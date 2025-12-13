@@ -146,13 +146,13 @@ body{
   </div>
 </div>
 
-<div class="wrap">
+<div class="wrap" id="app" style="display:none">
   <div class="glass card">
     <div>Balance</div>
     <div class="amount" id="balance">$0.00</div>
     <div class="vip-pill" id="vip">VIP: None</div>
   </div>
-
+<div id="loginStatus" style="margin-top:8px;font-size:13px;opacity:.85;"></div>
   <!-- TAP VISUAL ONLY (DISABLED) -->
   <div class="tap-area">
     <div class="orb glass">TAP</div>
@@ -223,18 +223,41 @@ window.setLang=l=>{
 };
 setLang("en");
 
-onAuthStateChanged(auth,async user=>{
-  loginBtn.style.display=user?"none":"block";
-  logoutBtn.style.display=user?"block":"none";
-  adminBtn.style.display="none";
-  if(user){
-    const snap=await getDoc(doc(db,"users",user.uid));
-    const u=snap.exists()?snap.data():{};
-    vipEl.textContent="VIP: "+(u.vip?.level||"None");
-    adminBtn.style.display=u.role==="admin"?"block":"none";
-  }else{
-    vipEl.textContent="VIP: None";
+onAuthStateChanged(auth, async user => {
+
+  // 🚫 Not logged in → force to auth page
+  if (!user) {
+    loginBtn.style.display = "block";
+    logoutBtn.style.display = "none";
+    adminBtn.style.display = "none";
+
+    const loginStatus = document.getElementById("loginStatus");
+    if (loginStatus) {
+      loginStatus.textContent = "Not logged in";
+    }
+
+    location.href = "auth.html";
+    return;
   }
+
+  // ✅ Logged in
+  loginBtn.style.display = "none";
+  logoutBtn.style.display = "block";
+  adminBtn.style.display = "none";
+
+  // 🔹 Show logged-in status (email)
+  const loginStatus = document.getElementById("loginStatus");
+  if (loginStatus) {
+    loginStatus.textContent = `Logged in as: ${user.email}`;
+  }
+
+  // Existing Firestore logic
+  const snap = await getDoc(doc(db, "users", user.uid));
+  const u = snap.exists() ? snap.data() : {};
+
+  vipEl.textContent = "VIP: " + (u.vip?.level || "None");
+  adminBtn.style.display = u.role === "admin" ? "block" : "none";
+  document.getElementById("app").style.display = "block";
 });
 </script>
 
