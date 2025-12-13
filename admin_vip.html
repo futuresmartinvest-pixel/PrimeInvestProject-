@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Admin VIP Panel</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
@@ -17,19 +18,31 @@ body{
   color:#fff;
   padding:16px;
 }
+
+h2{
+  text-align:center;
+  margin-bottom:16px;
+}
+
 .card{
   background:#141c2f;
   padding:16px;
   border-radius:14px;
   margin-bottom:14px;
 }
+
 button{
-  background:#22c55e;
+  padding:10px 14px;
   border:none;
-  padding:10px 16px;
   border-radius:10px;
   font-weight:800;
+  cursor:pointer;
+  margin-right:8px;
 }
+
+.approve{ background:#22c55e; color:#000; }
+.reject{ background:#ef4444; color:#fff; }
+
 .badge{
   background:#f59e0b;
   color:#000;
@@ -42,10 +55,10 @@ button{
 
 <body>
 
-<h2>VIP Requests</h2>
+<h2>VIP Requests (Admin Only)</h2>
 <div id="list"></div>
 
-<script type="module">
+<script type="module" defer>
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore,
@@ -63,6 +76,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+/* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
   authDomain: "primeinvestproject2.firebaseapp.com",
@@ -76,43 +90,61 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+/* ADMIN LOGIN */
 await signInWithEmailAndPassword(
   auth,
   prompt("Admin email"),
   prompt("Admin password")
 );
 
-onAuthStateChanged(auth, async user=>{
+/* VERIFY ADMIN */
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){
+    alert("Authentication failed");
+    return;
+  }
+
   const token = await user.getIdTokenResult();
   if(!token.claims.admin){
     alert("Access denied");
+    auth.signOut();
     return;
   }
-  load();
+
+  loadRequests();
 });
 
-const VIP_RATES = {1:5,2:10,3:20,4:40,5:80,6:800,7:8000,8:80000};
+/* VIP MULTIPLIERS */
+const VIP_RATES = {
+  1:5, 2:10, 3:20, 4:40,
+  5:80, 6:800, 7:8000, 8:80000
+};
 
-async function load(){
+/* LOAD REQUESTS */
+async function loadRequests(){
   const snap = await getDocs(collection(db,"vip_requests"));
   const list = document.getElementById("list");
-  list.innerHTML="";
+  list.innerHTML = "";
 
   snap.forEach(s=>{
-    const d=s.data();
-    if(d.status!=="pending") return;
+    const d = s.data();
+    if(d.status !== "pending") return;
 
-    const div=document.createElement("div");
-    div.className="card";
-    div.innerHTML=`
-      <div>User: ${d.userId}</div>
-      <div>VIP: ${d.vipLevel}</div>
-      <div>Price: $${d.price}</div>
-      <span class="badge">Pending</span><br><br>
-      <button>Approve</button>
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <div><b>User ID:</b> ${d.userId}</div>
+      <div><b>VIP Level:</b> ${d.vipLevel}</div>
+      <div><b>Price:</b> $${d.price}</div>
+      <span class="badge">Pending</span>
+      <br><br>
+      <button class="approve">Approve</button>
+      <button class="reject">Reject</button>
     `;
 
-    div.querySelector("button").onclick=async()=>{
+    /* APPROVE */
+    div.querySelector(".approve").onclick = async ()=>{
       await setDoc(doc(db,"users",d.userId),{
         vip:{
           level:d.vipLevel,
@@ -126,7 +158,6 @@ async function load(){
         approvedAt:serverTimestamp()
       });
 
-      /* AUDIT LOG */
       await addDoc(collection(db,"audit_logs"),{
         type:"VIP_APPROVED",
         userId:d.userId,
@@ -137,11 +168,35 @@ async function load(){
       });
 
       alert("VIP Approved");
-      load();
+      loadRequests();
+    };
+
+    /* REJECT */
+    div.querySelector(".reject").onclick = async ()=>{
+      await updateDoc(doc(db,"vip_requests",s.id),{
+        status:"rejected",
+        rejectedAt:serverTimestamp()
+      });
+
+      await addDoc(collection(db,"audit_logs"),{
+        type:"VIP_REJECTED",
+        userId:d.userId,
+        vipLevel:d.vipLevel,
+        price:d.price,
+        actor:"admin",
+        createdAt:serverTimestamp()
+      });
+
+      alert("VIP Rejected");
+      loadRequests();
     };
 
     list.appendChild(div);
   });
+
+  if(list.innerHTML === ""){
+    list.innerHTML = "<p>No pending VIP requests.</p>";
+  }
 }
 </script>
 
