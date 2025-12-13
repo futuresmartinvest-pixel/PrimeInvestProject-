@@ -2,260 +2,114 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+
 <meta name="viewport"
 content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <title>PrimeGlobalPro</title>
 
+<!-- ICONS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
 <style>
-*{box-sizing:border-box}
 body{
   margin:0;
   font-family:system-ui;
-  background:linear-gradient(135deg,#1a1f3c,#3b2b78);
+  background:linear-gradient(135deg,#1a1446,#3b2fa3);
   color:#fff;
-  height:100vh;
-  overflow:hidden;
+  padding-bottom:120px;
 }
 
-/* ===== BALANCE ===== */
-.balance-box{
-  position:absolute;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:rgba(255,255,255,.15);
-  backdrop-filter:blur(16px);
-  padding:16px 28px;
-  border-radius:24px;
+/* BALANCE */
+.balance-card{
+  margin:24px;
+  padding:28px;
+  border-radius:26px;
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(20px);
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
   text-align:center;
-  box-shadow:0 20px 40px rgba(0,0,0,.3);
 }
-.balance-box small{opacity:.8}
+.balance-card small{
+  opacity:.8;
+  font-size:16px;
+}
 .balance-amount{
-  font-size:36px;
+  font-size:44px;
   font-weight:900;
+  margin-top:6px;
 }
 
-/* ===== ROBOT ===== */
-.robot-wrap{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
+/* VIP STATUS */
+.vip-status{
+  margin:0 24px;
+  padding:16px;
+  border-radius:20px;
+  background:rgba(255,100,100,.85);
+  font-weight:700;
+  text-align:center;
 }
-.robot{
-  width:160px;
-  height:160px;
-  border-radius:50%;
-  background:radial-gradient(circle at top,#bfa9ff,#6a5cff);
+
+/* GLASS NAV */
+.nav-wrap{
+  position:fixed;
+  bottom:18px;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+}
+.nav{
+  width:calc(100% - 48px);
+  max-width:420px;
+  height:64px;
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(18px);
+  border-radius:999px;
   display:flex;
   align-items:center;
-  justify-content:center;
-  font-size:60px;
-  cursor:pointer;
-  animation:breathe 3s ease-in-out infinite;
-  box-shadow:0 0 60px rgba(150,120,255,.7);
-  position:relative;
+  justify-content:space-around;
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
 }
 
-@keyframes breathe{
-  0%,100%{box-shadow:0 0 40px rgba(150,120,255,.5)}
-  50%{box-shadow:0 0 80px rgba(190,160,255,.9)}
-}
-
-.robot::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(255,255,255,.6),transparent 70%);
-  opacity:0;
-  transform:scale(.6);
-}
-
-.robot.tap::after{
-  animation:ripple .4s ease-out;
-}
-
-@keyframes ripple{
-  0%{opacity:.6;transform:scale(.6)}
-  100%{opacity:0;transform:scale(1.4)}
-}
-
-.score-float{
-  position:absolute;
-  color:#fff;
-  font-weight:900;
-  font-size:20px;
-  animation:floatUp .9s ease-out forwards;
-  text-shadow:0 0 14px rgba(255,255,255,.9);
-}
-
-@keyframes floatUp{
-  0%{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  100%{opacity:0;transform:translate(-50%,-110%) scale(1.4)}
-}
-
-/* ===== NAV ===== */
-.nav{
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:rgba(255,255,255,.9);
-  padding:14px 24px;
-  border-radius:40px;
-  display:flex;
-  gap:28px;
-  box-shadow:0 20px 40px rgba(0,0,0,.3);
-}
 .nav i{
   font-size:22px;
-  color:#333;
-  cursor:pointer;
+  color:#777;
+  transition:.25s;
 }
 .nav i.active{
-  color:#6a5cff;
+  color:#3b2fa3;
+  transform:scale(1.25);
+}
+.nav i:hover{
+  color:#3b2fa3;
 }
 </style>
 </head>
 
 <body>
 
-<div class="balance-box">
+<!-- BALANCE -->
+<div class="balance-card">
   <small>Balance</small>
   <div class="balance-amount">$0.00</div>
 </div>
 
-<div class="robot-wrap">
-  <div id="robot" class="robot">🤖</div>
+<!-- VIP STATUS -->
+<div class="vip-status">
+  VIP: None — No active VIP
 </div>
 
-<div class="nav">
-  <i class="active">🏠</i>
-  <i onclick="location.href='tasks.html'">📋</i>
-  <i onclick="location.href='wallet.html'">💼</i>
-  <i onclick="location.href='referral.html'">👥</i>
-  <i onclick="location.href='deposit.html'">⭐</i>
+<!-- GLASS BOTTOM NAV -->
+<div class="nav-wrap">
+  <div class="nav">
+    <i class="fa-solid fa-house active"></i>
+    <i class="fa-solid fa-list-check" onclick="location.href='tasks.html'"></i>
+    <i class="fa-solid fa-robot"></i>
+    <i class="fa-solid fa-users" onclick="location.href='referral.html'"></i>
+    <i class="fa-solid fa-crown" onclick="location.href='deposit.html'"></i>
+  </div>
 </div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-/* FIREBASE */
-const firebaseConfig = {
-  apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
-  authDomain: "primeinvestproject2.firebaseapp.com",
-  projectId: "primeinvestproject2",
-  storageBucket: "primeinvestproject2.firebasestorage.app",
-  messagingSenderId: "798977477628",
-  appId: "1:798977477628:web:c97d1fba72ad7865864079"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-/* CONSTANTS */
-const SCORE_PER_DOLLAR = 10000000;
-const DAILY_LIMIT_NO_VIP = 500000;
-
-const MULTI = {
-  0:1,
-  1:5,
-  2:10,
-  3:20,
-  4:40,
-  5:80,
-  6:800,
-  7:8000,
-  8:80000
-};
-
-/* USER */
-function uid(){
-  let id = localStorage.getItem("userId");
-  if(!id){
-    id="user_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
-    localStorage.setItem("userId",id);
-  }
-  return id;
-}
-
-const userRef = doc(db,"users",uid());
-
-async function ensureUser(){
-  const s = await getDoc(userRef);
-  if(!s.exists()){
-    await setDoc(userRef,{
-      balance:0,
-      score:0,
-      dailyScore:0,
-      createdAt:serverTimestamp()
-    });
-  }
-}
-
-async function refresh(){
-  const s = await getDoc(userRef);
-  document.querySelector(".balance-amount").innerText =
-    "$"+((s.data().balance)||0).toFixed(2);
-}
-
-const robot = document.getElementById("robot");
-
-robot.onclick = async ()=>{
-  robot.classList.add("tap");
-  setTimeout(()=>robot.classList.remove("tap"),150);
-
-  const s = await getDoc(userRef);
-  const d = s.data();
-
-  const today = new Date().toDateString();
-  let daily = d.dailyScore||0;
-  if(d.lastTapDay !== today) daily=0;
-
-  const vipLevel = d.vip?.level||0;
-  const gain = MULTI[vipLevel];
-
-  if(!d.vip && daily + gain > DAILY_LIMIT_NO_VIP){
-    alert("Daily limit reached");
-    return;
-  }
-
-  const f=document.createElement("div");
-  f.className="score-float";
-  f.innerText="+"+gain;
-  f.style.left="50%";
-  f.style.top="50%";
-  document.body.appendChild(f);
-  setTimeout(()=>f.remove(),900);
-
-  const newScore=(d.score||0)+gain;
-  const oldDollars=Math.floor((d.score||0)/SCORE_PER_DOLLAR);
-  const newDollars=Math.floor(newScore/SCORE_PER_DOLLAR);
-
-  await updateDoc(userRef,{
-    score:newScore,
-    dailyScore:daily+gain,
-    lastTapDay:today,
-    balance:(d.balance||0)+(newDollars-oldDollars)
-  });
-
-  refresh();
-};
-
-await ensureUser();
-await refresh();
-</script>
 
 </body>
 </html>
