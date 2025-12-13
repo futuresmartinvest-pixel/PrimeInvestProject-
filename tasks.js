@@ -9,7 +9,8 @@ import {
   setDoc,
   getDoc,
   getDocs,
-  updateDoc
+  updateDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // ------------------------------------------------------
@@ -72,7 +73,7 @@ function createTaskCard(task, taskId) {
 }
 
 // ------------------------------------------------------
-// Completion Logic
+// Completion Logic (SAFE VERSION)
 // ------------------------------------------------------
 async function setupTaskCompletion(taskId, reward) {
   const user = auth.currentUser;
@@ -100,9 +101,9 @@ async function setupTaskCompletion(taskId, reward) {
       reward
     });
 
-    // Update balance
+    // ✅ SAFE BALANCE UPDATE (NO CORRUPTION)
     await updateDoc(doc(db, "users", user.uid), {
-      balance: (userTaskSnap.data()?.balance || 0) + reward
+      balance: increment(reward)
     });
 
     timerBox.textContent = "Completed ✔";
