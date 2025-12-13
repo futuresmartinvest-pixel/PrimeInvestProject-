@@ -22,10 +22,9 @@ body{
   color:#fff;
 }
 
-/* CARD */
 .auth-card{
   width:92%;
-  max-width:380px;
+  max-width:400px;
   background:rgba(255,255,255,.12);
   border:1px solid rgba(255,255,255,.22);
   border-radius:26px;
@@ -34,23 +33,10 @@ body{
   padding:22px;
 }
 
-/* HEADER */
-.auth-header{
-  text-align:center;
-  margin-bottom:18px;
-}
-.auth-header h2{
-  margin:0;
-  font-size:26px;
-  font-weight:900;
-}
-.auth-header p{
-  margin:6px 0 0;
-  font-size:14px;
-  opacity:.75;
-}
+.auth-header{text-align:center;margin-bottom:18px}
+.auth-header h2{margin:0;font-size:26px;font-weight:900}
+.auth-header p{margin:6px 0 0;font-size:14px;opacity:.75}
 
-/* TABS */
 .tabs{
   display:flex;
   background:rgba(255,255,255,.1);
@@ -73,8 +59,7 @@ body{
   opacity:1;
 }
 
-/* INPUTS */
-input{
+input,select{
   width:100%;
   padding:14px;
   border-radius:14px;
@@ -85,8 +70,8 @@ input{
   margin-bottom:12px;
 }
 input::placeholder{color:#bbb}
+select option{color:#000}
 
-/* BUTTON */
 .main-btn{
   width:100%;
   padding:14px;
@@ -97,20 +82,34 @@ input::placeholder{color:#bbb}
   font-weight:900;
   font-size:16px;
   cursor:pointer;
-  margin-top:6px;
 }
 
-/* LINK */
-.link{
-  text-align:center;
-  font-size:14px;
-  margin-top:12px;
-  opacity:.85;
-  cursor:pointer;
-}
-
-/* HIDE */
+.link{text-align:center;font-size:14px;margin-top:12px;opacity:.85;cursor:pointer}
 .hidden{display:none}
+
+/* PASSWORD STRENGTH */
+.strength{
+  height:6px;
+  border-radius:6px;
+  background:#333;
+  overflow:hidden;
+  margin-bottom:10px;
+}
+.strength div{
+  height:100%;
+  width:0%;
+  transition:.3s;
+}
+
+/* TERMS */
+.terms{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  font-size:13px;
+  margin-bottom:12px;
+}
+.terms input{margin-top:3px}
 </style>
 </head>
 
@@ -139,12 +138,37 @@ input::placeholder{color:#bbb}
   <!-- REGISTER -->
   <div id="registerBox" class="hidden">
     <input id="fullName" placeholder="Full name">
-    <input id="country" placeholder="Country">
+
+    <select id="country">
+      <option value="">🌍 Select country</option>
+      <option>🇬🇧 United Kingdom</option>
+      <option>🇺🇸 United States</option>
+      <option>🇨🇦 Canada</option>
+      <option>🇦🇺 Australia</option>
+      <option>🇩🇪 Germany</option>
+      <option>🇫🇷 France</option>
+      <option>🇮🇹 Italy</option>
+      <option>🇪🇸 Spain</option>
+      <option>🇹🇷 Turkey</option>
+      <option>🇮🇷 Iran</option>
+    </select>
+
     <input id="address" placeholder="Address">
     <input id="regEmail" type="email" placeholder="Email">
+
     <input id="regPass1" type="password" placeholder="Password">
+    <div class="strength"><div id="strengthBar"></div></div>
+
     <input id="regPass2" type="password" placeholder="Confirm password">
     <input id="referral" placeholder="Referral code (optional)">
+
+    <div class="terms">
+      <input type="checkbox" id="terms">
+      <label for="terms">
+        I agree to the <b>Terms & Conditions</b> and <b>Privacy Policy</b>
+      </label>
+    </div>
+
     <button class="main-btn" id="registerBtn">Create Account</button>
   </div>
 
@@ -179,33 +203,44 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* TABS */
-const loginBox = document.getElementById("loginBox");
-const registerBox = document.getElementById("registerBox");
-document.getElementById("tabLogin").onclick = ()=>{
+tabLogin.onclick = ()=>{
   loginBox.classList.remove("hidden");
   registerBox.classList.add("hidden");
   tabLogin.classList.add("active");
   tabRegister.classList.remove("active");
 };
-document.getElementById("tabRegister").onclick = ()=>{
+tabRegister.onclick = ()=>{
   registerBox.classList.remove("hidden");
   loginBox.classList.add("hidden");
   tabRegister.classList.add("active");
   tabLogin.classList.remove("active");
 };
 
+/* PASSWORD STRENGTH */
+regPass1.oninput = ()=>{
+  const v = regPass1.value;
+  let s = 0;
+  if(v.length >= 8) s+=25;
+  if(/[A-Z]/.test(v)) s+=25;
+  if(/[0-9]/.test(v)) s+=25;
+  if(/[^A-Za-z0-9]/.test(v)) s+=25;
+  strengthBar.style.width = s + "%";
+  strengthBar.style.background =
+    s < 50 ? "#ef4444" : s < 75 ? "#f59e0b" : "#22c55e";
+};
+
 /* LOGIN */
 loginBtn.onclick = async ()=>{
-  await signInWithEmailAndPassword(
-    auth,
-    loginEmail.value,
-    loginPassword.value
-  );
+  await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
   location.replace("index.html");
 };
 
 /* REGISTER */
 registerBtn.onclick = async ()=>{
+  if(!terms.checked){
+    alert("You must accept Terms & Conditions");
+    return;
+  }
   if(regPass1.value !== regPass2.value){
     alert("Passwords do not match");
     return;
@@ -228,14 +263,14 @@ registerBtn.onclick = async ()=>{
   location.replace("index.html");
 };
 
-/* FORGOT */
+/* FORGOT PASSWORD (EMAIL VERIFIED HERE) */
 forgotBtn.onclick = async ()=>{
   if(!loginEmail.value){
     alert("Enter your email first");
     return;
   }
   await sendPasswordResetEmail(auth, loginEmail.value);
-  alert("Password reset email sent");
+  alert("Password reset email sent. Check your inbox.");
 };
 </script>
 
