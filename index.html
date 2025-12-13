@@ -250,7 +250,7 @@ onAuthStateChanged(auth, async user => {
     loginEmailInfo.style.display = "none";
     loginEmailInfo.textContent = "";
 
-    document.getElementById("app").style.display = "none";
+  
     return;
   }
 
@@ -269,9 +269,6 @@ onAuthStateChanged(auth, async user => {
 
   vipEl.textContent = "VIP: " + (u.vip?.level || "None");
   adminBtn.style.display = u.role === "admin" ? "block" : "none";
-
-  document.getElementById("app").style.display = "block";
-});
 
 </script>
 <div class="bottom-nav">
