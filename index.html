@@ -239,7 +239,7 @@ function refresh(){
 }
 
 tapBtn.onclick = ()=>{
-  if(!authReady){
+  if(!state.loggedIn){
   alert("Please login first");
   return;
   }
