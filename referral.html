@@ -1,167 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
-<title>Referral Program</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>PrimeGlobalPro – Referral</title>
 
 <style>
 *{box-sizing:border-box}
-
 body{
   margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont;
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 20% 20%, #7f5cff55, transparent 40%),
-    radial-gradient(circle at 80% 70%, #00e5ff55, transparent 40%),
-    linear-gradient(180deg,#05070f,#0a0f24);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   color:#fff;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(165,120,255,.45), transparent 42%),
+    radial-gradient(circle at 82% 75%, rgba(0,220,255,.35), transparent 45%),
+    linear-gradient(180deg,#05070f,#0a0f24);
 }
 
-/* GLASS */
+.wrap{padding:18px 16px 120px; max-width:420px; margin:0 auto;}
+
 .glass{
-  background:rgba(255,255,255,0.12);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border:1px solid rgba(255,255,255,0.25);
-  border-radius:22px;
-  box-shadow:0 0 25px rgba(120,200,255,0.35);
-}
-
-/* HEADER */
-h1{
-  text-align:center;
-  margin:20px 0 16px;
-  font-weight:800;
-}
-
-/* CONTAINER */
-.container{
-  max-width:420px;
-  margin:auto;
-  padding:16px;
-}
-
-/* BLOCK */
-.block{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:24px;
+  backdrop-filter:blur(18px);
   padding:18px;
   margin-bottom:16px;
 }
 
-.label{
-  font-size:14px;
-  opacity:.8;
-  margin-bottom:6px;
-}
+h2{text-align:center;margin:0 0 14px}
 
-.value{
-  font-size:18px;
-  font-weight:700;
-  word-break:break-all;
-}
-
-/* INPUT LOOK */
-.fake-input{
-  background:rgba(0,0,0,.35);
-  padding:12px;
-  border-radius:14px;
-  margin-top:6px;
-}
-
-/* BUTTON */
-button{
-  width:100%;
-  margin-top:12px;
-  padding:14px;
-  border:none;
-  border-radius:16px;
+.code{
+  font-size:20px;
   font-weight:900;
-  font-size:16px;
-  background:linear-gradient(135deg,#ffd36e,#ffb700);
-  color:#000;
-  cursor:pointer;
+  letter-spacing:2px;
+  text-align:center;
 }
 
-/* STATS */
-.stats{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
+.copy{
   margin-top:10px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:14px;
+  font-weight:700;
+  cursor:pointer;
 }
 
 .stat{
-  padding:14px;
-  text-align:center;
-}
-
-.stat b{
-  display:block;
-  font-size:22px;
-  margin-top:4px;
-}
-
-.back{
-  text-align:center;
-  margin-top:16px;
-  opacity:.7;
-  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  font-weight:700;
+  margin-top:8px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Referral Program</h1>
+<div class="wrap">
 
-<div class="container">
-
-  <div class="glass block">
-    <div class="label">Your Referral Code</div>
-    <div class="fake-input value" id="refCode">Loading...</div>
-
-    <div class="label" style="margin-top:14px">Your Referral Link</div>
-    <div class="fake-input value" id="refLink">Loading...</div>
-
-    <button onclick="copyLink()">COPY LINK</button>
+  <div class="glass">
+    <h2>Your Referral Code</h2>
+    <div class="code" id="refCode">----</div>
+    <button class="copy" onclick="copyLink()">Copy Referral Link</button>
   </div>
 
-  <div class="glass block">
-    <div class="label">Your Stats</div>
-    <div class="stats">
-      <div class="glass stat">
-        Referred
-        <b id="refCount">0</b>
-      </div>
-      <div class="glass stat">
-        Earnings
-        <b id="refEarning">$0.00</b>
-      </div>
-    </div>
-  </div>
-
-  <div class="back" onclick="location.href='index.html'">
-    ← Back to Home
+  <div class="glass">
+    <h2>Referral Stats</h2>
+    <div class="stat"><span>Invited Users</span><span id="refCount">0</span></div>
+    <div class="stat"><span>Referral Earnings</span><span id="refEarnings">$0.00</span></div>
   </div>
 
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* FIREBASE */
 const firebaseConfig = {
-  apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
+  apiKey: "AIzaSyA1HZLZRY9UADNVBnoBIlG3b-bCkojxs",
   authDomain: "primeinvestproject2.firebaseapp.com",
   projectId: "primeinvestproject2",
   storageBucket: "primeinvestproject2.firebasestorage.app",
@@ -170,50 +89,44 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* USER ID */
-function uid(){
-  let id = localStorage.getItem("userId");
-  if(!id){
-    id = "user_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
-    localStorage.setItem("userId",id);
+let currentUser = null;
+
+onAuthStateChanged(auth, async user=>{
+  if(!user){
+    location.href="auth.html";
+    return;
   }
-  return id;
-}
 
-const userRef = doc(db,"users",uid());
+  currentUser = user;
+  const ref = doc(db,"users",user.uid);
+  const snap = await getDoc(ref);
 
-async function load(){
-  const snap = await getDoc(userRef);
+  let data = snap.exists() ? snap.data() : {};
 
-  if(!snap.exists()){
-    await setDoc(userRef,{
-      referralCode: uid().slice(-6).toUpperCase(),
-      referred:0,
-      referralEarning:0,
-      createdAt:serverTimestamp()
+  // Generate referral code once
+  if(!data.referralCode){
+    const code = user.uid.slice(0,8).toUpperCase();
+    await updateDoc(ref,{
+      referralCode:code,
+      referralCount:0,
+      referralEarnings:0
     });
+    data.referralCode = code;
   }
 
-  const data = (await getDoc(userRef)).data();
-
-  const code = data.referralCode;
-  const link = location.origin + "/index.html?ref=" + code;
-
-  document.getElementById("refCode").innerText = code;
-  document.getElementById("refLink").innerText = link;
-  document.getElementById("refCount").innerText = data.referred || 0;
-  document.getElementById("refEarning").innerText =
-    "$"+Number(data.referralEarning||0).toFixed(2);
-}
+  document.getElementById("refCode").textContent = data.referralCode;
+  document.getElementById("refCount").textContent = data.referralCount || 0;
+  document.getElementById("refEarnings").textContent = "$"+(data.referralEarnings||0).toFixed(2);
+});
 
 window.copyLink = ()=>{
-  navigator.clipboard.writeText(document.getElementById("refLink").innerText);
+  const link = location.origin + "/auth.html?ref=" + document.getElementById("refCode").textContent;
+  navigator.clipboard.writeText(link);
   alert("Referral link copied");
 };
-
-load();
 </script>
 
 </body>
