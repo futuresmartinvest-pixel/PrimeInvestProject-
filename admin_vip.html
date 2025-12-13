@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>Admin VIP Panel</title>
 
 <style>
@@ -48,7 +47,15 @@ button{
 <div id="list"></div>
 
 <script type="module">
+/* ================= ADMIN UID ================= */
+const ADMIN_UID = "3xM6WyDqPTVkX0L4sOTNQ8f4VWO2";
+
+/* ================= FIREBASE ================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
   getFirestore,
   collection,
@@ -59,7 +66,6 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
   authDomain: "primeinvestproject2.firebaseapp.com",
@@ -70,9 +76,20 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* VIP RATES */
+/* ================= SECURITY ================= */
+onAuthStateChanged(auth, (user) => {
+  if (!user || user.uid !== ADMIN_UID) {
+    alert("Access denied");
+    location.href = "index.html";
+  } else {
+    load();
+  }
+});
+
+/* ================= VIP RATES ================= */
 const VIP_PLANS = {
   1:{rate:2.33},
   2:{rate:3.33},
@@ -86,22 +103,22 @@ const VIP_PLANS = {
 
 const DAY = 86400000;
 
-/* LOAD REQUESTS */
+/* ================= LOAD REQUESTS ================= */
 async function load(){
   const snap = await getDocs(collection(db,"vip_requests"));
   const list = document.getElementById("list");
   list.innerHTML = "";
 
-  snap.forEach(async r=>{
+  snap.forEach(r=>{
     const d = r.data();
     if(d.status !== "pending") return;
 
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
-      <div class="row"><b>User:</b> ${d.userId}</div>
-      <div class="row"><b>VIP:</b> ${d.vipLevel}</div>
-      <div class="row"><b>Price:</b> $${d.price}</div>
+      <div class="row"><b>User ID:</b> ${d.userId}</div>
+      <div class="row"><b>VIP Level:</b> ${d.vipLevel}</div>
+      <div class="row"><b>Amount:</b> $${d.price}</div>
       <div class="row"><span class="badge">Pending</span></div>
       <button>Approve VIP</button>
     `;
@@ -116,25 +133,23 @@ async function load(){
           price:d.price,
           rate:VIP_PLANS[d.vipLevel].rate,
           lastProfitAt:serverTimestamp(),
-          expiresAt:new Date(Date.now()+30*DAY)
+          expiresAt:new Date(Date.now() + 30 * DAY)
         }
       },{merge:true});
 
-      /* UPDATE REQUEST */
+      /* UPDATE REQUEST STATUS */
       await updateDoc(doc(db,"vip_requests",r.id),{
         status:"approved",
         approvedAt:serverTimestamp()
       });
 
-      alert("VIP Activated");
+      alert("VIP Activated Successfully");
       load();
     };
 
     list.appendChild(div);
   });
 }
-
-load();
 </script>
 
 </body>
