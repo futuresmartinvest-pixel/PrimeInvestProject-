@@ -4,125 +4,158 @@
 <meta charset="UTF-8">
 <meta name="viewport"
 content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
-<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-
-<title>Authentication</title>
+<title>PrimeGlobalPro – Authentication</title>
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui;
-  background:linear-gradient(180deg,#05070f,#0a0f24);
-  color:#fff;
   min-height:100vh;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(165,120,255,.45), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(0,220,255,.35), transparent 40%),
+    linear-gradient(180deg,#05070f,#0a0f24);
   display:flex;
   justify-content:center;
   align-items:center;
+  color:#fff;
 }
 
-.card{
+/* CARD */
+.auth-card{
   width:92%;
-  max-width:390px;
+  max-width:380px;
   background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.25);
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:26px;
   backdrop-filter:blur(18px);
-  border-radius:22px;
-  padding:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+  padding:22px;
 }
 
-h2{text-align:center;margin:6px 0 14px}
+/* HEADER */
+.auth-header{
+  text-align:center;
+  margin-bottom:18px;
+}
+.auth-header h2{
+  margin:0;
+  font-size:26px;
+  font-weight:900;
+}
+.auth-header p{
+  margin:6px 0 0;
+  font-size:14px;
+  opacity:.75;
+}
 
+/* TABS */
+.tabs{
+  display:flex;
+  background:rgba(255,255,255,.1);
+  border-radius:16px;
+  overflow:hidden;
+  margin:18px 0;
+}
+.tabs button{
+  flex:1;
+  padding:12px;
+  border:none;
+  background:none;
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+  opacity:.6;
+}
+.tabs button.active{
+  background:rgba(255,255,255,.18);
+  opacity:1;
+}
+
+/* INPUTS */
 input{
   width:100%;
-  padding:12px;
-  margin-bottom:10px;
-  border-radius:12px;
-  border:none;
-  outline:none;
-  font-size:14px;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.25);
+  color:#fff;
+  font-size:15px;
+  margin-bottom:12px;
 }
+input::placeholder{color:#bbb}
 
-button{
+/* BUTTON */
+.main-btn{
   width:100%;
   padding:14px;
   border:none;
-  border-radius:14px;
-  font-size:15px;
-  font-weight:900;
+  border-radius:16px;
   background:linear-gradient(135deg,#ffd36e,#ffb700);
   color:#000;
-  margin-top:6px;
+  font-weight:900;
+  font-size:16px;
   cursor:pointer;
+  margin-top:6px;
 }
 
+/* LINK */
 .link{
   text-align:center;
-  margin-top:10px;
-  font-size:13px;
+  font-size:14px;
+  margin-top:12px;
   opacity:.85;
   cursor:pointer;
 }
 
+/* HIDE */
 .hidden{display:none}
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="auth-card">
 
-  <!-- REGISTER -->
-  <div id="registerBox">
-    <h2>Create Account</h2>
+  <div class="auth-header">
+    <h2>PrimeGlobalPro</h2>
+    <p>Secure investment access</p>
+  </div>
 
-    <input id="fullName" placeholder="Full name">
-    <input id="country" placeholder="Country">
-    <input id="address" placeholder="Address">
-    <input id="emailR" type="email" placeholder="Email">
-    <input id="passwordR" type="password" placeholder="Password">
-    <input id="passwordR2" type="password" placeholder="Confirm password">
-    <input id="referral" placeholder="Referral code (optional)">
-
-    <button id="registerBtn">Register</button>
-
-    <div class="link" onclick="showLogin()">Already have an account? Login</div>
+  <div class="tabs">
+    <button id="tabLogin" class="active">Login</button>
+    <button id="tabRegister">Register</button>
   </div>
 
   <!-- LOGIN -->
-  <div id="loginBox" class="hidden">
-    <h2>Login</h2>
-
-    <input id="emailL" type="email" placeholder="Email">
-    <input id="passwordL" type="password" placeholder="Password">
-
-    <button id="loginBtn">Login</button>
-
-    <div class="link" onclick="showReset()">Forgot password?</div>
-    <div class="link" onclick="showRegister()">Create new account</div>
+  <div id="loginBox">
+    <input id="loginEmail" type="email" placeholder="Email">
+    <input id="loginPassword" type="password" placeholder="Password">
+    <button class="main-btn" id="loginBtn">Login</button>
+    <div class="link" id="forgotBtn">Forgot password?</div>
   </div>
 
-  <!-- RESET PASSWORD -->
-  <div id="resetBox" class="hidden">
-    <h2>Reset Password</h2>
-
-    <input id="emailReset" type="email" placeholder="Enter your email">
-
-    <button id="resetBtn">Send Reset Link</button>
-
-    <div class="link" onclick="showLogin()">Back to login</div>
+  <!-- REGISTER -->
+  <div id="registerBox" class="hidden">
+    <input id="fullName" placeholder="Full name">
+    <input id="country" placeholder="Country">
+    <input id="address" placeholder="Address">
+    <input id="regEmail" type="email" placeholder="Email">
+    <input id="regPass1" type="password" placeholder="Password">
+    <input id="regPass2" type="password" placeholder="Confirm password">
+    <input id="referral" placeholder="Referral code (optional)">
+    <button class="main-btn" id="registerBtn">Create Account</button>
   </div>
 
 </div>
 
-<script type="module" defer>
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth,
-  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
@@ -132,103 +165,77 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
   authDomain: "primeinvestproject2.firebaseapp.com",
   projectId: "primeinvestproject2",
   storageBucket: "primeinvestproject2.firebasestorage.app",
   messagingSenderId: "798977477628",
-  appId: "1:1:798977477628:web:c97d1fba72ad7865864079"
+  appId: "1:798977477628:web:c97d1fba72ad7865864079"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* UI SWITCHES */
-window.showLogin = ()=>{
-  hideAll(); document.getElementById("loginBox").classList.remove("hidden");
+/* TABS */
+const loginBox = document.getElementById("loginBox");
+const registerBox = document.getElementById("registerBox");
+document.getElementById("tabLogin").onclick = ()=>{
+  loginBox.classList.remove("hidden");
+  registerBox.classList.add("hidden");
+  tabLogin.classList.add("active");
+  tabRegister.classList.remove("active");
 };
-window.showRegister = ()=>{
-  hideAll(); document.getElementById("registerBox").classList.remove("hidden");
+document.getElementById("tabRegister").onclick = ()=>{
+  registerBox.classList.remove("hidden");
+  loginBox.classList.add("hidden");
+  tabRegister.classList.add("active");
+  tabLogin.classList.remove("active");
 };
-window.showReset = ()=>{
-  hideAll(); document.getElementById("resetBox").classList.remove("hidden");
+
+/* LOGIN */
+loginBtn.onclick = async ()=>{
+  await signInWithEmailAndPassword(
+    auth,
+    loginEmail.value,
+    loginPassword.value
+  );
+  location.replace("index.html");
 };
-function hideAll(){
-  document.querySelectorAll(".card > div").forEach(d=>d.classList.add("hidden"));
-}
 
 /* REGISTER */
-document.getElementById("registerBtn").onclick = async ()=>{
-  const fullName = document.getElementById("fullName").value.trim();
-  const country = document.getElementById("country").value.trim();
-  const address = document.getElementById("address").value.trim();
-  const email = document.getElementById("emailR").value.trim();
-  const pass1 = document.getElementById("passwordR").value;
-  const pass2 = document.getElementById("passwordR2").value;
-  const referral = document.getElementById("referral").value.trim();
-
-  if(!fullName || !country || !address || !email || !pass1){
-    alert("Fill all required fields");
-    return;
-  }
-  if(pass1 !== pass2){
+registerBtn.onclick = async ()=>{
+  if(regPass1.value !== regPass2.value){
     alert("Passwords do not match");
     return;
   }
 
-  try{
-    const cred = await createUserWithEmailAndPassword(auth,email,pass1);
+  const cred = await createUserWithEmailAndPassword(
+    auth,
+    regEmail.value,
+    regPass1.value
+  );
 
-    await setDoc(doc(db,"users",cred.user.uid),{
-      fullName,
-      country,
-      address,
-      email,
-      referralCode: referral || null,
-      score:0,
-      tapsToday:0,
-      tapsDate:"",
-      createdAt: serverTimestamp()
-    });
+  await setDoc(doc(db,"users",cred.user.uid),{
+    fullName: fullName.value,
+    country: country.value,
+    address: address.value,
+    referral: referral.value || null,
+    createdAt: serverTimestamp()
+  });
 
-    alert("Account created");
-    location.href = "index.html";
-  }catch(e){
-    alert(e.message);
-  }
+  location.replace("index.html");
 };
 
-/* LOGIN */
-document.getElementById("loginBtn").onclick = async ()=>{
-  try{
-    await signInWithEmailAndPassword(
-      auth,
-      document.getElementById("emailL").value,
-      document.getElementById("passwordL").value
-    );
-    location.href = "index.html";
-  }catch(e){
-    alert("Login failed");
-  }
-};
-
-/* RESET PASSWORD */
-document.getElementById("resetBtn").onclick = async ()=>{
-  const email = document.getElementById("emailReset").value.trim();
-  if(!email){
-    alert("Enter your email");
+/* FORGOT */
+forgotBtn.onclick = async ()=>{
+  if(!loginEmail.value){
+    alert("Enter your email first");
     return;
   }
-  try{
-    await sendPasswordResetEmail(auth,email);
-    alert("Password reset email sent");
-    showLogin();
-  }catch(e){
-    alert("Failed to send reset email");
-  }
+  await sendPasswordResetEmail(auth, loginEmail.value);
+  alert("Password reset email sent");
 };
 </script>
 
