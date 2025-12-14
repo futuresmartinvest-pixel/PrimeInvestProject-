@@ -2,50 +2,30 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>PrimeGlobalPro – Referral</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Referral</title>
 
 <style>
-*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-family:system-ui;
+  background:#0a0f24;
   color:#fff;
-  background:
-    radial-gradient(circle at 18% 18%, rgba(165,120,255,.45), transparent 42%),
-    radial-gradient(circle at 82% 75%, rgba(0,220,255,.35), transparent 45%),
-    linear-gradient(180deg,#05070f,#0a0f24);
 }
-.wrap{padding:18px 16px 120px; max-width:420px; margin:0 auto;}
-.glass{
+.wrap{padding:20px}
+.card{
   background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.22);
-  border-radius:24px;
-  backdrop-filter:blur(18px);
-  padding:18px;
-  margin-bottom:16px;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
 }
-h2{text-align:center;margin:0 0 14px}
-.code{
-  font-size:20px;
-  font-weight:900;
-  letter-spacing:2px;
-  text-align:center;
-}
-.copy{
-  margin-top:10px;
+button{
   width:100%;
   padding:12px;
   border:none;
-  border-radius:14px;
-  font-weight:700;
+  border-radius:12px;
+  font-weight:800;
   cursor:pointer;
-}
-.stat{
-  display:flex;
-  justify-content:space-between;
-  font-weight:700;
-  margin-top:8px;
 }
 </style>
 </head>
@@ -54,88 +34,71 @@ h2{text-align:center;margin:0 0 14px}
 
 <div class="wrap">
 
-  <div class="glass">
-    <h2>Your Referral Code</h2>
-    <div class="code" id="refCode">----</div>
-    <button class="copy" id="copyBtn">Copy Referral Link</button>
+  <div class="card">
+    <h3>Your Referral Code</h3>
+    <div id="refCode">----</div>
+    <button id="copyBtn">Copy Referral Link</button>
   </div>
 
-  <div class="glass">
-    <h2>Referral Stats</h2>
-    <div class="stat"><span>Invited Users</span><span id="refCount">0</span></div>
-    <div class="stat"><span>Referral Earnings</span><span id="refEarnings">$0.00</span></div>
+  <div class="card">
+    <div>Invited Users: <b id="count">0</b></div>
+    <div>Earnings: <b id="earn">$0.00</b></div>
   </div>
 
-  <div class="glass">
-    <h2>Invited Users</h2>
-    <div id="refList"></div>
+  <div class="card">
+    <h3>Invited List</h3>
+    <div id="list"></div>
   </div>
 
 </div>
+
 <script type="module">
 import { auth, db } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
   doc,
   getDoc,
-  updateDoc,
   collection,
   query,
   where,
   getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    location.replace("auth.html");
+onAuthStateChanged(auth, async user=>{
+  if(!user){
+    location.href="auth.html";
     return;
   }
 
-  const userRef = doc(db, "users", user.uid);
-  const snap = await getDoc(userRef);
-  if (!snap.exists()) return;
+  const snap = await getDoc(doc(db,"users",user.uid));
+  const d = snap.data();
 
-  let data = snap.data();
-
-  if (!data.referralCode) {
-    const code = user.uid.slice(0, 8).toUpperCase();
-    await updateDoc(userRef, {
-      referralCode: code,
-      referralCount: 0,
-      referralEarnings: 0
-    });
-    data.referralCode = code;
-  }
-
-  document.getElementById("refCode").textContent = data.referralCode;
-  document.getElementById("refCount").textContent = data.referralCount || 0;
-  document.getElementById("refEarnings").textContent =
-    "$" + (data.referralEarnings || 0).toFixed(2);
-
-  const list = document.getElementById("refList");
-  list.innerHTML = "";
+  document.getElementById("refCode").innerText = d.referralCode;
+  document.getElementById("count").innerText = d.referralCount || 0;
+  document.getElementById("earn").innerText = "$" + (d.referralEarnings||0).toFixed(2);
 
   const q = query(
-    collection(db, "referrals"),
-    where("inviterUid", "==", user.uid)
+    collection(db,"referrals"),
+    where("inviterUid","==",user.uid)
   );
+  const refs = await getDocs(q);
 
-  const snapRefs = await getDocs(q);
-  if (snapRefs.empty) {
-    list.innerHTML = "No referrals yet";
-  } else {
-    snapRefs.forEach(d => {
-      const r = d.data();
-      const div = document.createElement("div");
-      div.textContent = r.invitedEmail;
-      list.appendChild(div);
-    });
-  }
+  const list = document.getElementById("list");
+  list.innerHTML = refs.empty ? "No referrals yet" : "";
+
+  refs.forEach(r=>{
+    const div = document.createElement("div");
+    div.innerText = r.data().invitedEmail;
+    list.appendChild(div);
+  });
+
+  document.getElementById("copyBtn").onclick = ()=>{
+    const link = location.origin + "/auth.html?ref=" + d.referralCode;
+    navigator.clipboard.writeText(link);
+    alert("Copied");
+  };
 });
-  document.getElementById("copyBtn").onclick = () => {
-  const code = document.getElementById("refCode").textContent;
-  const link = location.origin + "/auth.html?ref=" + code;
-  navigator.clipboard.writeText(link);
-  alert("Referral link copied");
-};
 </script>
+
+</body>
+</html>
