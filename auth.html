@@ -82,7 +82,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const msg = document.getElementById("msg");
+import { query, where, getDocs, updateDoc } from
+"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+const params = new URLSearchParams(window.location.search);
+const referralFromUrl = params.get("ref");
 // READ REF CODE FROM URL
 const params = new URLSearchParams(window.location.search);
 const refCode = params.get("ref");
@@ -121,13 +125,39 @@ registerBtn.onclick = async () => {
 
     // CREATE USER
     await setDoc(doc(db,"users",cred.user.uid),{
-      email: regEmail.value.trim(),
-      balance: 0,
-      referralCode,
-      referralCount: 0,
-      referralEarnings: 0,
-      createdAt: serverTimestamp()
+  fullName: fullName.value,
+  country: country.value,
+  address: address.value,
+  balance: 0,
+  vip: { level: 0 },
+  referralCode,
+  referralCount: 0,
+  referralEarnings: 0,
+  referredBy: referralFromUrl || null,
+  createdAt: serverTimestamp()
+});
+
+/* PAY REFERRAL ONLY AFTER REAL ACCOUNT IS CREATED */
+if (referralFromUrl) {
+  const q = query(
+    collection(db,"users"),
+    where("referralCode","==", referralFromUrl)
+  );
+
+  const snap = await getDocs(q);
+  if (!snap.empty) {
+    const refUser = snap.docs[0];
+    const refData = refUser.data();
+
+    await updateDoc(refUser.ref,{
+      balance: (refData.balance || 0) + 0.09,
+      referralCount: (refData.referralCount || 0) + 1,
+      referralEarnings: (refData.referralEarnings || 0) + 0.09
     });
+  }
+}
+
+location.href = "index.html";
 
     // HANDLE REFERRAL
     if (refCode) {
