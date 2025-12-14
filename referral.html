@@ -93,7 +93,7 @@ onAuthStateChanged(auth, async user=>{
   });
 
   document.getElementById("copyBtn").onclick = ()=>{
-    const link = location.origin + "/auth.html?ref=" + d.referralCode;
+    const link = window.location.origin + "/auth.html?ref=" + code;
     navigator.clipboard.writeText(link);
     alert("Copied");
   };
