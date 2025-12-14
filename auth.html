@@ -38,8 +38,6 @@ button{
 }
 #msg{margin-top:10px;text-align:center}
 .error{color:#ff6b6b}
-.success{color:#6aff9b}
-.link{margin-top:10px;text-align:center;cursor:pointer}
 </style>
 </head>
 
@@ -51,15 +49,11 @@ button{
   <input id="loginEmail" type="email" placeholder="Email">
   <input id="loginPassword" type="password" placeholder="Password">
   <button id="loginBtn">Login</button>
-  <div id="forgotBtn" class="link">Forgot password?</div>
 
   <hr style="margin:20px 0">
 
   <h2>Register</h2>
 
-  <input id="fullName" placeholder="Full name">
-  <input id="country" placeholder="Country">
-  <input id="address" placeholder="Address">
   <input id="regEmail" type="email" placeholder="Email">
   <input id="regPassword" type="password" placeholder="Password">
   <input id="regConfirm" type="password" placeholder="Confirm password">
@@ -69,60 +63,54 @@ button{
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { auth, db } from "./firebase.js";
 import {
-  getAuth,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
-  setPersistence,
-  browserLocalPersistence
+  createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
 import {
-  getFirestore,
   doc,
   setDoc,
+  getDocs,
+  query,
+  where,
+  collection,
+  updateDoc,
+  increment,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA1HZLZRY9UADNnDVBnoBIlG3b-bCkojxs",
-  authDomain: "primeinvestproject2.firebaseapp.com",
-  projectId: "primeinvestproject2",
-  storageBucket: "primeinvestproject2.firebasestorage.app",
-  messagingSenderId: "798977477628",
-  appId: "1:798977477628:web:c97d1fba72ad7865864079"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-await setPersistence(auth, browserLocalPersistence);
-
 const msg = document.getElementById("msg");
 
+// READ REF CODE FROM URL
+const params = new URLSearchParams(window.location.search);
+const refCode = params.get("ref");
+
+// LOGIN
 loginBtn.onclick = async () => {
-  msg.innerHTML="";
-  try{
+  try {
     await signInWithEmailAndPassword(
       auth,
       loginEmail.value.trim(),
       loginPassword.value
     );
-    location.href="index.html";
-  }catch(e){
-    msg.innerHTML=`<div class="error">${e.message}</div>`;
+    location.href = "index.html";
+  } catch (e) {
+    msg.innerHTML = `<div class="error">${e.message}</div>`;
   }
 };
 
+// REGISTER
 registerBtn.onclick = async () => {
-  msg.innerHTML="";
-  if(regPassword.value!==regConfirm.value){
-    msg.innerHTML=`<div class="error">Passwords do not match</div>`;
+  msg.innerHTML = "";
+
+  if (regPassword.value !== regConfirm.value) {
+    msg.innerHTML = `<div class="error">Passwords do not match</div>`;
     return;
   }
-  try{
+
+  try {
     const cred = await createUserWithEmailAndPassword(
       auth,
       regEmail.value.trim(),
@@ -131,31 +119,52 @@ registerBtn.onclick = async () => {
 
     const referralCode = cred.user.uid.slice(0,8).toUpperCase();
 
+    // CREATE USER
     await setDoc(doc(db,"users",cred.user.uid),{
-      fullName:fullName.value,
-      country:country.value,
-      address:address.value,
-      balance:0,
-      vip:{level:0},
+      email: regEmail.value.trim(),
+      balance: 0,
       referralCode,
-      referralCount:0,
-      referralEarnings:0,
-      createdAt:serverTimestamp()
+      referralCount: 0,
+      referralEarnings: 0,
+      createdAt: serverTimestamp()
     });
 
-    location.href="index.html";
-  }catch(e){
-    msg.innerHTML=`<div class="error">${e.message}</div>`;
-  }
-};
+    // HANDLE REFERRAL
+    if (refCode) {
+      const q = query(
+        collection(db,"users"),
+        where("referralCode","==",refCode)
+      );
+      const snap = await getDocs(q);
 
-forgotBtn.onclick = async ()=>{
-  if(!loginEmail.value){
-    msg.innerHTML=`<div class="error">Enter email</div>`;
-    return;
+      if (!snap.empty) {
+        const inviterDoc = snap.docs[0];
+        const inviterRef = doc(db,"users",inviterDoc.id);
+
+        await updateDoc(inviterRef,{
+          balance: increment(0.09),
+          referralCount: increment(1),
+          referralEarnings: increment(0.09)
+        });
+
+        await setDoc(
+          doc(collection(db,"referrals")),
+          {
+            inviterUid: inviterDoc.id,
+            invitedUid: cred.user.uid,
+            invitedEmail: regEmail.value.trim(),
+            reward: 0.09,
+            createdAt: serverTimestamp()
+          }
+        );
+      }
+    }
+
+    location.href = "index.html";
+
+  } catch (e) {
+    msg.innerHTML = `<div class="error">${e.message}</div>`;
   }
-  await sendPasswordResetEmail(auth,loginEmail.value.trim());
-  msg.innerHTML=`<div class="success">Reset email sent</div>`;
 };
 </script>
 
